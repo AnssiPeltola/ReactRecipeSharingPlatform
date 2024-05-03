@@ -21,6 +21,16 @@ class UserRepository {
       client.release();
     }
   }
+
+  async findById(id: number) {
+    const client = await pool.connect();
+    try {
+      const result = await client.query('SELECT * FROM users WHERE id = $1', [id]);
+      return result.rows[0]; // Return the user with the given id
+    } finally {
+      client.release();
+    }
+  }
 }
 
 export default UserRepository;
