@@ -26,6 +26,14 @@ class UserService {
     }
     return user;
   }
+
+  async findByEmail(email: string) {
+    return this.userRepository.findByEmail(email);
+  }
+
+  async findById(id: number) {
+    return this.userRepository.findById(id);
+  }
 }
 
 export default UserService;
