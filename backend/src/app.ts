@@ -48,4 +48,6 @@ app.post('/login', (req, res, next) => {
   })(req, res, next);
 });
 
+app.get('/checkAuthentication', (req, res) => userController.checkAuthentication(req, res));
+
 export default app;

@@ -23,6 +23,14 @@ class UserController {
       res.status(400).json({ message: error.message });
     }
   }
+
+  checkAuthentication(req: Request, res: Response) {
+    if (req.user) {
+      res.send({ loggedIn: true, user: req.user });
+    } else {
+      res.send({ loggedIn: false });
+    }
+  }
 }
 
 export default UserController;
