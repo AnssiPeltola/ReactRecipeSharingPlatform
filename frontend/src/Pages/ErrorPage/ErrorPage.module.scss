@@ -1,0 +1,28 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f8f9fa;
+  color: #212529;
+}
+
+.header {
+  font-size: 2em;
+  margin-bottom: 1em;
+}
+
+.return {
+  display: inline-block;
+  padding: 1em 2em;
+  background-color: #007bff;
+  color: #fff;
+  border-radius: 0.25em;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+}
