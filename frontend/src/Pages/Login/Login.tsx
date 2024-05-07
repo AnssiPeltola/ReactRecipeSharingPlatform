@@ -9,9 +9,13 @@ function Login() {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/login`, { email, password });
+      const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/login`, { email, password }, { withCredentials: true });
       console.log(response.data); // Here you would typically handle the logged in user data
-      setLoginStatus('Login successful!'); 
+      if (response.data.message === 'Login successful') {
+        window.location.reload();
+      } else {
+        setLoginStatus('Login failed. Please check your email and password.');
+      }
     } catch (error) {
       console.error(error);
       setLoginStatus('Login failed. Please check your email and password.');

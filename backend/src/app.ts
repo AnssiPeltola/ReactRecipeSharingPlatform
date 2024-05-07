@@ -14,7 +14,10 @@ const userRepository = new UserRepository();
 const userService = new UserService(userRepository);
 const userController = new UserController(userService);
 
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3001',
+  credentials: true
+}));
 app.use(express.json());
 
 app.use(session({
@@ -46,6 +49,17 @@ app.post('/login', (req, res, next) => {
       return res.json({ message: 'Login successful' });
     });
   })(req, res, next);
+});
+
+app.post('/logout', (req, res) => {
+  req.logout((err) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Error logging out' });
+    } else {
+      res.json({ message: 'Logout successful' });
+    }
+  });
 });
 
 app.get('/checkAuthentication', (req, res) => userController.checkAuthentication(req, res));
