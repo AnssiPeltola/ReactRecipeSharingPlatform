@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import Modal from 'react-modal';
 
-function Login() {
+Modal.setAppElement('#root'); // replace '#root' with the id of your app's root element
+
+function LoginModal({ isOpen, onRequestClose }: { isOpen: boolean; onRequestClose: () => void; }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loginStatus, setLoginStatus] = useState('');
@@ -9,10 +12,9 @@ function Login() {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/login`, { email, password });
+      const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/login`, { email, password }, { withCredentials: true });
       console.log(response.data);
       if (response.data.message === 'Login successful') {
-        // Store the token in local storage
         localStorage.setItem('sessionToken', response.data.token);
         window.location.reload();
       } else {
@@ -25,7 +27,7 @@ function Login() {
   };
 
   return (
-    <div>
+    <Modal isOpen={isOpen} onRequestClose={onRequestClose}>
       <form onSubmit={handleSubmit}>
         <label>
           Email:
@@ -35,11 +37,11 @@ function Login() {
           Password:
           <input type="password" value={password} onChange={e => setPassword(e.target.value)} required />
         </label>
-        <button type="submit">Login</button>
+        <input type="submit" value="Login" />
       </form>
       <p>{loginStatus}</p>
-    </div>
+    </Modal>
   );
 }
 
-export default Login;
+export default LoginModal;

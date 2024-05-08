@@ -1,4 +1,5 @@
 import express, { Express } from 'express';
+import { Request as ExpressRequest } from 'express';
 import cors from 'cors';
 import session from 'express-session';
 import flash from 'express-flash';
@@ -7,6 +8,8 @@ import { TestController } from './controllers/TestController';
 import UserController from './controllers/UserController';
 import UserService from './services/UserService';
 import UserRepository from './repositories/UserRepository';
+import jwt from 'jsonwebtoken';
+import User from './models/User';
 
 const app: Express = express();
 const testController = new TestController();
@@ -46,10 +49,13 @@ app.post('/login', (req, res, next) => {
       if (err) {
         return next(err);
       }
-      return res.json({ message: 'Login successful' });
+      const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET || 'your-jwt-secret');
+      return res.json({ message: 'Login successful', token });
     });
   })(req, res, next);
 });
+
+app.post('/register-details', passport.authenticate('jwt', { session: false }), (req, res) => userController.registerDetails(req as ExpressRequest & { user?: User }, res));
 
 app.post('/logout', (req, res) => {
   req.logout((err) => {
@@ -62,6 +68,6 @@ app.post('/logout', (req, res) => {
   });
 });
 
-app.get('/checkAuthentication', (req, res) => userController.checkAuthentication(req, res));
+app.get('/checkAuthentication', passport.authenticate('jwt', { session: false }), (req, res) => userController.checkAuthentication(req, res));
 
 export default app;

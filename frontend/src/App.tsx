@@ -6,6 +6,7 @@ import Register from './Pages/Register/Register';
 import Login from './Pages/Login/Login';
 import Navbar from './Components/Navbar/Navbar';
 import ErrorPage from './Pages/ErrorPage/ErrorPage';
+import RegisterDetails from './Pages/Register/RegisterDetails/RegisterDetails';
 
 function App() {
     return (
@@ -16,6 +17,7 @@ function App() {
             <Routes>
               <Route path={ROUTES.LANDING} element={<TestComponent />} />
               <Route path={ROUTES.REGISTER} element={<Register />} />
+              <Route path={ROUTES.REGISTER_DETAILS} element={<RegisterDetails />} />
               <Route path={ROUTES.LOGIN} element={<Login />} />
               <Route path="*" element={<ErrorPage />} />
             </Routes>

@@ -15,6 +15,10 @@ class UserService {
     return this.userRepository.save(user);
   }
 
+  async updateUserDetails(id: number, firstname: string, lastname: string) {
+    return this.userRepository.updateUserDetails(id, firstname, lastname);
+  }
+
   async login(email: string, password: string) {
     const user = await this.userRepository.findByEmail(email);
     if (!user) {
