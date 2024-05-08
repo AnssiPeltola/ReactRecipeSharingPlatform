@@ -4,10 +4,13 @@ import passportLocal from 'passport-local';
 import UserService from '../services/UserService';
 import UserRepository from '../repositories/UserRepository';
 import User from '../models/User';
+import passportJwt from 'passport-jwt';
 
 const userRepository = new UserRepository();
 const userService = new UserService(userRepository);
 const LocalStrategy = passportLocal.Strategy;
+const JwtStrategy = passportJwt.Strategy;
+const ExtractJwt = passportJwt.ExtractJwt;
 
 passport.use(new LocalStrategy({
   usernameField: 'email',
@@ -44,5 +47,21 @@ passport.deserializeUser((id: string, done) => {
     .then(user => done(null, user))
     .catch(err => done(err));
 });
+
+passport.use(new JwtStrategy({
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: process.env.JWT_SECRET || 'your-jwt-secret'
+}, async (jwtPayload: any, done: any) => {
+  try {
+    const user = await userService.findById(jwtPayload.id);
+    if (user) {
+      return done(null, user);
+    } else {
+      return done(null, false);
+    }
+  } catch (err) {
+    return done(err, false);
+  }
+}));
 
 export default passport;
