@@ -1,0 +1,27 @@
+databaseType = "PostgreSql"
+id = "b14472af-77fa-4b7b-8cfd-417a956675f1"
+name = "ReactRecipeSharingPlatform"
+
+[flyway]
+locations = [ "filesystem:migrations" ]
+mixed = true
+outOfOrder = true
+validateMigrationNaming = true
+
+  [flyway.check]
+  majorTolerance = 0
+
+[flywayDesktop]
+developmentEnvironment = "development"
+schemaModel = "schema-model"
+shadowEnvironment = "shadow"
+
+[redgateCompare]
+filterFile = "filter.rgf"
+
+[redgateCompare.postgresql.options.ignores]
+ignoreNewlinesInTextObjects = "off"
+
+[environments.anssi]
+url = "jdbc:postgresql://localhost:5432/recipe"
+schemas = [ "public" ]
