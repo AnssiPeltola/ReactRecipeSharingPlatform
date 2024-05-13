@@ -1,0 +1,27 @@
+.ingredientSearch {
+  position: relative;
+  width: 200px;
+}
+
+.inputField {
+  width: 100%;
+  padding: 10px;
+}
+
+.dropdown {
+  position: absolute;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: white;
+  border: 1px solid #ccc;
+  z-index: 1;
+}
+
+.dropdown p {
+  padding: 10px;
+  cursor: pointer;
+  &:hover {
+      background-color: #f1f1f1;
+  }
+}
