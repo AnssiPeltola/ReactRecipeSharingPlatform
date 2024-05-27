@@ -8,6 +8,7 @@ import Navbar from './Components/Navbar/Navbar';
 import ErrorPage from './Pages/ErrorPage/ErrorPage';
 import RegisterDetails from './Pages/Register/RegisterDetails/RegisterDetails';
 import IngredientSearch from './Components/IngredientSearch/IngredientSearch';
+import CreateRecipe from './Pages/RecipeCreate/RecipeCreate';
 
 function App() {
     return (
@@ -21,6 +22,7 @@ function App() {
               <Route path={ROUTES.REGISTER_DETAILS} element={<RegisterDetails />} />
               <Route path={ROUTES.LOGIN} element={<Login />} />
               <Route path={ROUTES.INGREDIENT_SEARCH} element={<IngredientSearch />} />
+              <Route path={ROUTES.CREATERECIPE + '/*'} element={<CreateRecipe />} />
               <Route path="*" element={<ErrorPage />} />
             </Routes>
           </main>
