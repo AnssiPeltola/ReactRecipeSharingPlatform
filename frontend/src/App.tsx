@@ -21,7 +21,7 @@ function App() {
               <Route path={ROUTES.REGISTER} element={<Register />} />
               <Route path={ROUTES.REGISTER_DETAILS} element={<RegisterDetails />} />
               <Route path={ROUTES.LOGIN} element={<Login />} />
-              <Route path={ROUTES.INGREDIENT_SEARCH} element={<IngredientSearch />} />
+              {/* <Route path={ROUTES.INGREDIENT_SEARCH} element={<IngredientSearch />} /> */}
               <Route path={ROUTES.CREATERECIPE + '/*'} element={<CreateRecipe />} />
               <Route path="*" element={<ErrorPage />} />
             </Routes>
