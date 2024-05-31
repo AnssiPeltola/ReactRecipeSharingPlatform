@@ -1,5 +1,5 @@
 import React, { useEffect, useState} from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styles from './Navbar.module.scss';
 import axios from 'axios';
 import LoginModal from '../Modal/LoginModal/LoginModal';
@@ -8,6 +8,7 @@ const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem('sessionToken');
@@ -43,28 +44,32 @@ const Navbar = () => {
       });
   };
 
+  if (!isLoggedIn) {
+    return (
+      <nav className={styles.nav}>
+        <button onClick={() => navigate('/')}>
+          <img src='https://via.placeholder.com/40' alt='Logo' />
+        </button>
+        <div>
+          <button onClick={() => navigate('/register')}>Register</button>
+          <button onClick={() => setIsLoginOpen(true)}>Login</button>
+          <LoginModal isOpen={isLoginOpen} onRequestClose={() => setIsLoginOpen(false)} />
+        </div>
+      </nav>
+    );
+  }
+  
   return (
     <nav className={styles.nav}>
-      <div>Logo</div>
-      <ul>
-        {!isLoggedIn ? (
-          <>
-            <li>
-              <Link to="/register">Register</Link>
-            </li>
-            <li>
-              <button onClick={() => setIsLoginOpen(true)}>Login</button>
-              <LoginModal isOpen={isLoginOpen} onRequestClose={() => setIsLoginOpen(false)} />
-            </li>
-          </>
-        ) : (
-          <li>
-            <button onClick={handleLogout}>Logout</button>
-          </li>
-        )} 
-      </ul>
+      <button onClick={() => navigate('/')}>
+        <img src='https://via.placeholder.com/40' alt='Logo' />
+      </button>
+      <div>
+        <button onClick={() => navigate('/create-recipe')}>Lisää resepti</button>
+        <button onClick={handleLogout}>Logout</button>
+      </div>
     </nav>
   );
-};
-
-export default Navbar;
+}
+  
+  export default Navbar;
