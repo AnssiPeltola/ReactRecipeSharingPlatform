@@ -7,6 +7,7 @@ export interface RecipeState {
 }
 
 export interface Ingredient {
+  id: string;
   quantity: string;
   unit: string;
   name: string;
