@@ -1,16 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './IngredientSearch.module.scss';
 
 interface IngredientSearchProps {
     onIngredientSelect: (name: string) => void;
+    initialValue: string;
   }
 
   interface Ingredient {
     name: string;
   }
 
-const IngredientSearch: React.FC<IngredientSearchProps> = ({ onIngredientSelect }) => {
-  const [query, setQuery] = useState('');
+const IngredientSearch: React.FC<IngredientSearchProps> = ({ onIngredientSelect, initialValue }) => {
+  const [query, setQuery] = useState(initialValue || '');
   const [results, setResults] = useState<Ingredient[]>([]);
 
   const searchIngredients = () => {
