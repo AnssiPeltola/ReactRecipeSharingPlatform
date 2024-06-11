@@ -5,6 +5,7 @@ import { RootState } from '../../../Redux/store';
 import IngredientSearch from '../../../Components/IngredientSearch/IngredientSearch';
 import { setIngredients, setInstructions } from '../../../Redux/recipeSlice';
 import { Ingredient } from '../../../Types/types';
+import { v4 as uuidv4 } from 'uuid';
 
 const RecipeIngredients = () => {
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ const RecipeIngredients = () => {
 
   useEffect(() => {
     if (recipeState.ingredients.length === 0) {
-      setLocalIngredients([{ quantity: '', unit: '', name: '' }]);
+      setLocalIngredients([{ id: uuidv4(), quantity: '', unit: '', name: '' }]);
     } else {
       setLocalIngredients(recipeState.ingredients);
     }
@@ -23,27 +24,27 @@ const RecipeIngredients = () => {
   }, []);
 
   const handleButtonClick = () => {
-    const ingredientsForAction = ingredients.map(({ quantity, unit, name }) => ({ quantity, unit, name }));
+    const ingredientsForAction = ingredients.map(({ id, quantity, unit, name }) => ({ id, quantity, unit, name }));
     dispatch(setIngredients(ingredientsForAction));
     dispatch(setInstructions(instructions));
     navigate('/create-recipe/recipe-picture');
   };
 
   const handleAddMore = () => {
-    setLocalIngredients([...ingredients, { quantity: '', unit: '', name: '' }]);
+    setLocalIngredients([...ingredients, { id: uuidv4(), quantity: '', unit: '', name: '' }]);
   };
   
-  const handleRemove = (index: number) => {
-    const newIngredients = [...ingredients];
-    newIngredients.splice(index, 1);
-    setLocalIngredients(newIngredients);
+  const handleRemove = (id: string) => {
+    setLocalIngredients(prevIngredients => {
+      return prevIngredients.filter(ingredient => ingredient.id !== id);
+    });
   };
 
   return (
     <div>
       <p>Raaka-aine sivu</p>
       {ingredients.map((ingredient, index) => (
-        <div key={index}>
+        <div key={ingredient.id}>
           <input type="text" placeholder="Quantity" value={ingredient.quantity} onChange={(e) => {
             const newIngredients = ingredients.map((ing, idx) => {
               if (idx === index) {
@@ -80,7 +81,7 @@ const RecipeIngredients = () => {
               });
               setLocalIngredients(newIngredients);
             }} />
-          <button onClick={() => handleRemove(index)}>Poista</button>
+          <button onClick={() => handleRemove(ingredient.id)}>Remove</button>
         </div>
       ))}
       <button onClick={handleAddMore}>Lisää uusi raaka-aine</button>
