@@ -3,7 +3,7 @@ export interface RecipeState {
   category: string;
   ingredients: Ingredient[];
   instructions: string;
-  pictureUrl: string;
+  pictureId: string;
 }
 
 export interface Ingredient {
