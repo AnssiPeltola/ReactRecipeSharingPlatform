@@ -1,16 +1,16 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RecipeState, Ingredient } from '../Types/types';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { RecipeState, Ingredient } from "../Types/types";
 
 const initialState: RecipeState = {
-  title: '',
-  category: '',
+  title: "",
+  category: "",
   ingredients: [],
-  instructions: '',
-  pictureUrl: '',
+  instructions: "",
+  pictureId: "",
 };
 
 const recipeSlice = createSlice({
-  name: 'recipe',
+  name: "recipe",
   initialState,
   reducers: {
     setTitle: (state, action: PayloadAction<string>) => {
@@ -25,12 +25,18 @@ const recipeSlice = createSlice({
     setInstructions: (state, action: PayloadAction<string>) => {
       state.instructions = action.payload;
     },
-    setPictureUrl: (state, action: PayloadAction<string>) => {
-      state.pictureUrl = action.payload;
+    setPictureId: (state, action: PayloadAction<string>) => {
+      state.pictureId = action.payload;
     },
   },
 });
 
-export const { setTitle, setCategory, setIngredients, setInstructions, setPictureUrl } = recipeSlice.actions;
+export const {
+  setTitle,
+  setCategory,
+  setIngredients,
+  setInstructions,
+  setPictureId,
+} = recipeSlice.actions;
 
 export default recipeSlice.reducer;
