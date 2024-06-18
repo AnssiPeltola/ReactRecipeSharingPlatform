@@ -7,6 +7,7 @@ const initialState: RecipeState = {
   ingredients: [],
   instructions: "",
   pictureId: "",
+  userId: "",
 };
 
 const recipeSlice = createSlice({
@@ -28,6 +29,9 @@ const recipeSlice = createSlice({
     setPictureId: (state, action: PayloadAction<string>) => {
       state.pictureId = action.payload;
     },
+    setUserId: (state, action: PayloadAction<string>) => {
+      state.userId = action.payload;
+    },
   },
 });
 
@@ -37,6 +41,7 @@ export const {
   setIngredients,
   setInstructions,
   setPictureId,
+  setUserId,
 } = recipeSlice.actions;
 
 export default recipeSlice.reducer;

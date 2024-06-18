@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../Redux/store";
+import axios from "axios";
 
 const RecipeOverview = () => {
   const navigate = useNavigate();
@@ -12,7 +13,34 @@ const RecipeOverview = () => {
     ? `${process.env.REACT_APP_API_BASE_URL}/recipePicture/${recipeState.pictureId}`
     : null;
 
-  const handleButtonClick = () => {
+  const handleButtonClick = async () => {
+    const formData = new FormData();
+    formData.append("title", recipeState.title);
+    formData.append("category", recipeState.category);
+    formData.append("instructions", recipeState.instructions);
+    formData.append("userId", recipeState.userId.toString());
+    formData.append("pictureUrl", recipeState.pictureId);
+
+    recipeState.ingredients.forEach((ingredient, index) => {
+      formData.append(`ingredients[${index}][quantity]`, ingredient.quantity);
+      formData.append(`ingredients[${index}][unit]`, ingredient.unit);
+      formData.append(`ingredients[${index}][name]`, ingredient.name);
+    });
+
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_BASE_URL}/recipeCreate`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+    }
     navigate("/create-recipe/recipe-created");
   };
 
