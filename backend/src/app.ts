@@ -97,6 +97,23 @@ app.get(
   (req, res) => userController.checkAuthentication(req, res)
 );
 
+app.get(
+  "/getUserDetails",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    if (req.user) {
+      const user: User = req.user as User;
+      res.json({ id: user.id, email: user.email }); // Include any other user details as needed
+    } else {
+      res.status(401).json({ message: "User not authenticated" });
+    }
+  }
+);
+
+app.post("/recipeCreate", upload.single("file"), (req, res) =>
+  recipeController.createRecipe(req, res)
+);
+
 app.post("/uploadRecipePicture", upload.single("file"), (req, res) =>
   recipeController.uploadFile(req, res)
 );

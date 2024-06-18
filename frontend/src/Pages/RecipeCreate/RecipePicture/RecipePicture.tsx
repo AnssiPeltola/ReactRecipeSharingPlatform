@@ -50,7 +50,6 @@ const RecipePicture = () => {
         }
       );
 
-      // Assuming the backend returns the ID of the uploaded picture
       dispatch(setPictureId(response.data.fileId)); // Update Redux with the picture ID
     } catch (error) {
       console.error("Failed to upload image", error);

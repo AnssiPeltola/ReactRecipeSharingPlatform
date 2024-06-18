@@ -6,18 +6,66 @@ class RecipeRepository {
   async createRecipe(recipe: Recipe) {
     const client = await pool.connect();
     try {
-      const query: QueryConfig<any[]> = {
-        text: "INSERT INTO recipes(title, category, ingredients, instructions, picture_url) VALUES($1, $2, $3, $4, $5) RETURNING *",
+      await client.query("BEGIN"); // Start transaction
+
+      // Insert the recipe
+      const recipeInsertQuery: QueryConfig = {
+        text: "INSERT INTO recipes(user_id, title, category, instructions, picture_url) VALUES($1, $2, $3, $4, $5) RETURNING id",
         values: [
+          recipe.userId,
           recipe.title,
           recipe.category,
-          JSON.stringify(recipe.ingredients),
           recipe.instructions,
           recipe.pictureUrl,
         ],
       };
-      const result = await client.query(query);
-      return result.rows[0]; // Return the inserted recipe
+      const recipeResult = await client.query(recipeInsertQuery);
+      const recipeId = recipeResult.rows[0].id; // Get the inserted recipe ID
+
+      // Handle ingredients
+      for (const ingredient of recipe.ingredients) {
+        let ingredientId;
+
+        // Check if ingredient exists
+        const ingredientCheckQuery: QueryConfig = {
+          text: "SELECT id FROM ingredients WHERE name = $1",
+          values: [ingredient.name],
+        };
+        const ingredientCheckResult = await client.query(ingredientCheckQuery);
+
+        if (ingredientCheckResult.rows.length > 0) {
+          // Ingredient exists
+          ingredientId = ingredientCheckResult.rows[0].id;
+        } else {
+          // Insert new ingredient
+          const ingredientInsertQuery: QueryConfig = {
+            text: "INSERT INTO ingredients(name) VALUES($1) RETURNING id",
+            values: [ingredient.name],
+          };
+          const ingredientInsertResult = await client.query(
+            ingredientInsertQuery
+          );
+          ingredientId = ingredientInsertResult.rows[0].id;
+        }
+
+        // Insert into recipe_ingredients
+        const recipeIngredientsInsertQuery: QueryConfig = {
+          text: "INSERT INTO recipe_ingredients(recipe_id, ingredient_id, quantity, unit) VALUES($1, $2, $3, $4)",
+          values: [
+            recipeId,
+            ingredientId,
+            ingredient.quantity,
+            ingredient.unit,
+          ],
+        };
+        await client.query(recipeIngredientsInsertQuery);
+      }
+
+      await client.query("COMMIT"); // Commit transaction
+      return { ...recipe, id: recipeId }; // Return the inserted recipe with ID
+    } catch (error) {
+      await client.query("ROLLBACK"); // Rollback transaction on error
+      throw error; // Rethrow the error
     } finally {
       client.release();
     }

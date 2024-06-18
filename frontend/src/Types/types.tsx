@@ -4,6 +4,7 @@ export interface RecipeState {
   ingredients: Ingredient[];
   instructions: string;
   pictureId: string;
+  userId: string;
 }
 
 export interface Ingredient {
