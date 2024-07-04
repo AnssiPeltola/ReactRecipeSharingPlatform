@@ -2,10 +2,12 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../Redux/store";
+import { resetState } from "../../../Redux/recipeSlice";
 import axios from "axios";
 
 const RecipeOverview = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const recipeState = useSelector((state: RootState) => state.recipe);
 
   // Dynamically construct the image URL for display using the pictureId
@@ -38,6 +40,7 @@ const RecipeOverview = () => {
         }
       );
       console.log(response.data);
+      dispatch(resetState());
     } catch (error) {
       console.error(error);
     }
