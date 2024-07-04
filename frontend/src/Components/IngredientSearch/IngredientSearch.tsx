@@ -1,37 +1,53 @@
-import React, { useState, useEffect } from 'react';
-import styles from './IngredientSearch.module.scss';
+import React, { useState, useEffect } from "react";
+import styles from "./IngredientSearch.module.scss";
 
 interface IngredientSearchProps {
-    onIngredientSelect: (name: string) => void;
-    initialValue: string;
-  }
+  onIngredientSelect: (name: string) => void;
+  initialValue: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
 
-  interface Ingredient {
-    name: string;
-  }
+interface Ingredient {
+  name: string;
+}
 
-const IngredientSearch: React.FC<IngredientSearchProps> = ({ onIngredientSelect, initialValue }) => {
-  const [query, setQuery] = useState(initialValue || '');
+const IngredientSearch: React.FC<IngredientSearchProps> = ({
+  onIngredientSelect,
+  initialValue,
+  onChange,
+}) => {
+  const [query, setQuery] = useState(initialValue || "");
   const [results, setResults] = useState<Ingredient[]>([]);
 
   const searchIngredients = () => {
     fetch(`https://world.openfoodfacts.org/data/taxonomies/ingredients.json`)
-      .then(response => response.json())
-      .then(data => {
+      .then((response) => response.json())
+      .then((data) => {
         // Extract the Finnish names
         const fiNames = Object.entries(data)
-          .filter(([key, ingredient]: [string, any]) => ingredient.name && ingredient.name.fi && ingredient.name.fi.toLowerCase().includes(query.toLowerCase()))
-          .map(([key, ingredient]: [string, any]) => ({ name: ingredient.name.fi }))
+          .filter(
+            ([key, ingredient]: [string, any]) =>
+              ingredient.name &&
+              ingredient.name.fi &&
+              ingredient.name.fi.toLowerCase().includes(query.toLowerCase())
+          )
+          .map(([key, ingredient]: [string, any]) => ({
+            name: ingredient.name.fi,
+          }))
           .sort((a: any, b: any) => a.name.length - b.name.length);
         setResults(fiNames);
       })
-      .catch(error => {
-        console.error('Error:', error);
+      .catch((error) => {
+        console.error("Error:", error);
       });
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
+    if (onChange) {
+      // Call the passed onChange function if provided
+      onChange(e);
+    }
     if (e.target.value.length < 3) {
       setResults([]);
     } else {
@@ -47,16 +63,21 @@ const IngredientSearch: React.FC<IngredientSearchProps> = ({ onIngredientSelect,
 
   return (
     <div className={styles.ingredientSearch}>
-      <input className={styles.inputField} type="text" value={query} onChange={handleInputChange} />
+      <input
+        className={styles.inputField}
+        type="text"
+        value={query}
+        onChange={handleInputChange}
+      />
       <div className={styles.dropdown}>
-            {results.map((result, index) => (
-        <p key={index} onClick={() => handleResultClick(result)}>
+        {results.map((result, index) => (
+          <p key={index} onClick={() => handleResultClick(result)}>
             {result.name}
-        </p>
+          </p>
         ))}
       </div>
     </div>
   );
-}
+};
 
 export default IngredientSearch;

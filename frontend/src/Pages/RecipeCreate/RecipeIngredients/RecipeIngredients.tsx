@@ -45,6 +45,22 @@ const RecipeIngredients = () => {
     });
   };
 
+  const formatIngredientName = (name: string) => {
+    return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+  };
+
+  // Function to update ingredient name in local state
+  const updateIngredientName = (ingredientIndex: number, newName: string) => {
+    const formattedName = formatIngredientName(newName); // Use the helper function
+    const newIngredients = ingredients.map((ingredient, idx) => {
+      if (idx === ingredientIndex) {
+        return { ...ingredient, name: formattedName };
+      }
+      return ingredient;
+    });
+    setLocalIngredients(newIngredients);
+  };
+
   return (
     <div>
       <p>Raaka-aine sivu</p>
@@ -77,20 +93,28 @@ const RecipeIngredients = () => {
             }}
           >
             <option value="">Select unit</option>
-            <option value="dl">dl</option>
-            <option value="tl">tl</option>
-            <option value="kpl">kpl</option>
+            <option value="g">g (gramma)</option>
+            <option value="kg">kg (kilogramma)</option>
+            <option value="ml">ml (millilitra)</option>
+            <option value="dl">dl (desilitra)</option>
+            <option value="l">l (litra)</option>
+            <option value="rkl">rkl (ruokalusikallinen)</option>
+            <option value="tl">tl (teelusikallinen)</option>
+            <option value="kpl">kpl (kappale)</option>
+            <option value="pkt">pkt (paketti)</option>
+            <option value="tlk">tlk (tölkki)</option>
+            <option value="prk">prk (purkki)</option>
           </select>
           <IngredientSearch
             initialValue={ingredient.name}
             onIngredientSelect={(name) => {
-              const newIngredients = ingredients.map((ing, idx) => {
-                if (idx === index) {
-                  return { ...ing, name: name ? name : "" };
-                }
-                return ing;
-              });
-              setLocalIngredients(newIngredients);
+              // This handles selection from search results
+              updateIngredientName(index, name);
+            }}
+            onChange={(e) => {
+              // This handles manual input
+              const name = e.target.value;
+              updateIngredientName(index, name);
             }}
           />
           <button onClick={() => handleRemove(ingredient.id)}>Remove</button>
