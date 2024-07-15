@@ -10,6 +10,8 @@ import ErrorPage from "./Pages/ErrorPage/ErrorPage";
 import RegisterDetails from "./Pages/Register/RegisterDetails/RegisterDetails";
 import IngredientSearch from "./Components/IngredientSearch/IngredientSearch";
 import CreateRecipe from "./Pages/RecipeCreate/RecipeCreate";
+import SearchResultsPage from "./Pages/RecipeSearchResults/RecipeSearchResults";
+import RecipeDetails from "./Pages/RecipeDetails/RecipeDetails";
 
 function App() {
   return (
@@ -30,6 +32,11 @@ function App() {
               path={ROUTES.CREATERECIPE + "/*"}
               element={<CreateRecipe />}
             />
+            <Route
+              path={ROUTES.SEARCH_RESULTS}
+              element={<SearchResultsPage />}
+            />
+            <Route path={ROUTES.RECIPE_DETAILS} element={<RecipeDetails />} />
             <Route path="*" element={<ErrorPage />} />
           </Routes>
         </main>

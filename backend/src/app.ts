@@ -140,6 +140,10 @@ app.get("/recipePicture/:id", async (req, res) => {
   }
 });
 
+// Recipe search
 app.get("/search", (req, res) => recipeController.searchRecipes(req, res));
+
+// Get recipe by ID
+app.get("/recipe/:id", (req, res) => recipeController.getRecipeById(req, res));
 
 export default app;

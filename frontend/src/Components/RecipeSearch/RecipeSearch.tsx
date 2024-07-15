@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import * as ROUTES from "../../Constants/routes";
 
 function RecipeSearch() {
   const [searchTerm, setSearchTerm] = useState("");
   const [recipes, setRecipes] = useState<{ id: number; title: string }[]>([]);
   const [error, setError] = useState("");
+
+  const navigate = useNavigate();
 
   const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -13,7 +17,7 @@ function RecipeSearch() {
       const response = await axios.get(
         `/search?query=${encodeURIComponent(searchTerm)}`
       );
-      setRecipes(response.data);
+      navigate(ROUTES.SEARCH_RESULTS, { state: { recipes: response.data } });
     } catch (error) {
       console.error("Search failed:", error);
       setError("Failed to fetch recipes. Please try again.");
