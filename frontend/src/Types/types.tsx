@@ -5,6 +5,7 @@ export interface RecipeState {
   instructions: string;
   pictureId: string;
   userId: string;
+  picture_url?: string;
 }
 
 export interface Ingredient {

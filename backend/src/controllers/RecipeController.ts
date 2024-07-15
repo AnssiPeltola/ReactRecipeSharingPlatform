@@ -42,6 +42,27 @@ class RecipeController {
       res.status(500).send("An error occurred while searching for recipes");
     }
   }
+
+  async getRecipeById(req: Request, res: Response): Promise<void> {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        res.status(400).json({ message: "Invalid recipe ID" });
+        return;
+      }
+
+      const recipe = await this.recipeService.getRecipeById(id);
+      if (!recipe) {
+        res.status(404).json({ message: "Recipe not found" });
+        return;
+      }
+
+      res.json(recipe);
+    } catch (error) {
+      console.error("Error fetching recipe details:", error);
+      res.status(500).json({ message: "Error fetching recipe details" });
+    }
+  }
 }
 
 export default RecipeController;

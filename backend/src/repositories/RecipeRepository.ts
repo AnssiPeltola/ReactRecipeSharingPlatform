@@ -105,6 +105,41 @@ class RecipeRepository {
     const result = await pool.query(query, [`%${searchTerm}%`]);
     return result.rows;
   }
+
+  async getRecipeById(id: number): Promise<Recipe | null> {
+    const query = {
+      text: `
+        SELECT r.*, ri.quantity, ri.unit, i.name AS ingredient_name
+        FROM recipes r
+        INNER JOIN recipe_ingredients ri ON r.id = ri.recipe_id
+        INNER JOIN ingredients i ON ri.ingredient_id = i.id
+        WHERE r.id = $1
+      `,
+      values: [id],
+    };
+
+    try {
+      const { rows } = await pool.query(query);
+      if (rows.length === 0) {
+        return null;
+      }
+
+      // Transform rows into a structured recipe object
+      const recipe = {
+        ...rows[0],
+        ingredients: rows.map((row) => ({
+          name: row.ingredient_name,
+          quantity: row.quantity,
+          unit: row.unit,
+        })),
+      };
+
+      return recipe;
+    } catch (error) {
+      console.error("Error querying the database", error);
+      throw error;
+    }
+  }
 }
 
 export default RecipeRepository;

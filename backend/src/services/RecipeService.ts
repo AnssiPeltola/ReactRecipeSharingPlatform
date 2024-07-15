@@ -27,6 +27,10 @@ class RecipeService {
   async searchRecipes(searchTerm: string): Promise<Recipe[]> {
     return this.recipeRepository.searchByIngredientOrName(searchTerm);
   }
+
+  async getRecipeById(id: number): Promise<Recipe | null> {
+    return this.recipeRepository.getRecipeById(id);
+  }
 }
 
 export default RecipeService;
