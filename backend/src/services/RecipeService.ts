@@ -1,3 +1,4 @@
+import Recipe from "../models/Recipe";
 import RecipeRepository from "../repositories/RecipeRepository";
 
 class RecipeService {
@@ -21,6 +22,10 @@ class RecipeService {
       console.error(error);
       throw error;
     }
+  }
+
+  async searchRecipes(searchTerm: string): Promise<Recipe[]> {
+    return this.recipeRepository.searchByIngredientOrName(searchTerm);
   }
 }
 
