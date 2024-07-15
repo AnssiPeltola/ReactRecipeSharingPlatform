@@ -28,6 +28,20 @@ class RecipeController {
       return res.status(500).send("Error uploading file");
     }
   };
+
+  async searchRecipes(req: Request, res: Response) {
+    try {
+      const { query } = req.query;
+      if (!query || typeof query !== "string") {
+        return res.status(400).send("Query parameter is required");
+      }
+      const recipes = await this.recipeService.searchRecipes(query);
+      res.json(recipes);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("An error occurred while searching for recipes");
+    }
+  }
 }
 
 export default RecipeController;
