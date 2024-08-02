@@ -146,4 +146,9 @@ app.get("/search", (req, res) => recipeController.searchRecipes(req, res));
 // Get recipe by ID
 app.get("/recipe/:id", (req, res) => recipeController.getRecipeById(req, res));
 
+// Get random recipe ID
+app.get("/random-recipe", (req, res) =>
+  recipeController.getRandomRecipeId(req, res)
+);
+
 export default app;

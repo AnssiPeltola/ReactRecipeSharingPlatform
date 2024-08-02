@@ -31,6 +31,10 @@ class RecipeService {
   async getRecipeById(id: number): Promise<Recipe | null> {
     return this.recipeRepository.getRecipeById(id);
   }
+
+  async getRandomRecipeId(): Promise<number | null> {
+    return this.recipeRepository.getRandomRecipeId();
+  }
 }
 
 export default RecipeService;

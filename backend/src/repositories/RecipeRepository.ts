@@ -140,6 +140,23 @@ class RecipeRepository {
       throw error;
     }
   }
+
+  async getRandomRecipeId(): Promise<number | null> {
+    const query = {
+      text: "SELECT id FROM recipes ORDER BY RANDOM() LIMIT 1",
+    };
+
+    try {
+      const { rows } = await pool.query(query);
+      if (rows.length === 0) {
+        return null;
+      }
+      return rows[0].id;
+    } catch (error) {
+      console.error("Error querying the database", error);
+      throw error;
+    }
+  }
 }
 
 export default RecipeRepository;

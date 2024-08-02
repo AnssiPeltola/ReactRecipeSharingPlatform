@@ -1,5 +1,6 @@
 import React from "react";
 import RecipeSearch from "../../Components/RecipeSearch/RecipeSearch";
+import RandomRecipeButton from "../../Components/RandomRecipeButton/RandomRecipeButton";
 
 function Frontpage() {
   return (
@@ -9,6 +10,7 @@ function Frontpage() {
         Löydä reseptejä, suunnittele ateriasi ja jaa kokemuksesi muiden kanssa!
       </p>
       <RecipeSearch />
+      <RandomRecipeButton />
     </div>
   );
 }
