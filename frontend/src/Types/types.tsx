@@ -1,6 +1,7 @@
 export interface RecipeState {
   title: string;
   category: string;
+  secondaryCategory: string;
   ingredients: Ingredient[];
   instructions: string;
   pictureId: string;

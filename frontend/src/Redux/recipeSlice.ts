@@ -4,6 +4,7 @@ import { RecipeState, Ingredient } from "../Types/types";
 const initialState: RecipeState = {
   title: "",
   category: "",
+  secondaryCategory: "",
   ingredients: [],
   instructions: "",
   pictureId: "",
@@ -20,6 +21,9 @@ const recipeSlice = createSlice({
     setCategory: (state, action: PayloadAction<string>) => {
       state.category = action.payload;
     },
+    setSecondaryCategory: (state, action: PayloadAction<string>) => {
+      state.secondaryCategory = action.payload;
+    },
     setIngredients: (state, action: PayloadAction<Ingredient[]>) => {
       state.ingredients = action.payload;
     },
@@ -35,6 +39,7 @@ const recipeSlice = createSlice({
     resetState: (state) => {
       state.title = "";
       state.category = "";
+      state.secondaryCategory = "";
       state.ingredients = [];
       state.instructions = "";
       state.pictureId = "";
@@ -46,6 +51,7 @@ const recipeSlice = createSlice({
 export const {
   setTitle,
   setCategory,
+  setSecondaryCategory,
   setIngredients,
   setInstructions,
   setPictureId,

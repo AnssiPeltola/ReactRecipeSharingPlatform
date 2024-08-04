@@ -10,11 +10,16 @@ class RecipeRepository {
 
       // Insert the recipe
       const recipeInsertQuery: QueryConfig = {
-        text: "INSERT INTO recipes(user_id, title, category, instructions, picture_url) VALUES($1, $2, $3, $4, $5) RETURNING id",
+        text: `
+          INSERT INTO recipes(user_id, title, category, secondary_category, instructions, picture_url)
+          VALUES($1, $2, $3, $4, $5, $6)
+          RETURNING id
+        `,
         values: [
           recipe.userId,
           recipe.title,
           recipe.category,
+          recipe.secondaryCategory || null, // Use null if not provided
           recipe.instructions,
           recipe.pictureUrl,
         ],
