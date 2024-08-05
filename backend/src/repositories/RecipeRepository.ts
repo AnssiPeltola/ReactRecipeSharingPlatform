@@ -105,7 +105,10 @@ class RecipeRepository {
       SELECT DISTINCT recipes.* FROM recipes
       LEFT JOIN recipe_ingredients ON recipes.id = recipe_ingredients.recipe_id
       LEFT JOIN ingredients ON recipe_ingredients.ingredient_id = ingredients.id
-      WHERE recipes.title ILIKE $1 OR ingredients.name ILIKE $1
+      WHERE recipes.title ILIKE $1 
+        OR ingredients.name ILIKE $1
+        OR recipes.category ILIKE $1
+        OR recipes.secondary_category ILIKE $1
     `;
     const result = await pool.query(query, [`%${searchTerm}%`]);
     return result.rows;

@@ -1,5 +1,6 @@
 import { useLocation, Link } from "react-router-dom";
 import { RecipeState } from "../../Types/types";
+import { LANDING } from "../../Constants/routes";
 
 interface ExtendedRecipeState extends RecipeState {
   id: number;
@@ -12,8 +13,15 @@ const SearchResultsPage = () => {
     | { recipes: ExtendedRecipeState[] }
     | undefined;
 
-  if (!state || !state.recipes) {
-    return <div>No recipes found.</div>;
+  if (!state || !state.recipes || state.recipes.length === 0) {
+    return (
+      <div>
+        <p>Reseptejä ei löytynyt!</p>
+        <Link to={LANDING}>
+          <button>Palaa etusivulle</button>
+        </Link>
+      </div>
+    );
   }
 
   return (

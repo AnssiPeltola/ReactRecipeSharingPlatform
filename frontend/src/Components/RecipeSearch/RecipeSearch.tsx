@@ -36,11 +36,6 @@ function RecipeSearch() {
         <button type="submit">Hae</button>
       </form>
       {error && <p>{error}</p>}
-      <ul>
-        {recipes.map((recipe) => (
-          <li key={recipe.id}>{recipe.title}</li>
-        ))}
-      </ul>
     </div>
   );
 }
