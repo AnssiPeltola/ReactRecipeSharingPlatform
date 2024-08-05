@@ -15,3 +15,9 @@ export interface Ingredient {
   unit: string;
   name: string;
 }
+
+export interface User {
+  firstname: string;
+  lastname: string;
+  email: string;
+}

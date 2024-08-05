@@ -12,6 +12,7 @@ import IngredientSearch from "./Components/IngredientSearch/IngredientSearch";
 import CreateRecipe from "./Pages/RecipeCreate/RecipeCreate";
 import SearchResultsPage from "./Pages/RecipeSearchResults/RecipeSearchResults";
 import RecipeDetails from "./Pages/RecipeDetails/RecipeDetails";
+import ProfilePage from "./Pages/ProfilePage/ProfilePage";
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
               element={<SearchResultsPage />}
             />
             <Route path={ROUTES.RECIPE_DETAILS} element={<RecipeDetails />} />
+            <Route path={ROUTES.PROFILE + "/*"} element={<ProfilePage />} />
             <Route path="*" element={<ErrorPage />} />
           </Routes>
         </main>

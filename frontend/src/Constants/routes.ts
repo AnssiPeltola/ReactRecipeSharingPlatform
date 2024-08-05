@@ -6,3 +6,5 @@ export const INGREDIENT_SEARCH = "/ingredient-search";
 export const CREATERECIPE = "/create-recipe";
 export const SEARCH_RESULTS = "/search-results";
 export const RECIPE_DETAILS = "/recipe/:recipeId";
+export const PROFILE = "/profile";
+export const MODIFY_USER_INFO = "/profile/modify";

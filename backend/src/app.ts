@@ -100,10 +100,20 @@ app.get(
 app.get(
   "/getUserDetails",
   passport.authenticate("jwt", { session: false }),
-  (req, res) => {
+  async (req, res) => {
     if (req.user) {
       const user: User = req.user as User;
-      res.json({ id: user.id, email: user.email }); // Include any other user details as needed
+      try {
+        const userDetails = await userRepository.findById(user.id);
+        res.json({
+          id: userDetails.id,
+          email: userDetails.email,
+          firstname: userDetails.firstname,
+          lastname: userDetails.lastname,
+        });
+      } catch (error) {
+        res.status(500).json({ message: "Error fetching user details" });
+      }
     } else {
       res.status(401).json({ message: "User not authenticated" });
     }
