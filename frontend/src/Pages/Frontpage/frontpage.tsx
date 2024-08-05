@@ -1,6 +1,7 @@
 import React from "react";
 import RecipeSearch from "../../Components/RecipeSearch/RecipeSearch";
 import RandomRecipeButton from "../../Components/RandomRecipeButton/RandomRecipeButton";
+import CategorySelection from "../../Components/CategorySelection/CategorySelection";
 
 function Frontpage() {
   return (
@@ -11,6 +12,7 @@ function Frontpage() {
       </p>
       <RecipeSearch />
       <RandomRecipeButton />
+      <CategorySelection />
     </div>
   );
 }
