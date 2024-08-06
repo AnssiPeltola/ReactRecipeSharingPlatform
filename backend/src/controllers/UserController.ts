@@ -11,8 +11,8 @@ class UserController {
   }
 
   async register(req: Request, res: Response) {
-    const { email, password } = req.body;
-    const user = await this.userService.register(email, password);
+    const { email, password, nickname } = req.body;
+    const user = await this.userService.register(email, password, nickname);
     // Log the user in
     req.user = user;
     const token = jwt.sign(
@@ -32,12 +32,29 @@ class UserController {
 
   async registerDetails(req: Request & { user?: User }, res: Response) {
     console.log(req.headers.authorization);
-    const { firstname, lastname } = req.body;
+    const {
+      firstname,
+      lastname,
+      bio,
+      location,
+      instagram,
+      tiktok,
+      experienceLevel,
+    } = req.body;
     if (!req.user) {
       return res.status(401).json({ message: "No user is logged in" });
     }
-    // Update the user's firstname and lastname
-    await this.userService.updateUserDetails(req.user.id, firstname, lastname);
+    // Update the user's details
+    await this.userService.updateUserDetails(
+      req.user.id,
+      firstname,
+      lastname,
+      bio,
+      location,
+      instagram,
+      tiktok,
+      experienceLevel
+    );
     return res.json({ message: "Registration complete" });
   }
 
@@ -58,6 +75,22 @@ class UserController {
       res.send({ loggedIn: true, user: { id: user.id, email: user.email } });
     } else {
       res.send({ loggedIn: false });
+    }
+  }
+
+  async checkNickname(req: Request, res: Response) {
+    try {
+      const { nickname } = req.query;
+
+      if (typeof nickname !== "string") {
+        return res.status(400).json({ error: "Nickname must be a string" });
+      }
+
+      const exists = await this.userService.checkNickname(nickname);
+      res.json({ exists });
+    } catch (error) {
+      console.error("Error checking nickname:", error);
+      res.status(500).json({ error: "Internal server error" });
     }
   }
 }
