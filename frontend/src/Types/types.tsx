@@ -20,4 +20,10 @@ export interface User {
   firstname: string;
   lastname: string;
   email: string;
+  nickname: string;
+  bio: string;
+  location: string;
+  instagram: string;
+  tiktok: string;
+  experienceLevel: string;
 }

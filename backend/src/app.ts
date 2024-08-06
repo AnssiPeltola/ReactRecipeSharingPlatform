@@ -48,7 +48,10 @@ app.use(passport.session());
 // Use the controller to handle the route
 app.get("/test", testController.getTestMessage);
 
+// User routes below this line ----------------------------
+
 app.post("/register", (req, res) => userController.register(req, res));
+
 app.post("/login", (req, res, next) => {
   passport.authenticate(
     "local",
@@ -119,6 +122,12 @@ app.get(
     }
   }
 );
+
+app.get("/check-nickname", (req, res) =>
+  userController.checkNickname(req, res)
+);
+
+// Recipe routes below this line ----------------------------
 
 app.post("/recipeCreate", upload.single("file"), (req, res) =>
   recipeController.createRecipe(req, res)
