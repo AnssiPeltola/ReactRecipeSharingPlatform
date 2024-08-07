@@ -17,8 +17,6 @@ export interface Ingredient {
 }
 
 export interface User {
-  firstname: string;
-  lastname: string;
   email: string;
   nickname: string;
   bio: string;
