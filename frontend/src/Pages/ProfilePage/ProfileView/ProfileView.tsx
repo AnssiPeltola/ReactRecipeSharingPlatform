@@ -31,7 +31,7 @@ const ProfileView = () => {
       {userDetails && (
         <div>
           <p>Nickname: {userDetails.nickname}</p>
-          <p>Location {userDetails.location}</p>
+          <p>Location: {userDetails.location}</p>
           <p>Bio: {userDetails.bio}</p>
           <p>Instagram: {userDetails.instagram}</p>
           <p>TikTok: {userDetails.tiktok}</p>
