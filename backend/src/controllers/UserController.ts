@@ -44,17 +44,18 @@ class UserController {
     if (!req.user) {
       return res.status(401).json({ message: "No user is logged in" });
     }
-    // Update the user's details
-    await this.userService.updateUserDetails(
-      req.user.id,
+    // Create a Partial<User> object
+    const userDetails: Partial<User> = {
       firstname,
       lastname,
       bio,
       location,
       instagram,
       tiktok,
-      experienceLevel
-    );
+      experience_level: experienceLevel,
+    };
+    // Update the user's details
+    await this.userService.updateUserDetails(req.user.id, userDetails);
     return res.json({ message: "Registration complete" });
   }
 

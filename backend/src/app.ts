@@ -108,12 +108,7 @@ app.get(
       const user: User = req.user as User;
       try {
         const userDetails = await userRepository.findById(user.id);
-        res.json({
-          id: userDetails.id,
-          email: userDetails.email,
-          firstname: userDetails.firstname,
-          lastname: userDetails.lastname,
-        });
+        res.json(userDetails);
       } catch (error) {
         res.status(500).json({ message: "Error fetching user details" });
       }
