@@ -32,22 +32,12 @@ class UserController {
 
   async registerDetails(req: Request & { user?: User }, res: Response) {
     console.log(req.headers.authorization);
-    const {
-      firstname,
-      lastname,
-      bio,
-      location,
-      instagram,
-      tiktok,
-      experience_level,
-    } = req.body;
+    const { bio, location, instagram, tiktok, experience_level } = req.body;
     if (!req.user) {
       return res.status(401).json({ message: "No user is logged in" });
     }
     // Create a Partial<User> object
     const userDetails: Partial<User> = {
-      firstname,
-      lastname,
       bio,
       location,
       instagram,

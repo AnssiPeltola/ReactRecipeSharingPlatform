@@ -46,10 +46,8 @@ class UserRepository {
     const client = await pool.connect();
     try {
       const query: QueryConfig<any[]> = {
-        text: "UPDATE users SET firstname = $1, lastname = $2, bio = $3, location = $4, instagram = $5, tiktok = $6, experience_level = $7 WHERE id = $8",
+        text: "UPDATE users SET bio = $1, location = $2, instagram = $3, tiktok = $4, experience_level = $5 WHERE id = $6",
         values: [
-          userDetails.firstname,
-          userDetails.lastname,
           userDetails.bio,
           userDetails.location,
           userDetails.instagram,
