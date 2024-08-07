@@ -101,7 +101,7 @@ app.get(
 );
 
 app.get(
-  "/wwwwwwww",
+  "/getUserDetails",
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {
     if (req.user) {
