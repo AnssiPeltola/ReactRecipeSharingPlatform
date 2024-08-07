@@ -30,8 +30,12 @@ const ProfileView = () => {
       <h1>Profile Page</h1>
       {userDetails && (
         <div>
-          <p>First Name: {userDetails.firstname}</p>
-          <p>Last Name: {userDetails.lastname}</p>
+          <p>Nickname: {userDetails.nickname}</p>
+          <p>Location {userDetails.location}</p>
+          <p>Bio: {userDetails.bio}</p>
+          <p>Instagram: {userDetails.instagram}</p>
+          <p>TikTok: {userDetails.tiktok}</p>
+          <p>Experience Level: {userDetails.experience_level}</p>
           <p>Email: {userDetails.email}</p>
         </div>
       )}

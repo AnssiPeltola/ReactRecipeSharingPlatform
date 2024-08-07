@@ -25,5 +25,5 @@ export interface User {
   location: string;
   instagram: string;
   tiktok: string;
-  experienceLevel: string;
+  experience_level: string;
 }

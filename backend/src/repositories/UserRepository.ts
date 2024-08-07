@@ -42,28 +42,19 @@ class UserRepository {
     }
   }
 
-  async updateUserDetails(
-    id: number,
-    firstname: string,
-    lastname: string,
-    bio: string,
-    location: string,
-    instagram: string,
-    tiktok: string,
-    experienceLevel: string
-  ) {
+  async updateUserDetails(id: number, userDetails: Partial<User>) {
     const client = await pool.connect();
     try {
       const query: QueryConfig<any[]> = {
         text: "UPDATE users SET firstname = $1, lastname = $2, bio = $3, location = $4, instagram = $5, tiktok = $6, experience_level = $7 WHERE id = $8",
         values: [
-          firstname,
-          lastname,
-          bio,
-          location,
-          instagram,
-          tiktok,
-          experienceLevel,
+          userDetails.firstname,
+          userDetails.lastname,
+          userDetails.bio,
+          userDetails.location,
+          userDetails.instagram,
+          userDetails.tiktok,
+          userDetails.experience_level,
           id,
         ],
       };

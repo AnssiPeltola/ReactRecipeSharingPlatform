@@ -9,7 +9,7 @@ class User {
   location: string;
   instagram: string;
   tiktok: string;
-  experienceLevel: string;
+  experience_level: string;
 
   constructor({
     id = 0,
@@ -22,7 +22,7 @@ class User {
     location = "",
     instagram = "",
     tiktok = "",
-    experienceLevel = "",
+    experience_level = "",
   }) {
     this.id = id;
     this.email = email;
@@ -34,7 +34,7 @@ class User {
     this.location = location;
     this.instagram = instagram;
     this.tiktok = tiktok;
-    this.experienceLevel = experienceLevel;
+    this.experience_level = experience_level;
   }
 }
 

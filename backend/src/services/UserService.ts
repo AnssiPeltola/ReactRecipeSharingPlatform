@@ -15,26 +15,8 @@ class UserService {
     return this.userRepository.save(user);
   }
 
-  async updateUserDetails(
-    id: number,
-    firstname: string,
-    lastname: string,
-    bio: string,
-    location: string,
-    instagram: string,
-    tiktok: string,
-    experienceLevel: string
-  ) {
-    return this.userRepository.updateUserDetails(
-      id,
-      firstname,
-      lastname,
-      bio,
-      location,
-      instagram,
-      tiktok,
-      experienceLevel
-    );
+  async updateUserDetails(id: number, userDetails: Partial<User>) {
+    return this.userRepository.updateUserDetails(id, userDetails);
   }
 
   async login(email: string, password: string) {
