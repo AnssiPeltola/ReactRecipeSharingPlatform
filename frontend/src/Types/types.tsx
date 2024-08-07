@@ -1,4 +1,5 @@
 export interface RecipeState {
+  id?: string;
   title: string;
   category: string;
   secondaryCategory: string;

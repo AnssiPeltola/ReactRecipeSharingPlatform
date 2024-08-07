@@ -3,7 +3,7 @@ import { RecipeState } from "../../Types/types";
 import { LANDING } from "../../Constants/routes";
 
 interface ExtendedRecipeState extends RecipeState {
-  id: number;
+  id: string;
   pictureUrl: string; // Assuming this holds just the filename or a relative path
 }
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { User } from "../../../Types/types";
+import UserRecipes from "../../../Components/UserRecipes/UserRecipes";
 
 const ProfileView = () => {
   const [userDetails, setUserDetails] = useState<User | null>(null);
@@ -42,7 +43,7 @@ const ProfileView = () => {
       <button onClick={() => navigate("/profile/modify")}>
         Modify User Info
       </button>
-      <h2>Your Recipes</h2>
+      <UserRecipes />
     </div>
   );
 };
