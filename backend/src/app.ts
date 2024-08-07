@@ -165,4 +165,23 @@ app.get("/random-recipe", (req, res) =>
   recipeController.getRandomRecipeId(req, res)
 );
 
+// Get user recipes by user ID
+app.get(
+  "/getUserRecipes",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    if (req.user) {
+      const user: User = req.user as User;
+      try {
+        const recipes = await recipeController.getUserRecipes(user.id);
+        res.json(recipes);
+      } catch (error) {
+        res.status(500).json({ message: "Error fetching user recipes" });
+      }
+    } else {
+      res.status(401).json({ message: "User not authenticated" });
+    }
+  }
+);
+
 export default app;

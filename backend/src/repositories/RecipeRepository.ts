@@ -165,6 +165,21 @@ class RecipeRepository {
       throw error;
     }
   }
+
+  async getUserRecipes(userId: number): Promise<Recipe[]> {
+    const query: QueryConfig = {
+      text: "SELECT * FROM recipes WHERE user_id = $1",
+      values: [userId],
+    };
+
+    try {
+      const { rows } = await pool.query(query);
+      return rows;
+    } catch (error) {
+      console.error("Error querying the database", error);
+      throw error;
+    }
+  }
 }
 
 export default RecipeRepository;

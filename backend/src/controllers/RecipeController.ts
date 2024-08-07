@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import RecipeService from "../services/RecipeService";
+import Recipe from "../models/Recipe";
 
 class RecipeController {
   private recipeService: RecipeService;
@@ -76,6 +77,10 @@ class RecipeController {
       console.error("Error fetching random recipe ID:", error);
       res.status(500).json({ message: "Error fetching random recipe ID" });
     }
+  }
+
+  async getUserRecipes(userId: number): Promise<Recipe[]> {
+    return this.recipeService.getUserRecipes(userId);
   }
 }
 
