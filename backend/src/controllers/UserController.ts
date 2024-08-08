@@ -3,6 +3,10 @@ import UserService from "../services/UserService";
 import User from "../models/User";
 import jwt from "jsonwebtoken";
 
+interface AuthenticatedUser extends Express.User {
+  id: number;
+}
+
 class UserController {
   private userService: UserService;
 
@@ -84,6 +88,47 @@ class UserController {
       res.status(500).json({ error: "Internal server error" });
     }
   }
+
+  uploadProfilePicture = async (req: Request, res: Response) => {
+    const file = req.file;
+    const user = req.user as AuthenticatedUser | undefined;
+
+    if (!user || !user.id) {
+      return res.status(401).send("Unauthorized");
+    }
+
+    if (!file) {
+      return res.status(400).send("No file uploaded");
+    }
+
+    try {
+      const fileId = await this.userService.uploadProfilePicture(user.id, file);
+      return res.json({ fileId });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).send("Error uploading file");
+    }
+  };
+
+  getProfilePicture = async (req: Request, res: Response) => {
+    const user = req.user as AuthenticatedUser | undefined;
+
+    if (!user || !user.id) {
+      return res.status(401).send("Unauthorized");
+    }
+
+    try {
+      const profilePicture = await this.userService.getProfilePicture(user.id);
+      if (!profilePicture) {
+        return res.status(404).send("Profile picture not found");
+      }
+      res.setHeader("Content-Type", profilePicture.type);
+      res.send(profilePicture.data);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).send("Error fetching profile picture");
+    }
+  };
 }
 
 export default UserController;

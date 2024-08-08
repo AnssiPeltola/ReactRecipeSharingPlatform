@@ -122,6 +122,19 @@ app.get("/check-nickname", (req, res) =>
   userController.checkNickname(req, res)
 );
 
+app.post(
+  "/uploadProfilePicture",
+  passport.authenticate("jwt", { session: false }),
+  upload.single("file"),
+  (req, res) => userController.uploadProfilePicture(req, res)
+);
+
+app.get(
+  "/getProfilePicture",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => userController.getProfilePicture(req, res)
+);
+
 // Recipe routes below this line ----------------------------
 
 app.post("/recipeCreate", upload.single("file"), (req, res) =>

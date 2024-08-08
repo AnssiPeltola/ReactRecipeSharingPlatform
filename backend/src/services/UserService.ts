@@ -43,6 +43,33 @@ class UserService {
     const user = await this.userRepository.findUserByNickname(nickname);
     return user !== null;
   }
+
+  async uploadProfilePicture(
+    userId: number,
+    file: Express.Multer.File
+  ): Promise<number> {
+    try {
+      const fileId = await this.userRepository.uploadProfilePicture(
+        userId,
+        file
+      );
+      return fileId;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  async getProfilePicture(
+    userId: number
+  ): Promise<{ type: string; data: Buffer } | null> {
+    try {
+      return await this.userRepository.getProfilePicture(userId);
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
 }
 
 export default UserService;
