@@ -76,6 +76,42 @@ class UserRepository {
       client.release();
     }
   }
+
+  async uploadProfilePicture(
+    userId: number,
+    file: Express.Multer.File
+  ): Promise<number> {
+    const { originalname: name, mimetype: type, buffer: data } = file;
+
+    const query: QueryConfig = {
+      text: "INSERT INTO profile_pictures (user_id, name, type, data) VALUES ($1, $2, $3, $4) RETURNING id",
+      values: [userId, name, type, data],
+    };
+
+    const result = await pool.query(query);
+
+    return result.rows[0].id;
+  }
+
+  async getProfilePicture(
+    userId: number
+  ): Promise<{ type: string; data: Buffer } | null> {
+    const query: QueryConfig = {
+      text: "SELECT type, data FROM profile_pictures WHERE user_id = $1",
+      values: [userId],
+    };
+
+    const result = await pool.query(query);
+
+    if (result.rows.length === 0) {
+      return null;
+    }
+
+    return {
+      type: result.rows[0].type,
+      data: result.rows[0].data,
+    };
+  }
 }
 
 export default UserRepository;

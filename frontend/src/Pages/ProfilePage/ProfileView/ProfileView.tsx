@@ -6,10 +6,12 @@ import UserRecipes from "../../../Components/UserRecipes/UserRecipes";
 
 const ProfileView = () => {
   const [userDetails, setUserDetails] = useState<User | null>(null);
+  const [profilePicture, setProfilePicture] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchUserDetails();
+    fetchProfilePicture();
   }, []);
 
   const fetchUserDetails = async () => {
@@ -24,11 +26,33 @@ const ProfileView = () => {
     }
   };
 
-  // TODO: Fetch user recipes
+  const fetchProfilePicture = async () => {
+    try {
+      const token = localStorage.getItem("sessionToken");
+      const response = await axios.get(
+        "http://localhost:3000/getProfilePicture",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          responseType: "arraybuffer",
+        }
+      );
+      const base64 = btoa(
+        new Uint8Array(response.data).reduce(
+          (data, byte) => data + String.fromCharCode(byte),
+          ""
+        )
+      );
+      const mimeType = response.headers["content-type"];
+      setProfilePicture(`data:${mimeType};base64,${base64}`);
+    } catch (error) {
+      console.error("Error fetching profile picture:", error);
+    }
+  };
 
   return (
     <div>
       <h1>Profile Page</h1>
+      {profilePicture && <img src={profilePicture} alt="Profile" />}
       {userDetails && (
         <div>
           <p>Nickname: {userDetails.nickname}</p>
@@ -41,7 +65,7 @@ const ProfileView = () => {
         </div>
       )}
       <button onClick={() => navigate("/profile/modify")}>
-        Modify User Info
+        Modify Profile
       </button>
       <UserRecipes />
     </div>

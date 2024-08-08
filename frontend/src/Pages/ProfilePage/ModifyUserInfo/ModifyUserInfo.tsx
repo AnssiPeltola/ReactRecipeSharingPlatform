@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { User } from "../../../Types/types";
 import { useNavigate } from "react-router-dom";
+import ProfilePictureUpload from "../../../Components/ProfilePictureUpload/ProfilePictureUpload";
 
 const ModifyUserInfo = () => {
   const [userDetails, setUserDetails] = useState<Partial<User> | null>(null);
@@ -28,6 +29,13 @@ const ModifyUserInfo = () => {
     setUserDetails((prevDetails) => ({
       ...prevDetails,
       [name]: value,
+    }));
+  };
+
+  const handleProfilePictureUpload = (fileId: number) => {
+    setUserDetails((prevDetails) => ({
+      ...prevDetails,
+      profilePictureId: fileId,
     }));
   };
 
@@ -97,6 +105,7 @@ const ModifyUserInfo = () => {
               onChange={handleChange}
             />
           </label>
+          <ProfilePictureUpload onUpload={handleProfilePictureUpload} />
           <button onClick={handleSubmit}>Submit</button>
           <button onClick={handleBack}>Back</button>
         </div>

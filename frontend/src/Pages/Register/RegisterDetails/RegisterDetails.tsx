@@ -28,7 +28,7 @@ function RegisterDetails() {
         }
       );
       console.log(response.data);
-      navigate("/");
+      navigate("/register-picture");
     } catch (error) {
       console.error(error);
     }
@@ -73,7 +73,7 @@ function RegisterDetails() {
         onChange={(e) => setExperienceLevel(e.target.value)}
         placeholder="Experience Level (optional)"
       />
-      <button type="submit">Complete Registration</button>
+      <button type="submit">Continue</button>
     </form>
   );
 }
