@@ -135,6 +135,18 @@ app.get(
   (req, res) => userController.getProfilePicture(req, res)
 );
 
+app.get(
+  "/hasProfilePicture",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => userController.hasProfilePicture(req, res)
+);
+
+app.delete(
+  "/deleteProfilePicture",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => userController.deleteProfilePicture(req, res)
+);
+
 // Recipe routes below this line ----------------------------
 
 app.post("/recipeCreate", upload.single("file"), (req, res) =>

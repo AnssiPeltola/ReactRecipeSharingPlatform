@@ -30,7 +30,7 @@ const ProfileView = () => {
     try {
       const token = localStorage.getItem("sessionToken");
       const response = await axios.get(
-        "http://localhost:3000/getProfilePicture",
+        `${process.env.REACT_APP_API_BASE_URL}/getProfilePicture`,
         {
           headers: { Authorization: `Bearer ${token}` },
           responseType: "arraybuffer",

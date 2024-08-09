@@ -112,6 +112,19 @@ class UserRepository {
       data: result.rows[0].data,
     };
   }
+
+  async deleteProfilePicture(userId: number): Promise<void> {
+    const client = await pool.connect();
+    try {
+      const query: QueryConfig = {
+        text: "DELETE FROM profile_pictures WHERE user_id = $1",
+        values: [userId],
+      };
+      await client.query(query);
+    } finally {
+      client.release();
+    }
+  }
 }
 
 export default UserRepository;
