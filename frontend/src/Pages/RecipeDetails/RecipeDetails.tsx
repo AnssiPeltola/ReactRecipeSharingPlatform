@@ -27,6 +27,8 @@ const RecipeDetails = () => {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
+  // console.log(recipe);
+
   return (
     <div>
       {recipe && (
@@ -46,6 +48,7 @@ const RecipeDetails = () => {
             ))}
           </div>
           <p>{recipe.instructions}</p>
+          <p>Recipe by: {recipe.nickname}</p>
         </>
       )}
     </div>
