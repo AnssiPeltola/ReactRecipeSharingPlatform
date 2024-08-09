@@ -3,7 +3,7 @@ class Recipe {
   userId: number;
   title: string;
   category: string;
-  secondaryCategory?: string;
+  secondary_category?: string;
   ingredients: Ingredient[];
   instructions: string;
   pictureUrl: string;

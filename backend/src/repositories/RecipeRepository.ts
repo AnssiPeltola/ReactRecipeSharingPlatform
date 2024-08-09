@@ -19,7 +19,7 @@ class RecipeRepository {
           recipe.userId,
           recipe.title,
           recipe.category,
-          recipe.secondaryCategory || null, // Use null if not provided
+          recipe.secondary_category || null, // Use null if not provided
           recipe.instructions,
           recipe.pictureUrl,
         ],

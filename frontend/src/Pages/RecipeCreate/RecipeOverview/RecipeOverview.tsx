@@ -19,7 +19,7 @@ const RecipeOverview = () => {
     const formData = new FormData();
     formData.append("title", recipeState.title);
     formData.append("category", recipeState.category);
-    formData.append("secondaryCategory", recipeState.secondaryCategory);
+    formData.append("secondary_category", recipeState.secondary_category);
     formData.append("instructions", recipeState.instructions);
     formData.append("userId", recipeState.userId.toString());
     formData.append("pictureUrl", recipeState.pictureId);
@@ -55,7 +55,7 @@ const RecipeOverview = () => {
       <p>Katsaus sivu</p>
       <p>Title: {recipeState.title}</p>
       <p>Category: {recipeState.category}</p>
-      <p>Secondary Category: {recipeState.secondaryCategory}</p>
+      <p>Secondary Category: {recipeState.secondary_category}</p>
       <div>
         Ingredients:
         {recipeState.ingredients.map((ingredient, index) => (

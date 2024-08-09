@@ -5,7 +5,7 @@ import axios from "axios";
 import {
   setTitle,
   setCategory,
-  setSecondaryCategory,
+  setsecondary_category,
   setUserId,
 } from "../../../Redux/recipeSlice";
 import { RootState } from "../../../Redux/store";
@@ -21,9 +21,9 @@ const RecipeTitle = () => {
   const [category, setCategoryLocal] = useState(
     recipeState && recipeState.category ? recipeState.category : ""
   );
-  const [secondaryCategory, setSecondaryCategoryLocal] = useState(
-    recipeState && recipeState.secondaryCategory
-      ? recipeState.secondaryCategory
+  const [secondary_category, setsecondary_categoryLocal] = useState(
+    recipeState && recipeState.secondary_category
+      ? recipeState.secondary_category
       : ""
   );
 
@@ -47,7 +47,7 @@ const RecipeTitle = () => {
   const handleButtonClick = () => {
     dispatch(setTitle(title));
     dispatch(setCategory(category));
-    dispatch(setSecondaryCategory(secondaryCategory));
+    dispatch(setsecondary_category(secondary_category));
     console.log(recipeState);
     navigate("/create-recipe/recipe-ingredients");
   };
@@ -104,8 +104,8 @@ const RecipeTitle = () => {
         ))}
       </select>
       <select
-        value={secondaryCategory}
-        onChange={(e) => setSecondaryCategoryLocal(e.target.value)}
+        value={secondary_category}
+        onChange={(e) => setsecondary_categoryLocal(e.target.value)}
       >
         {secondaryCategories.map((secCat) => (
           <option key={secCat} value={secCat}>

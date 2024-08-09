@@ -27,14 +27,16 @@ const RecipeDetails = () => {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
-  // console.log(recipe);
+  console.log(recipe);
 
   return (
     <div>
       {recipe && (
         <>
           <h1>{recipe.title}</h1>
-          <p>{recipe.category}</p>
+          <p>
+            {recipe.category} - {recipe.secondary_category}
+          </p>
           <img
             src={`${process.env.REACT_APP_API_BASE_URL}/recipePicture/${recipe.picture_url}`}
             alt={recipe.title}

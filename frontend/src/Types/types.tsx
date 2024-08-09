@@ -2,7 +2,7 @@ export interface RecipeState {
   id?: string;
   title: string;
   category: string;
-  secondaryCategory: string;
+  secondary_category: string;
   ingredients: Ingredient[];
   instructions: string;
   pictureId: string;
