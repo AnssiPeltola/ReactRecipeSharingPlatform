@@ -78,14 +78,14 @@ class UserRepository {
   }
 
   async uploadProfilePicture(
-    userId: number,
+    user_id: number,
     file: Express.Multer.File
   ): Promise<number> {
     const { originalname: name, mimetype: type, buffer: data } = file;
 
     const query: QueryConfig = {
       text: "INSERT INTO profile_pictures (user_id, name, type, data) VALUES ($1, $2, $3, $4) RETURNING id",
-      values: [userId, name, type, data],
+      values: [user_id, name, type, data],
     };
 
     const result = await pool.query(query);
@@ -94,11 +94,11 @@ class UserRepository {
   }
 
   async getProfilePicture(
-    userId: number
+    user_id: number
   ): Promise<{ type: string; data: Buffer } | null> {
     const query: QueryConfig = {
       text: "SELECT type, data FROM profile_pictures WHERE user_id = $1",
-      values: [userId],
+      values: [user_id],
     };
 
     const result = await pool.query(query);
@@ -113,12 +113,12 @@ class UserRepository {
     };
   }
 
-  async deleteProfilePicture(userId: number): Promise<void> {
+  async deleteProfilePicture(user_id: number): Promise<void> {
     const client = await pool.connect();
     try {
       const query: QueryConfig = {
         text: "DELETE FROM profile_pictures WHERE user_id = $1",
-        values: [userId],
+        values: [user_id],
       };
       await client.query(query);
     } finally {

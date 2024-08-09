@@ -2,12 +2,11 @@ export interface RecipeState {
   id?: string;
   title: string;
   category: string;
-  secondaryCategory: string;
+  secondary_category: string;
   ingredients: Ingredient[];
   instructions: string;
-  pictureId: string;
-  userId: string;
-  picture_url?: string;
+  user_id: string;
+  picture_url: string;
   nickname?: string;
 }
 

@@ -4,11 +4,11 @@ import { RecipeState, Ingredient } from "../Types/types";
 const initialState: RecipeState = {
   title: "",
   category: "",
-  secondaryCategory: "",
+  secondary_category: "",
   ingredients: [],
   instructions: "",
-  pictureId: "",
-  userId: "",
+  picture_url: "",
+  user_id: "",
 };
 
 const recipeSlice = createSlice({
@@ -21,8 +21,8 @@ const recipeSlice = createSlice({
     setCategory: (state, action: PayloadAction<string>) => {
       state.category = action.payload;
     },
-    setSecondaryCategory: (state, action: PayloadAction<string>) => {
-      state.secondaryCategory = action.payload;
+    setsecondary_category: (state, action: PayloadAction<string>) => {
+      state.secondary_category = action.payload;
     },
     setIngredients: (state, action: PayloadAction<Ingredient[]>) => {
       state.ingredients = action.payload;
@@ -30,20 +30,20 @@ const recipeSlice = createSlice({
     setInstructions: (state, action: PayloadAction<string>) => {
       state.instructions = action.payload;
     },
-    setPictureId: (state, action: PayloadAction<string>) => {
-      state.pictureId = action.payload;
+    setpicture_url: (state, action: PayloadAction<string>) => {
+      state.picture_url = action.payload;
     },
-    setUserId: (state, action: PayloadAction<string>) => {
-      state.userId = action.payload;
+    setuser_id: (state, action: PayloadAction<string>) => {
+      state.user_id = action.payload;
     },
     resetState: (state) => {
       state.title = "";
       state.category = "";
-      state.secondaryCategory = "";
+      state.secondary_category = "";
       state.ingredients = [];
       state.instructions = "";
-      state.pictureId = "";
-      state.userId = "";
+      state.picture_url = "";
+      state.user_id = "";
     },
   },
 });
@@ -51,11 +51,11 @@ const recipeSlice = createSlice({
 export const {
   setTitle,
   setCategory,
-  setSecondaryCategory,
+  setsecondary_category,
   setIngredients,
   setInstructions,
-  setPictureId,
-  setUserId,
+  setpicture_url,
+  setuser_id,
   resetState,
 } = recipeSlice.actions;
 

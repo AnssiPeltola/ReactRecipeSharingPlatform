@@ -10,19 +10,19 @@ const RecipeOverview = () => {
   const dispatch = useDispatch();
   const recipeState = useSelector((state: RootState) => state.recipe);
 
-  // Dynamically construct the image URL for display using the pictureId
-  const imageUrl = recipeState.pictureId
-    ? `${process.env.REACT_APP_API_BASE_URL}/recipePicture/${recipeState.pictureId}`
+  // Dynamically construct the image URL for display using the picture_url
+  const imageUrl = recipeState.picture_url
+    ? `${process.env.REACT_APP_API_BASE_URL}/recipePicture/${recipeState.picture_url}`
     : null;
 
   const handleButtonClick = async () => {
     const formData = new FormData();
     formData.append("title", recipeState.title);
     formData.append("category", recipeState.category);
-    formData.append("secondaryCategory", recipeState.secondaryCategory);
+    formData.append("secondary_category", recipeState.secondary_category);
     formData.append("instructions", recipeState.instructions);
-    formData.append("userId", recipeState.userId.toString());
-    formData.append("pictureUrl", recipeState.pictureId);
+    formData.append("user_id", recipeState.user_id.toString());
+    formData.append("pictureUrl", recipeState.picture_url ?? "");
 
     recipeState.ingredients.forEach((ingredient, index) => {
       formData.append(`ingredients[${index}][quantity]`, ingredient.quantity);
@@ -55,7 +55,7 @@ const RecipeOverview = () => {
       <p>Katsaus sivu</p>
       <p>Title: {recipeState.title}</p>
       <p>Category: {recipeState.category}</p>
-      <p>Secondary Category: {recipeState.secondaryCategory}</p>
+      <p>Secondary Category: {recipeState.secondary_category}</p>
       <div>
         Ingredients:
         {recipeState.ingredients.map((ingredient, index) => (
@@ -65,7 +65,7 @@ const RecipeOverview = () => {
         ))}
       </div>
       <p>Instructions: {recipeState.instructions}</p>
-      <p>Picture ID: {recipeState.pictureId}</p>
+      <p>Picture ID: {recipeState.picture_url}</p>
       {imageUrl && <img src={imageUrl} alt="Recipe" />}
 
       <button onClick={handleButtonClick}>Next</button>

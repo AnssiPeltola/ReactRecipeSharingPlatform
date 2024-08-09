@@ -36,8 +36,8 @@ class RecipeService {
     return this.recipeRepository.getRandomRecipeId();
   }
 
-  async getUserRecipes(userId: number): Promise<Recipe[]> {
-    return this.recipeRepository.getUserRecipes(userId);
+  async getUserRecipes(user_id: number): Promise<Recipe[]> {
+    return this.recipeRepository.getUserRecipes(user_id);
   }
 }
 

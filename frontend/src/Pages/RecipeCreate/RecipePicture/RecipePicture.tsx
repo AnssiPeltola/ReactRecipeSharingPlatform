@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../Redux/store";
-import { setPictureId } from "../../../Redux/recipeSlice";
+import { setpicture_url } from "../../../Redux/recipeSlice";
 import axios from "axios";
 
 const RecipePicture = () => {
@@ -11,9 +11,9 @@ const RecipePicture = () => {
   const recipeState = useSelector((state: RootState) => state.recipe);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  // Dynamically construct the image URL for display using the pictureId
-  const imageUrl = recipeState.pictureId
-    ? `${process.env.REACT_APP_API_BASE_URL}/recipePicture/${recipeState.pictureId}`
+  // Dynamically construct the image URL for display using the picture_url
+  const imageUrl = recipeState.picture_url
+    ? `${process.env.REACT_APP_API_BASE_URL}/recipePicture/${recipeState.picture_url}`
     : null;
 
   useEffect(() => {
@@ -50,7 +50,7 @@ const RecipePicture = () => {
         }
       );
 
-      dispatch(setPictureId(response.data.fileId)); // Update Redux with the picture ID
+      dispatch(setpicture_url(response.data.fileId)); // Update Redux with the picture ID
     } catch (error) {
       console.error("Failed to upload image", error);
     }

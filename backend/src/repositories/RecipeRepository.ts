@@ -16,10 +16,10 @@ class RecipeRepository {
           RETURNING id
         `,
         values: [
-          recipe.userId,
+          recipe.user_id,
           recipe.title,
           recipe.category,
-          recipe.secondaryCategory || null, // Use null if not provided
+          recipe.secondary_category || null, // Use null if not provided
           recipe.instructions,
           recipe.pictureUrl,
         ],
@@ -168,10 +168,10 @@ class RecipeRepository {
     }
   }
 
-  async getUserRecipes(userId: number): Promise<Recipe[]> {
+  async getUserRecipes(user_id: number): Promise<Recipe[]> {
     const query: QueryConfig = {
       text: "SELECT * FROM recipes WHERE user_id = $1",
-      values: [userId],
+      values: [user_id],
     };
 
     try {
