@@ -129,6 +129,36 @@ class UserController {
       return res.status(500).send("Error fetching profile picture");
     }
   };
+
+  async hasProfilePicture(req: Request, res: Response) {
+    const user = req.user as AuthenticatedUser | undefined;
+
+    if (!user || !user.id) {
+      return res.status(401).send("Unauthorized");
+    }
+
+    try {
+      const hasPicture = await this.userService.hasProfilePicture(user.id);
+      res.json({ hasProfilePicture: hasPicture });
+    } catch (error) {
+      res.status(500).json({ message: "Error checking profile picture" });
+    }
+  }
+
+  async deleteProfilePicture(req: Request, res: Response) {
+    const user = req.user as AuthenticatedUser | undefined;
+
+    if (!user || !user.id) {
+      return res.status(401).send("Unauthorized");
+    }
+
+    try {
+      await this.userService.deleteProfilePicture(user.id);
+      res.json({ message: "Profile picture deleted" });
+    } catch (error) {
+      res.status(500).json({ message: "Error deleting profile picture" });
+    }
+  }
 }
 
 export default UserController;

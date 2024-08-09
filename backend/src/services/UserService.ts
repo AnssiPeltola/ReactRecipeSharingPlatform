@@ -70,6 +70,15 @@ class UserService {
       throw error;
     }
   }
+
+  async hasProfilePicture(userId: number): Promise<boolean> {
+    const profilePicture = await this.userRepository.getProfilePicture(userId);
+    return !!profilePicture;
+  }
+
+  async deleteProfilePicture(userId: number): Promise<void> {
+    await this.userRepository.deleteProfilePicture(userId);
+  }
 }
 
 export default UserService;
