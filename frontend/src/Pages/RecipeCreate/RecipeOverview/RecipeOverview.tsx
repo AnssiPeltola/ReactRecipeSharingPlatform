@@ -21,7 +21,7 @@ const RecipeOverview = () => {
     formData.append("category", recipeState.category);
     formData.append("secondary_category", recipeState.secondary_category);
     formData.append("instructions", recipeState.instructions);
-    formData.append("userId", recipeState.userId.toString());
+    formData.append("user_id", recipeState.user_id.toString());
     formData.append("pictureUrl", recipeState.picture_url ?? "");
 
     recipeState.ingredients.forEach((ingredient, index) => {

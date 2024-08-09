@@ -45,12 +45,12 @@ class UserService {
   }
 
   async uploadProfilePicture(
-    userId: number,
+    user_id: number,
     file: Express.Multer.File
   ): Promise<number> {
     try {
       const fileId = await this.userRepository.uploadProfilePicture(
-        userId,
+        user_id,
         file
       );
       return fileId;
@@ -61,23 +61,23 @@ class UserService {
   }
 
   async getProfilePicture(
-    userId: number
+    user_id: number
   ): Promise<{ type: string; data: Buffer } | null> {
     try {
-      return await this.userRepository.getProfilePicture(userId);
+      return await this.userRepository.getProfilePicture(user_id);
     } catch (error) {
       console.error(error);
       throw error;
     }
   }
 
-  async hasProfilePicture(userId: number): Promise<boolean> {
-    const profilePicture = await this.userRepository.getProfilePicture(userId);
+  async hasProfilePicture(user_id: number): Promise<boolean> {
+    const profilePicture = await this.userRepository.getProfilePicture(user_id);
     return !!profilePicture;
   }
 
-  async deleteProfilePicture(userId: number): Promise<void> {
-    await this.userRepository.deleteProfilePicture(userId);
+  async deleteProfilePicture(user_id: number): Promise<void> {
+    await this.userRepository.deleteProfilePicture(user_id);
   }
 }
 

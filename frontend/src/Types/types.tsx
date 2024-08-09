@@ -6,7 +6,7 @@ export interface RecipeState {
   ingredients: Ingredient[];
   instructions: string;
   // picture_url: string;
-  userId: string;
+  user_id: string;
   picture_url?: string;
   nickname?: string;
 }

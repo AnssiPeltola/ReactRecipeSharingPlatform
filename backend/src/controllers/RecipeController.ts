@@ -79,8 +79,8 @@ class RecipeController {
     }
   }
 
-  async getUserRecipes(userId: number): Promise<Recipe[]> {
-    return this.recipeService.getUserRecipes(userId);
+  async getUserRecipes(user_id: number): Promise<Recipe[]> {
+    return this.recipeService.getUserRecipes(user_id);
   }
 }
 

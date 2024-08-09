@@ -1,6 +1,6 @@
 class Recipe {
   id: number;
-  userId: number;
+  user_id: number;
   title: string;
   category: string;
   secondary_category?: string;
@@ -10,7 +10,7 @@ class Recipe {
 
   constructor(
     id: number,
-    userId: number,
+    user_id: number,
     title: string,
     category: string,
     ingredients: Ingredient[],
@@ -18,7 +18,7 @@ class Recipe {
     pictureUrl: string
   ) {
     this.id = id;
-    this.userId = userId;
+    this.user_id = user_id;
     this.title = title;
     this.category = category;
     this.ingredients = ingredients;

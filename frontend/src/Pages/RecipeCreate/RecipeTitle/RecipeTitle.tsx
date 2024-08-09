@@ -6,7 +6,7 @@ import {
   setTitle,
   setCategory,
   setsecondary_category,
-  setUserId,
+  setuser_id,
 } from "../../../Redux/recipeSlice";
 import { RootState } from "../../../Redux/store";
 
@@ -35,8 +35,8 @@ const RecipeTitle = () => {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((response) => {
-          const userId = response.data.id;
-          dispatch(setUserId(userId));
+          const user_id = response.data.id;
+          dispatch(setuser_id(user_id));
         })
         .catch((error) => {
           console.error("Error fetching user details", error);
