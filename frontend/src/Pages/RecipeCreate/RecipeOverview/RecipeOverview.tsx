@@ -10,9 +10,9 @@ const RecipeOverview = () => {
   const dispatch = useDispatch();
   const recipeState = useSelector((state: RootState) => state.recipe);
 
-  // Dynamically construct the image URL for display using the pictureId
-  const imageUrl = recipeState.pictureId
-    ? `${process.env.REACT_APP_API_BASE_URL}/recipePicture/${recipeState.pictureId}`
+  // Dynamically construct the image URL for display using the picture_url
+  const imageUrl = recipeState.picture_url
+    ? `${process.env.REACT_APP_API_BASE_URL}/recipePicture/${recipeState.picture_url}`
     : null;
 
   const handleButtonClick = async () => {
@@ -22,7 +22,7 @@ const RecipeOverview = () => {
     formData.append("secondary_category", recipeState.secondary_category);
     formData.append("instructions", recipeState.instructions);
     formData.append("userId", recipeState.userId.toString());
-    formData.append("pictureUrl", recipeState.pictureId);
+    formData.append("pictureUrl", recipeState.picture_url ?? "");
 
     recipeState.ingredients.forEach((ingredient, index) => {
       formData.append(`ingredients[${index}][quantity]`, ingredient.quantity);
@@ -65,7 +65,7 @@ const RecipeOverview = () => {
         ))}
       </div>
       <p>Instructions: {recipeState.instructions}</p>
-      <p>Picture ID: {recipeState.pictureId}</p>
+      <p>Picture ID: {recipeState.picture_url}</p>
       {imageUrl && <img src={imageUrl} alt="Recipe" />}
 
       <button onClick={handleButtonClick}>Next</button>

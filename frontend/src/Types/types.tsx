@@ -5,7 +5,7 @@ export interface RecipeState {
   secondary_category: string;
   ingredients: Ingredient[];
   instructions: string;
-  pictureId: string;
+  // picture_url: string;
   userId: string;
   picture_url?: string;
   nickname?: string;

@@ -7,7 +7,7 @@ const initialState: RecipeState = {
   secondary_category: "",
   ingredients: [],
   instructions: "",
-  pictureId: "",
+  picture_url: "",
   userId: "",
 };
 
@@ -30,8 +30,8 @@ const recipeSlice = createSlice({
     setInstructions: (state, action: PayloadAction<string>) => {
       state.instructions = action.payload;
     },
-    setPictureId: (state, action: PayloadAction<string>) => {
-      state.pictureId = action.payload;
+    setpicture_url: (state, action: PayloadAction<string>) => {
+      state.picture_url = action.payload;
     },
     setUserId: (state, action: PayloadAction<string>) => {
       state.userId = action.payload;
@@ -42,7 +42,7 @@ const recipeSlice = createSlice({
       state.secondary_category = "";
       state.ingredients = [];
       state.instructions = "";
-      state.pictureId = "";
+      state.picture_url = "";
       state.userId = "";
     },
   },
@@ -54,7 +54,7 @@ export const {
   setsecondary_category,
   setIngredients,
   setInstructions,
-  setPictureId,
+  setpicture_url,
   setUserId,
   resetState,
 } = recipeSlice.actions;
