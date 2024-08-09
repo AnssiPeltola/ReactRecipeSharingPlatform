@@ -117,10 +117,11 @@ class RecipeRepository {
   async getRecipeById(id: number): Promise<Recipe | null> {
     const query = {
       text: `
-        SELECT r.*, ri.quantity, ri.unit, i.name AS ingredient_name
+        SELECT r.*, ri.quantity, ri.unit, i.name AS ingredient_name, u.nickname
         FROM recipes r
         INNER JOIN recipe_ingredients ri ON r.id = ri.recipe_id
         INNER JOIN ingredients i ON ri.ingredient_id = i.id
+        INNER JOIN users u ON r.user_id = u.id
         WHERE r.id = $1
       `,
       values: [id],
@@ -140,6 +141,7 @@ class RecipeRepository {
           quantity: row.quantity,
           unit: row.unit,
         })),
+        nickname: rows[0].nickname, // Include the nickname
       };
 
       return recipe;

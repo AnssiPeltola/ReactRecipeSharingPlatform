@@ -8,6 +8,7 @@ export interface RecipeState {
   pictureId: string;
   userId: string;
   picture_url?: string;
+  nickname?: string;
 }
 
 export interface Ingredient {
