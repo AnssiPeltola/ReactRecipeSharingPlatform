@@ -225,6 +225,15 @@ class RecipeRepository {
       throw error;
     }
   }
+
+  async getRecipeLikes(recipeId: number) {
+    const query = {
+      text: "SELECT COUNT(*) FROM recipe_likes WHERE recipe_id = $1",
+      values: [recipeId],
+    };
+    const result = await pool.query(query);
+    return result.rows[0].count;
+  }
 }
 
 export default RecipeRepository;
