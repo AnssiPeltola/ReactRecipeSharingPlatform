@@ -209,4 +209,28 @@ app.get(
   }
 );
 
+app.post(
+  "/likeRecipe/:id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => recipeController.likeRecipe(req, res)
+);
+
+app.delete(
+  "/unlikeRecipe/:id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => recipeController.unlikeRecipe(req, res)
+);
+
+app.get(
+  "/likedRecipes",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => recipeController.getLikedRecipes(req, res)
+);
+
+app.get(
+  "/isRecipeLiked/:recipeId",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => recipeController.isRecipeLiked(req, res)
+);
+
 export default app;

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { User } from "../../../Types/types";
 import UserRecipes from "../../../Components/UserRecipes/UserRecipes";
+import LikedRecipes from "../../../Components/LikedRecipes/LikedRecipes";
 
 const ProfileView = () => {
   const [userDetails, setUserDetails] = useState<User | null>(null);
@@ -68,6 +69,7 @@ const ProfileView = () => {
         Modify Profile
       </button>
       <UserRecipes />
+      <LikedRecipes />
     </div>
   );
 };
