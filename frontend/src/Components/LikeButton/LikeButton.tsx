@@ -7,9 +7,11 @@ interface LikeButtonProps {
 
 const LikeButton: React.FC<LikeButtonProps> = ({ recipeId }) => {
   const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
 
   useEffect(() => {
     checkIfLiked();
+    fetchLikeCount();
   }, []);
 
   const checkIfLiked = async () => {
@@ -29,6 +31,23 @@ const LikeButton: React.FC<LikeButtonProps> = ({ recipeId }) => {
     }
   };
 
+  const fetchLikeCount = async () => {
+    try {
+      const token = localStorage.getItem("sessionToken");
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/recipeLikes/${recipeId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setLikeCount(response.data.likes);
+    } catch (error) {
+      console.error("Error fetching like count:", error);
+    }
+  };
+
   const handleLike = async () => {
     try {
       const token = localStorage.getItem("sessionToken");
@@ -42,6 +61,7 @@ const LikeButton: React.FC<LikeButtonProps> = ({ recipeId }) => {
         }
       );
       setLiked(true);
+      setLikeCount(likeCount + 1);
     } catch (error) {
       console.error("Error liking the recipe:", error);
     }
@@ -59,15 +79,19 @@ const LikeButton: React.FC<LikeButtonProps> = ({ recipeId }) => {
         }
       );
       setLiked(false);
+      setLikeCount(likeCount - 1);
     } catch (error) {
       console.error("Error unliking the recipe:", error);
     }
   };
 
   return (
-    <button onClick={liked ? handleUnlike : handleLike}>
-      {liked ? "Unlike" : "Like"}
-    </button>
+    <div>
+      <button onClick={liked ? handleUnlike : handleLike}>
+        {liked ? "Unlike" : "Like"}
+      </button>
+      <p>{likeCount} likes</p>
+    </div>
   );
 };
 

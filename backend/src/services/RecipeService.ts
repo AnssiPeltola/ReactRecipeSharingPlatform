@@ -55,6 +55,10 @@ class RecipeService {
   async isRecipeLiked(userId: number, recipeId: number): Promise<boolean> {
     return this.recipeRepository.isRecipeLiked(userId, recipeId);
   }
+
+  async getRecipeLikes(recipeId: number) {
+    return await this.recipeRepository.getRecipeLikes(recipeId);
+  }
 }
 
 export default RecipeService;

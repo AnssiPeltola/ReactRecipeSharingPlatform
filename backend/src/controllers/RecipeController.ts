@@ -163,6 +163,12 @@ class RecipeController {
       res.status(500).send("Error checking if recipe is liked");
     }
   }
+
+  async getRecipeLikes(req: Request, res: Response) {
+    const recipeId = Number(req.params.recipeId);
+    const likes = await this.recipeService.getRecipeLikes(recipeId);
+    res.status(200).json({ likes });
+  }
 }
 
 export default RecipeController;
