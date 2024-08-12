@@ -182,6 +182,49 @@ class RecipeRepository {
       throw error;
     }
   }
+
+  async likeRecipe(userId: number, recipeId: number) {
+    const query = `
+      INSERT INTO recipe_likes (user_id, recipe_id)
+      VALUES ($1, $2)
+      ON CONFLICT (user_id, recipe_id) DO NOTHING
+    `;
+    await pool.query(query, [userId, recipeId]);
+  }
+
+  async unlikeRecipe(userId: number, recipeId: number) {
+    const query = `
+      DELETE FROM recipe_likes
+      WHERE user_id = $1 AND recipe_id = $2
+    `;
+    await pool.query(query, [userId, recipeId]);
+  }
+
+  async getLikedRecipes(userId: number) {
+    const query = `
+      SELECT r.*
+      FROM recipes r
+      JOIN recipe_likes rl ON r.id = rl.recipe_id
+      WHERE rl.user_id = $1
+    `;
+    const result = await pool.query(query, [userId]);
+    return result.rows;
+  }
+
+  async isRecipeLiked(userId: number, recipeId: number): Promise<boolean> {
+    const query = {
+      text: "SELECT COUNT(*) FROM recipe_likes WHERE user_id = $1 AND recipe_id = $2",
+      values: [userId, recipeId],
+    };
+
+    try {
+      const result = await pool.query(query);
+      return result.rows[0].count > 0;
+    } catch (error) {
+      console.error("Error querying the database", error);
+      throw error;
+    }
+  }
 }
 
 export default RecipeRepository;

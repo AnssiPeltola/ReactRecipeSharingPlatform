@@ -1,6 +1,11 @@
 import { Request, Response } from "express";
 import RecipeService from "../services/RecipeService";
 import Recipe from "../models/Recipe";
+import User from "../models/User";
+
+interface AuthenticatedUser extends Express.User {
+  id: number;
+}
 
 class RecipeController {
   private recipeService: RecipeService;
@@ -81,6 +86,82 @@ class RecipeController {
 
   async getUserRecipes(user_id: number): Promise<Recipe[]> {
     return this.recipeService.getUserRecipes(user_id);
+  }
+
+  async likeRecipe(req: Request, res: Response) {
+    const user = req.user as AuthenticatedUser;
+    if (!user || !user.id) {
+      return res.status(401).send("Unauthorized");
+    }
+    const userId = user.id;
+    const recipeId = Number(req.params.id);
+
+    if (isNaN(recipeId)) {
+      return res.status(400).send("Invalid recipe ID");
+    }
+
+    try {
+      await this.recipeService.likeRecipe(userId, recipeId);
+      res.status(200).send("Recipe liked");
+    } catch (error) {
+      console.error("Error liking recipe:", error);
+      res.status(500).send("Error liking recipe");
+    }
+  }
+
+  async unlikeRecipe(req: Request, res: Response) {
+    const user = req.user as AuthenticatedUser;
+    const userId = user.id;
+    const recipeId = Number(req.params.id);
+
+    if (isNaN(recipeId)) {
+      return res.status(400).send("Invalid recipe ID");
+    }
+
+    try {
+      await this.recipeService.unlikeRecipe(userId, recipeId);
+      res.status(200).send("Recipe unliked");
+    } catch (error) {
+      console.error("Error unliking recipe:", error);
+      res.status(500).send("Error unliking recipe");
+    }
+  }
+
+  async getLikedRecipes(req: Request, res: Response) {
+    const user = req.user as AuthenticatedUser;
+    if (!user || !user.id) {
+      return res.status(401).send("Unauthorized");
+    }
+    const userId = user.id;
+
+    try {
+      const likedRecipes = await this.recipeService.getLikedRecipes(userId);
+      res.status(200).json(likedRecipes);
+    } catch (error) {
+      console.error("Error fetching liked recipes:", error);
+      res.status(500).send("Error fetching liked recipes");
+    }
+  }
+
+  async isRecipeLiked(req: Request, res: Response) {
+    const user = req.user as AuthenticatedUser;
+    if (!user || !user.id) {
+      return res.status(401).send("Unauthorized");
+    }
+    const userId = user.id;
+    const recipeId = Number(req.params.recipeId);
+
+    if (isNaN(recipeId)) {
+      return res.status(400).send("Invalid recipe ID");
+    }
+
+    try {
+      const liked = await this.recipeService.isRecipeLiked(userId, recipeId);
+      res.json({ liked });
+    } catch (error) {
+      console.error("Error checking if recipe is liked:", error);
+      res.status(500).send("Error checking if recipe is liked");
+    }
   }
 }
 

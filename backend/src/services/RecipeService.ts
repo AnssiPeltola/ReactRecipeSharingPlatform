@@ -39,6 +39,22 @@ class RecipeService {
   async getUserRecipes(user_id: number): Promise<Recipe[]> {
     return this.recipeRepository.getUserRecipes(user_id);
   }
+
+  async likeRecipe(userId: number, recipeId: number) {
+    await this.recipeRepository.likeRecipe(userId, recipeId);
+  }
+
+  async unlikeRecipe(userId: number, recipeId: number) {
+    await this.recipeRepository.unlikeRecipe(userId, recipeId);
+  }
+
+  async getLikedRecipes(userId: number) {
+    return this.recipeRepository.getLikedRecipes(userId);
+  }
+
+  async isRecipeLiked(userId: number, recipeId: number): Promise<boolean> {
+    return this.recipeRepository.isRecipeLiked(userId, recipeId);
+  }
 }
 
 export default RecipeService;

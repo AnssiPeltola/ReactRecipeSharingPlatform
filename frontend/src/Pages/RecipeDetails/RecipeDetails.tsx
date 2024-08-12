@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { RecipeState } from "../../Types/types";
+import LikeButton from "../../Components/LikeButton/LikeButton";
 
 const RecipeDetails = () => {
   const { recipeId } = useParams<{ recipeId: string }>();
@@ -51,6 +52,7 @@ const RecipeDetails = () => {
           </div>
           <p>{recipe.instructions}</p>
           <p>Recipe by: {recipe.nickname}</p>
+          <LikeButton recipeId={recipe.id || ""} />
         </>
       )}
     </div>
