@@ -42,7 +42,7 @@ const LikeButton: React.FC<LikeButtonProps> = ({ recipeId }) => {
           },
         }
       );
-      setLikeCount(response.data.likes);
+      setLikeCount(Number(response.data.likes));
     } catch (error) {
       console.error("Error fetching like count:", error);
     }
