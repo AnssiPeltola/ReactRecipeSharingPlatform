@@ -159,6 +159,22 @@ class UserController {
       res.status(500).json({ message: "Error deleting profile picture" });
     }
   }
+
+  async getProfilePictureById(req: Request, res: Response) {
+    const { id } = req.params;
+    try {
+      const profilePicture = await this.userService.getProfilePictureById(id);
+      if (profilePicture) {
+        res.set("Content-Type", profilePicture.type);
+        res.send(profilePicture.data);
+      } else {
+        res.status(404).send("Profile picture not found");
+      }
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Internal server error");
+    }
+  }
 }
 
 export default UserController;

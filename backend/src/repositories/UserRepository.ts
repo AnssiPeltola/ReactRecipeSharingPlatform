@@ -125,6 +125,19 @@ class UserRepository {
       client.release();
     }
   }
+
+  async getProfilePictureById(id: string) {
+    const query = {
+      text: "SELECT data, type FROM profile_pictures WHERE id = $1",
+      values: [id],
+    };
+    const result = await pool.query(query);
+    if (result.rows.length > 0) {
+      return result.rows[0];
+    } else {
+      return null;
+    }
+  }
 }
 
 export default UserRepository;

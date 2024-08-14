@@ -169,6 +169,59 @@ class RecipeController {
     const likes = await this.recipeService.getRecipeLikes(recipeId);
     res.status(200).json({ likes });
   }
+
+  async addComment(req: Request, res: Response) {
+    const { recipeId } = req.params;
+    const { content } = req.body;
+    const user = req.user as AuthenticatedUser;
+    const userId = user.id;
+
+    try {
+      const comment = await this.recipeService.addComment(
+        Number(recipeId),
+        userId,
+        content
+      );
+      res.status(201).json(comment);
+    } catch (error) {
+      console.error("Error adding comment:", error);
+      res.status(500).json({ message: "Error adding comment" });
+    }
+  }
+
+  async getComments(req: Request, res: Response) {
+    const { recipeId } = req.params;
+
+    try {
+      const comments = await this.recipeService.getComments(Number(recipeId));
+      res.status(200).json(comments);
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+      res.status(500).json({ message: "Error fetching comments" });
+    }
+  }
+
+  async deleteComment(req: Request, res: Response) {
+    const { commentId } = req.params;
+    const user = req.user as AuthenticatedUser;
+    const userId = user.id;
+
+    try {
+      const success = await this.recipeService.deleteComment(
+        Number(commentId),
+        userId
+      );
+      if (!success) {
+        return res
+          .status(404)
+          .json({ message: "Comment not found or not authorized" });
+      }
+      res.status(200).json({ message: "Comment deleted" });
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+      res.status(500).json({ message: "Error deleting comment" });
+    }
+  }
 }
 
 export default RecipeController;
