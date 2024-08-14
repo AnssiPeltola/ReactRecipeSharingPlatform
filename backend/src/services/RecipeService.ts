@@ -59,6 +59,18 @@ class RecipeService {
   async getRecipeLikes(recipeId: number) {
     return await this.recipeRepository.getRecipeLikes(recipeId);
   }
+
+  async addComment(recipeId: number, userId: number, content: string) {
+    return this.recipeRepository.addComment(recipeId, userId, content);
+  }
+
+  async getComments(recipeId: number) {
+    return this.recipeRepository.getComments(recipeId);
+  }
+
+  async deleteComment(commentId: number, userId: number) {
+    return this.recipeRepository.deleteComment(commentId, userId);
+  }
 }
 
 export default RecipeService;

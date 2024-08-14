@@ -234,6 +234,45 @@ class RecipeRepository {
     const result = await pool.query(query);
     return result.rows[0].count;
   }
+
+  async addComment(recipeId: number, userId: number, content: string) {
+    const query: QueryConfig = {
+      text: "INSERT INTO recipe_comments (recipe_id, user_id, content) VALUES ($1, $2, $3) RETURNING *",
+      values: [recipeId, userId, content],
+    };
+    const result = await pool.query(query);
+    return result.rows[0];
+  }
+
+  async getComments(recipeId: number) {
+    const query: QueryConfig = {
+      text: `
+        SELECT c.id, c.content, c.timestamp, c.user_id, u.nickname, pp.id AS profile_picture_id
+        FROM recipe_comments c
+        JOIN users u ON c.user_id = u.id
+        LEFT JOIN profile_pictures pp ON u.id = pp.user_id
+        WHERE c.recipe_id = $1
+        ORDER BY c.timestamp DESC
+      `,
+      values: [recipeId],
+    };
+    const result = await pool.query(query);
+    return result.rows.map((row) => ({
+      ...row,
+      profile_picture_url: row.profile_picture_id
+        ? `/profile_picture/${row.profile_picture_id}`
+        : null,
+    }));
+  }
+
+  async deleteComment(commentId: number, userId: number) {
+    const query: QueryConfig = {
+      text: "DELETE FROM recipe_comments WHERE id = $1 AND user_id = $2 RETURNING *",
+      values: [commentId, userId],
+    };
+    const result = await pool.query(query);
+    return (result.rowCount ?? 0) > 0;
+  }
 }
 
 export default RecipeRepository;

@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { RecipeState } from "../../Types/types";
 import LikeButton from "../../Components/LikeButton/LikeButton";
+import AddComment from "../../Components/RecipeComments/AddComment/AddComment";
+import CommentList from "../../Components/RecipeComments/CommentList/CommentList";
 
 const RecipeDetails = () => {
   const { recipeId } = useParams<{ recipeId: string }>();
@@ -10,18 +12,19 @@ const RecipeDetails = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const fetchRecipe = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`/recipe/${recipeId}`);
+      setRecipe(response.data);
+    } catch (err) {
+      setError("Failed to fetch recipe details.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchRecipe = async () => {
-      setLoading(true);
-      try {
-        const response = await axios.get(`/recipe/${recipeId}`);
-        setRecipe(response.data);
-      } catch (err) {
-        setError("Failed to fetch recipe details.");
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchRecipe();
   }, [recipeId]);
 
@@ -53,6 +56,11 @@ const RecipeDetails = () => {
           <p>{recipe.instructions}</p>
           <p>Recipe by: {recipe.nickname}</p>
           <LikeButton recipeId={recipe.id || ""} />
+          <AddComment
+            recipeId={parseInt(recipe.id || "")}
+            onCommentAdded={() => fetchRecipe()}
+          />
+          <CommentList recipeId={parseInt(recipe.id || "")} />
         </>
       )}
     </div>

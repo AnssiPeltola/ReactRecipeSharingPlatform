@@ -147,6 +147,10 @@ app.delete(
   (req, res) => userController.deleteProfilePicture(req, res)
 );
 
+app.get("/profile_picture/:id", (req, res) =>
+  userController.getProfilePictureById(req, res)
+);
+
 // Recipe routes below this line ----------------------------
 
 app.post("/recipeCreate", upload.single("file"), (req, res) =>
@@ -237,6 +241,22 @@ app.get(
   "/recipeLikes/:recipeId",
   passport.authenticate("jwt", { session: false }),
   (req, res) => recipeController.getRecipeLikes(req, res)
+);
+
+app.post(
+  "/recipe/:recipeId/comment",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => recipeController.addComment(req, res)
+);
+
+app.get("/recipe/:recipeId/comments", (req, res) =>
+  recipeController.getComments(req, res)
+);
+
+app.delete(
+  "/comment/:commentId",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => recipeController.deleteComment(req, res)
 );
 
 export default app;

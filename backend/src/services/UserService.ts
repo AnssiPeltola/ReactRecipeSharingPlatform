@@ -79,6 +79,10 @@ class UserService {
   async deleteProfilePicture(user_id: number): Promise<void> {
     await this.userRepository.deleteProfilePicture(user_id);
   }
+
+  async getProfilePictureById(id: string) {
+    return await this.userRepository.getProfilePictureById(id);
+  }
 }
 
 export default UserService;
