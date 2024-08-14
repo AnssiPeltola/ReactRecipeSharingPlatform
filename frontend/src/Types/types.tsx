@@ -26,3 +26,12 @@ export interface User {
   tiktok: string;
   experience_level: string;
 }
+
+export interface Comment {
+  id: number;
+  content: string;
+  timestamp: string;
+  nickname: string;
+  profile_picture_url: string;
+  user_id: number;
+}

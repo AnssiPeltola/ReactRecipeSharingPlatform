@@ -1,14 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-
-interface Comment {
-  id: number;
-  content: string;
-  timestamp: string;
-  nickname: string;
-  profile_picture_url: string;
-  user_id: number;
-}
+import { Comment } from "../../../Types/types";
 
 interface CommentListProps {
   recipeId: number;
