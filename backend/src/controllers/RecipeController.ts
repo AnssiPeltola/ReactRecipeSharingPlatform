@@ -222,6 +222,15 @@ class RecipeController {
       res.status(500).json({ message: "Error deleting comment" });
     }
   }
+
+  async getLatestRecipes(req: Request, res: Response) {
+    try {
+      const latestRecipes = await this.recipeService.getLatestRecipes();
+      res.json(latestRecipes);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching latest recipes" });
+    }
+  }
 }
 
 export default RecipeController;

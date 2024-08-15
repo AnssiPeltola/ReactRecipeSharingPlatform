@@ -71,6 +71,10 @@ class RecipeService {
   async deleteComment(commentId: number, userId: number) {
     return this.recipeRepository.deleteComment(commentId, userId);
   }
+
+  async getLatestRecipes() {
+    return await this.recipeRepository.getLatestRecipes();
+  }
 }
 
 export default RecipeService;

@@ -22,7 +22,7 @@ const RandomRecipeButton = () => {
       onClick={fetchRandomRecipe}
       className="bg-blue-500 text-white rounded p-2 hover:bg-blue-700 focus:outline-none"
     >
-      Hae satunnainen resepti!
+      Heitä herkkunoppa ja nappaa resepti!
     </button>
   );
 };
