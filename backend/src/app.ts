@@ -259,4 +259,12 @@ app.delete(
   (req, res) => recipeController.deleteComment(req, res)
 );
 
+app.get("/latestRecipes", async (req, res) => {
+  try {
+    await recipeController.getLatestRecipes(req, res);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching latest recipes" });
+  }
+});
+
 export default app;

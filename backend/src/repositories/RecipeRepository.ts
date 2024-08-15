@@ -273,6 +273,20 @@ class RecipeRepository {
     const result = await pool.query(query);
     return (result.rowCount ?? 0) > 0;
   }
+
+  async getLatestRecipes(): Promise<Recipe[]> {
+    const query = {
+      text: "SELECT * FROM recipes ORDER BY created_at DESC LIMIT 6",
+    };
+
+    try {
+      const { rows } = await pool.query(query);
+      return rows;
+    } catch (error) {
+      console.error("Error querying the database", error);
+      throw error;
+    }
+  }
 }
 
 export default RecipeRepository;
