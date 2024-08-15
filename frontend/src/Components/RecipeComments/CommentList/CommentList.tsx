@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Comment } from "../../../Types/types";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 
 interface CommentListProps {
   recipeId: number;
@@ -72,17 +74,35 @@ const CommentList: React.FC<CommentListProps> = ({ recipeId }) => {
   console.log("Comments:", comments); // Debugging log
 
   return (
-    <div>
+    <div className="space-y-4">
       {comments.map((comment) => (
-        <div key={comment.id}>
+        <div
+          key={comment.id}
+          className="relative flex items-start space-x-4 p-4 border-b border-gray-200"
+        >
           {comment.profile_picture_url && (
-            <img src={comment.profile_picture_url} alt={comment.nickname} />
+            <img
+              src={comment.profile_picture_url}
+              alt={comment.nickname}
+              className="w-12 h-12 rounded-full"
+            />
           )}
-          <p>{comment.nickname}</p>
-          <p>{comment.content}</p>
-          <p>{new Date(comment.timestamp).toLocaleString()}</p>
+          <div className="flex-1">
+            <div className="flex justify-between items-center">
+              <p className="font-semibold">{comment.nickname}</p>
+              <p className="text-gray-500 text-sm mr-8">
+                {new Date(comment.timestamp).toLocaleString()}
+              </p>
+            </div>
+            <p className="mt-2">{comment.content}</p>
+          </div>
           {currentUserId === comment.user_id && (
-            <button onClick={() => handleDelete(comment.id)}>Delete</button>
+            <button
+              onClick={() => handleDelete(comment.id)}
+              className="absolute top-2 right-2 text-red-500 hover:text-red-600 transition-colors duration-200"
+            >
+              <FontAwesomeIcon icon={faTrash} />
+            </button>
           )}
         </div>
       ))}

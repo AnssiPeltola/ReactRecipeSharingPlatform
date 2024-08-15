@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import styles from "./Navbar.module.scss";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import LoginModal from "../Modal/LoginModal/LoginModal";
 
@@ -48,13 +47,27 @@ const Navbar = () => {
 
   if (!isLoggedIn) {
     return (
-      <nav className={styles.nav}>
+      <nav className="bg-gray-800 p-4 flex justify-between items-center">
         <button onClick={() => navigate("/")}>
-          <img src="https://via.placeholder.com/40" alt="Logo" />
+          <img
+            src="https://via.placeholder.com/40"
+            alt="Logo"
+            className="h-10"
+          />
         </button>
-        <div>
-          <button onClick={() => navigate("/register")}>Register</button>
-          <button onClick={() => setIsLoginOpen(true)}>Login</button>
+        <div className="flex space-x-4">
+          <button
+            onClick={() => navigate("/register")}
+            className="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-700"
+          >
+            Register
+          </button>
+          <button
+            onClick={() => setIsLoginOpen(true)}
+            className="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-700"
+          >
+            Login
+          </button>
           <LoginModal
             isOpen={isLoginOpen}
             onRequestClose={() => setIsLoginOpen(false)}
@@ -65,16 +78,29 @@ const Navbar = () => {
   }
 
   return (
-    <nav className={styles.nav}>
+    <nav className="bg-gray-800 p-4 flex justify-between items-center">
       <button onClick={() => navigate("/")}>
-        <img src="https://via.placeholder.com/40" alt="Logo" />
+        <img src="https://via.placeholder.com/40" alt="Logo" className="h-10" />
       </button>
-      <div>
-        <button onClick={() => navigate("/create-recipe")}>
+      <div className="flex space-x-4">
+        <button
+          onClick={() => navigate("/create-recipe")}
+          className="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-700"
+        >
           Lisää resepti
         </button>
-        <button onClick={() => navigate("/profile")}>Profiili</button>
-        <button onClick={handleLogout}>Logout</button>
+        <button
+          onClick={() => navigate("/profile")}
+          className="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-700"
+        >
+          Profiili
+        </button>
+        <button
+          onClick={handleLogout}
+          className="bg-red-500 text-white rounded px-4 py-2 hover:bg-red-700"
+        >
+          Logout
+        </button>
       </div>
     </nav>
   );

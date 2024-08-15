@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faStar } from "@fortawesome/free-solid-svg-icons";
 
 interface LikeButtonProps {
   recipeId: string;
@@ -86,11 +88,17 @@ const LikeButton: React.FC<LikeButtonProps> = ({ recipeId }) => {
   };
 
   return (
-    <div>
-      <button onClick={liked ? handleUnlike : handleLike}>
+    <div className="flex items-center space-x-2">
+      <button
+        onClick={liked ? handleUnlike : handleLike}
+        className={`px-4 py-2 rounded ${
+          liked ? "bg-red-500 text-white" : "bg-blue-500 text-white"
+        } hover:opacity-75 transition-opacity duration-200`}
+      >
         {liked ? "Unlike" : "Like"}
       </button>
-      <p>{likeCount} likes</p>
+      <FontAwesomeIcon icon={faStar} className="mx-2 text-yellow-500" />
+      <p className="text-gray-700">{likeCount} likes</p>
     </div>
   );
 };

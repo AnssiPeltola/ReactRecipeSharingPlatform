@@ -6,6 +6,7 @@ import IngredientSearch from "../../../Components/IngredientSearch/IngredientSea
 import { setIngredients, setInstructions } from "../../../Redux/recipeSlice";
 import { Ingredient } from "../../../Types/types";
 import { v4 as uuidv4 } from "uuid";
+import ProgressBar from "../../../Components/ProgressBar/ProgressBar";
 
 const RecipeIngredients = () => {
   const navigate = useNavigate();
@@ -49,9 +50,8 @@ const RecipeIngredients = () => {
     return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
   };
 
-  // Function to update ingredient name in local state
   const updateIngredientName = (ingredientIndex: number, newName: string) => {
-    const formattedName = formatIngredientName(newName); // Use the helper function
+    const formattedName = formatIngredientName(newName);
     const newIngredients = ingredients.map((ingredient, idx) => {
       if (idx === ingredientIndex) {
         return { ...ingredient, name: formattedName };
@@ -62,71 +62,93 @@ const RecipeIngredients = () => {
   };
 
   return (
-    <div>
-      <p>Raaka-aine sivu</p>
-      {ingredients.map((ingredient, index) => (
-        <div key={ingredient.id}>
-          <input
-            type="text"
-            placeholder="Quantity"
-            value={ingredient.quantity}
-            onChange={(e) => {
-              const newIngredients = ingredients.map((ing, idx) => {
-                if (idx === index) {
-                  return { ...ing, quantity: e.target.value };
-                }
-                return ing;
-              });
-              setLocalIngredients(newIngredients);
-            }}
-          />
-          <select
-            value={ingredient.unit}
-            onChange={(e) => {
-              const newIngredients = ingredients.map((ing, idx) => {
-                if (idx === index) {
-                  return { ...ing, unit: e.target.value };
-                }
-                return ing;
-              });
-              setLocalIngredients(newIngredients);
-            }}
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
+        <ProgressBar currentStep={2} maxStep={4} />
+        <p className="text-xl font-bold mb-4">Raaka-aine sivu</p>
+        {ingredients.map((ingredient, index) => (
+          <div
+            key={ingredient.id}
+            className="mb-4 p-4 border rounded-lg bg-white shadow"
           >
-            <option value="">Select unit</option>
-            <option value="g">g (gramma)</option>
-            <option value="kg">kg (kilogramma)</option>
-            <option value="ml">ml (millilitra)</option>
-            <option value="dl">dl (desilitra)</option>
-            <option value="l">l (litra)</option>
-            <option value="rkl">rkl (ruokalusikallinen)</option>
-            <option value="tl">tl (teelusikallinen)</option>
-            <option value="kpl">kpl (kappale)</option>
-            <option value="pkt">pkt (paketti)</option>
-            <option value="tlk">tlk (tölkki)</option>
-            <option value="prk">prk (purkki)</option>
-          </select>
-          <IngredientSearch
-            initialValue={ingredient.name}
-            onIngredientSelect={(name) => {
-              // This handles selection from search results
-              updateIngredientName(index, name);
-            }}
-            onChange={(e) => {
-              // This handles manual input
-              const name = e.target.value;
-              updateIngredientName(index, name);
-            }}
-          />
-          <button onClick={() => handleRemove(ingredient.id)}>Remove</button>
-        </div>
-      ))}
-      <button onClick={handleAddMore}>Lisää uusi raaka-aine</button>
-      <textarea
-        value={instructions}
-        onChange={(e) => setInstructionsLocal(e.target.value)}
-        placeholder="Instructions"
-      />
-      <button onClick={handleButtonClick}>Next</button>
+            <input
+              type="text"
+              placeholder="Quantity"
+              value={ingredient.quantity}
+              onChange={(e) => {
+                const newIngredients = ingredients.map((ing, idx) => {
+                  if (idx === index) {
+                    return { ...ing, quantity: e.target.value };
+                  }
+                  return ing;
+                });
+                setLocalIngredients(newIngredients);
+              }}
+              className="border p-2 rounded w-full mb-2"
+            />
+            <select
+              value={ingredient.unit}
+              onChange={(e) => {
+                const newIngredients = ingredients.map((ing, idx) => {
+                  if (idx === index) {
+                    return { ...ing, unit: e.target.value };
+                  }
+                  return ing;
+                });
+                setLocalIngredients(newIngredients);
+              }}
+              className="border p-2 rounded w-full mb-2"
+            >
+              <option value="">Select unit</option>
+              <option value="g">g (gramma)</option>
+              <option value="kg">kg (kilogramma)</option>
+              <option value="ml">ml (millilitra)</option>
+              <option value="dl">dl (desilitra)</option>
+              <option value="l">l (litra)</option>
+              <option value="rkl">rkl (ruokalusikallinen)</option>
+              <option value="tl">tl (teelusikallinen)</option>
+              <option value="kpl">kpl (kappale)</option>
+              <option value="pkt">pkt (paketti)</option>
+              <option value="tlk">tlk (tölkki)</option>
+              <option value="prk">prk (purkki)</option>
+            </select>
+            <IngredientSearch
+              initialValue={ingredient.name}
+              onIngredientSelect={(name) => {
+                updateIngredientName(index, name);
+              }}
+              onChange={(e) => {
+                const name = e.target.value;
+                updateIngredientName(index, name);
+              }}
+            />
+            <button
+              onClick={() => handleRemove(ingredient.id)}
+              className="bg-red-500 text-white p-2 rounded mt-2"
+            >
+              Remove
+            </button>
+          </div>
+        ))}
+        <button
+          onClick={handleAddMore}
+          className="bg-blue-500 text-white p-2 rounded mb-4"
+        >
+          Lisää uusi raaka-aine
+        </button>
+        <textarea
+          value={instructions}
+          onChange={(e) => setInstructionsLocal(e.target.value)}
+          placeholder="Instructions"
+          className="border p-2 rounded w-full mb-4"
+        />
+        <button
+          onClick={handleButtonClick}
+          className="bg-green-500 text-white p-2 rounded"
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 };
