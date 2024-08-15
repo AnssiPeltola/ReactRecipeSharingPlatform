@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import styles from "./IngredientSearch.module.scss";
 
 interface IngredientSearchProps {
   onIngredientSelect: (name: string) => void;
@@ -23,7 +22,6 @@ const IngredientSearch: React.FC<IngredientSearchProps> = ({
     fetch(`https://world.openfoodfacts.org/data/taxonomies/ingredients.json`)
       .then((response) => response.json())
       .then((data) => {
-        // Extract the Finnish names
         const fiNames = Object.entries(data)
           .filter(
             ([key, ingredient]: [string, any]) =>
@@ -45,7 +43,6 @@ const IngredientSearch: React.FC<IngredientSearchProps> = ({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
     if (onChange) {
-      // Call the passed onChange function if provided
       onChange(e);
     }
     if (e.target.value.length < 3) {
@@ -62,20 +59,26 @@ const IngredientSearch: React.FC<IngredientSearchProps> = ({
   };
 
   return (
-    <div className={styles.ingredientSearch}>
+    <div className="relative">
       <input
-        className={styles.inputField}
         type="text"
         value={query}
         onChange={handleInputChange}
+        className="border p-2 rounded w-full"
       />
-      <div className={styles.dropdown}>
-        {results.map((result, index) => (
-          <p key={index} onClick={() => handleResultClick(result)}>
-            {result.name}
-          </p>
-        ))}
-      </div>
+      {results.length > 0 && (
+        <div className="absolute bg-white border rounded w-full mt-1 z-10">
+          {results.map((result, index) => (
+            <p
+              key={index}
+              onClick={() => handleResultClick(result)}
+              className="p-2 cursor-pointer hover:bg-gray-200"
+            >
+              {result.name}
+            </p>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

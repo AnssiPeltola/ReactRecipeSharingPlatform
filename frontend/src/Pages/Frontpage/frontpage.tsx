@@ -5,14 +5,20 @@ import CategorySelection from "../../Components/CategorySelection/CategorySelect
 
 function Frontpage() {
   return (
-    <div>
-      <h1>Tervetuloa</h1>
-      <p>
+    <div className="container mx-auto p-4">
+      <h1 className="text-4xl font-bold mb-4">Tervetuloa</h1>
+      <p className="text-lg mb-6">
         Löydä reseptejä, suunnittele ateriasi ja jaa kokemuksesi muiden kanssa!
       </p>
-      <RecipeSearch />
-      <RandomRecipeButton />
-      <CategorySelection />
+      <div className="mb-6">
+        <RecipeSearch />
+      </div>
+      <div className="mb-6">
+        <RandomRecipeButton />
+      </div>
+      <div className="mb-6">
+        <CategorySelection />
+      </div>
     </div>
   );
 }

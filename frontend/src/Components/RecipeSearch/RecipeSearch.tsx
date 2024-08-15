@@ -25,17 +25,23 @@ function RecipeSearch() {
   };
 
   return (
-    <div>
-      <form onSubmit={handleSearch}>
+    <div className="max-w-xs">
+      <form onSubmit={handleSearch} className="flex flex-col">
         <input
           type="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="Reseptin tai raaka-aineen nimi"
+          className="border rounded p-2 mb-4"
         />
-        <button type="submit">Hae</button>
+        <button
+          type="submit"
+          className="bg-blue-500 text-white rounded p-2 hover:bg-blue-700"
+        >
+          Hae
+        </button>
       </form>
-      {error && <p>{error}</p>}
+      {error && <p className="text-red-500 mt-4">{error}</p>}
     </div>
   );
 }

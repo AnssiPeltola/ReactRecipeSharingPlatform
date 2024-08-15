@@ -9,6 +9,7 @@ import {
   setuser_id,
 } from "../../../Redux/recipeSlice";
 import { RootState } from "../../../Redux/store";
+import ProgressBar from "../../../Components/ProgressBar/ProgressBar";
 
 const RecipeTitle = () => {
   const navigate = useNavigate();
@@ -82,38 +83,49 @@ const RecipeTitle = () => {
   ];
 
   return (
-    <div>
-      <p>Title sivu</p>
-      <input
-        type="text"
-        value={title}
-        onChange={(e) => setTitleLocal(e.target.value)}
-        placeholder="Title"
-      />
-      <select
-        value={category}
-        onChange={(e) => setCategoryLocal(e.target.value)}
-      >
-        <option value="" disabled>
-          Select Category
-        </option>
-        {categories.map((cat) => (
-          <option key={cat} value={cat}>
-            {cat}
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
+        <ProgressBar currentStep={1} maxStep={4} />
+        <p className="mb-4 text-2xl font-semibold text-gray-700">Title sivu</p>
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitleLocal(e.target.value)}
+          placeholder="Title"
+          className="mb-4 p-2 border border-gray-300 rounded w-full"
+        />
+        <select
+          value={category}
+          onChange={(e) => setCategoryLocal(e.target.value)}
+          className="mb-4 p-2 border border-gray-300 rounded w-full"
+        >
+          <option value="" disabled>
+            Select Category
           </option>
-        ))}
-      </select>
-      <select
-        value={secondary_category}
-        onChange={(e) => setsecondary_categoryLocal(e.target.value)}
-      >
-        {secondaryCategories.map((secCat) => (
-          <option key={secCat} value={secCat}>
-            {secCat}
-          </option>
-        ))}
-      </select>
-      <button onClick={handleButtonClick}>Next</button>
+          {categories.map((cat) => (
+            <option key={cat} value={cat}>
+              {cat}
+            </option>
+          ))}
+        </select>
+        <select
+          value={secondary_category}
+          onChange={(e) => setsecondary_categoryLocal(e.target.value)}
+          className="mb-4 p-2 border border-gray-300 rounded w-full"
+        >
+          {secondaryCategories.map((secCat) => (
+            <option key={secCat} value={secCat}>
+              {secCat}
+            </option>
+          ))}
+        </select>
+        <button
+          onClick={handleButtonClick}
+          className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-700 w-full"
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 };

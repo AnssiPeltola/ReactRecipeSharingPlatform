@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import ProgressBar from "../../../Components/ProgressBar/ProgressBar";
 
 function RegisterDetails() {
   const [bio, setBio] = useState("");
@@ -42,39 +43,57 @@ function RegisterDetails() {
   }, [navigate]);
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        value={bio}
-        onChange={(e) => setBio(e.target.value)}
-        placeholder="Bio (optional)"
-      />
-      <input
-        type="text"
-        value={location}
-        onChange={(e) => setLocation(e.target.value)}
-        placeholder="Location (optional)"
-      />
-      <input
-        type="text"
-        value={instagram}
-        onChange={(e) => setInstagram(e.target.value)}
-        placeholder="Instagram (optional)"
-      />
-      <input
-        type="text"
-        value={tiktok}
-        onChange={(e) => setTiktok(e.target.value)}
-        placeholder="TikTok (optional)"
-      />
-      <input
-        type="text"
-        value={experienceLevel}
-        onChange={(e) => setExperienceLevel(e.target.value)}
-        placeholder="Experience Level (optional)"
-      />
-      <button type="submit">Continue</button>
-    </form>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
+        <ProgressBar currentStep={2} maxStep={3} />
+        <h2 className="text-2xl font-semibold text-gray-700 mb-6">
+          Register Details
+        </h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            type="text"
+            value={bio}
+            onChange={(e) => setBio(e.target.value)}
+            placeholder="Bio (optional)"
+            className="w-full p-2 border border-gray-300 rounded"
+          />
+          <input
+            type="text"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            placeholder="Location (optional)"
+            className="w-full p-2 border border-gray-300 rounded"
+          />
+          <input
+            type="text"
+            value={instagram}
+            onChange={(e) => setInstagram(e.target.value)}
+            placeholder="Instagram (optional)"
+            className="w-full p-2 border border-gray-300 rounded"
+          />
+          <input
+            type="text"
+            value={tiktok}
+            onChange={(e) => setTiktok(e.target.value)}
+            placeholder="TikTok (optional)"
+            className="w-full p-2 border border-gray-300 rounded"
+          />
+          <input
+            type="text"
+            value={experienceLevel}
+            onChange={(e) => setExperienceLevel(e.target.value)}
+            placeholder="Experience Level (optional)"
+            className="w-full p-2 border border-gray-300 rounded"
+          />
+          <button
+            type="submit"
+            className="w-full py-2 text-white bg-blue-500 rounded hover:bg-blue-700"
+          >
+            Continue
+          </button>
+        </form>
+      </div>
+    </div>
   );
 }
 

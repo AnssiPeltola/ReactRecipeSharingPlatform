@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const RecipeCreated = () => {
   const navigate = useNavigate();
@@ -13,17 +13,19 @@ const RecipeCreated = () => {
 
     // Navigate to the page where the user came from when timeleft reaches 0
     if (timeLeft === 0) {
-      navigate('/');
+      navigate("/");
     }
 
     // Clear the timer when the component is unmounted
-    return () => clearTimeout(timer); 
+    return () => clearTimeout(timer);
   }, [navigate, timeLeft]);
 
   return (
-    <div>
-      <div>Resepti luotu!</div>
-      <div>Uudelleenohjataan etusivulle {timeLeft} sekunnin kuluttua</div>
+    <div className="container mx-auto p-4 max-w-lg text-center">
+      <div className="text-2xl font-bold mb-4">Resepti luotu!</div>
+      <div className="text-lg">
+        Uudelleenohjataan etusivulle {timeLeft} sekunnin kuluttua
+      </div>
     </div>
   );
 };

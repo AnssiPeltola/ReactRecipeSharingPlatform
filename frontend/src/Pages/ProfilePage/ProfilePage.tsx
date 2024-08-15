@@ -40,9 +40,16 @@ const ProfilePage = () => {
 
   if (!isLoggedIn) {
     return (
-      <div>
-        <p>You need to log in to view your profile.</p>
-        <button onClick={() => navigate("/")}>Go to Homepage</button>
+      <div className="flex flex-col items-center justify-center h-screen">
+        <p className="mb-4 text-lg text-gray-700">
+          You need to log in to view your profile.
+        </p>
+        <button
+          onClick={() => navigate("/")}
+          className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-700"
+        >
+          Go to Homepage
+        </button>
       </div>
     );
   }

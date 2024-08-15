@@ -80,9 +80,17 @@ const ProfilePictureUpload = ({
   };
 
   return (
-    <div>
-      <input type="file" onChange={handleFileChange} />
-      <button onClick={handleUpload}>Upload Profile Picture</button>
+    <div className="flex items-center bg-white rounded">
+      <label className="p-2 cursor-pointer bg-gray-100 hover:bg-gray-200 rounded">
+        Valitse tiedosto
+        <input type="file" onChange={handleFileChange} className="hidden" />
+      </label>
+      <button
+        onClick={handleUpload}
+        className="ml-auto px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-700"
+      >
+        Upload Profile Picture
+      </button>
     </div>
   );
 };
