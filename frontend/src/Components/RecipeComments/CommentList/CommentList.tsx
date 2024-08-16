@@ -11,6 +11,7 @@ interface CommentListProps {
 const CommentList: React.FC<CommentListProps> = ({ recipeId }) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
+  const placeholderImageUrl = "https://via.placeholder.com/40";
 
   const fetchComments = async () => {
     try {
@@ -80,13 +81,11 @@ const CommentList: React.FC<CommentListProps> = ({ recipeId }) => {
           key={comment.id}
           className="relative flex items-start space-x-4 p-4 border-b border-gray-200"
         >
-          {comment.profile_picture_url && (
-            <img
-              src={comment.profile_picture_url}
-              alt={comment.nickname}
-              className="w-12 h-12 rounded-full"
-            />
-          )}
+          <img
+            src={comment.profile_picture_url || placeholderImageUrl}
+            alt={comment.nickname}
+            className="w-12 h-12 rounded-full"
+          />
           <div className="flex-1">
             <div className="flex justify-between items-center">
               <p className="font-semibold">{comment.nickname}</p>
