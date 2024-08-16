@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import Modal from "react-modal";
+import "./LoginModal.css";
 
 Modal.setAppElement("#root"); // replace '#root' with the id of your app's root element
 
@@ -40,8 +41,8 @@ function LoginModal({
     <Modal
       isOpen={isOpen}
       onRequestClose={onRequestClose}
-      className="fixed inset-0 flex items-center justify-center"
-      overlayClassName="fixed inset-0 bg-black bg-opacity-50"
+      className="modal-content"
+      overlayClassName="modal-overlay"
       shouldCloseOnOverlayClick={true}
     >
       <div className="relative bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
