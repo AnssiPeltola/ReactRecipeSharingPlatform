@@ -6,10 +6,13 @@ import {
   setTitle,
   setCategory,
   setsecondary_category,
+  setMainIngredient,
+  setMainIngredientCategory,
   setuser_id,
 } from "../../../Redux/recipeSlice";
 import { RootState } from "../../../Redux/store";
 import ProgressBar from "../../../Components/ProgressBar/ProgressBar";
+import { MainIngredientsType, mainIngredients } from "../../../Types/types";
 
 const RecipeTitle = () => {
   const navigate = useNavigate();
@@ -25,6 +28,18 @@ const RecipeTitle = () => {
   const [secondary_category, setsecondary_categoryLocal] = useState(
     recipeState && recipeState.secondary_category
       ? recipeState.secondary_category
+      : ""
+  );
+  const [mainCategory, setMainCategory] = useState<
+    keyof MainIngredientsType | ""
+  >(
+    recipeState && recipeState.main_ingredient_category
+      ? (recipeState.main_ingredient_category as keyof MainIngredientsType)
+      : ""
+  );
+  const [specificIngredient, setSpecificIngredient] = useState(
+    recipeState && recipeState.main_ingredient
+      ? recipeState.main_ingredient
       : ""
   );
 
@@ -49,6 +64,8 @@ const RecipeTitle = () => {
     dispatch(setTitle(title));
     dispatch(setCategory(category));
     dispatch(setsecondary_category(secondary_category));
+    dispatch(setMainIngredient(specificIngredient));
+    dispatch(setMainIngredientCategory(mainCategory));
     console.log(recipeState);
     navigate("/create-recipe/recipe-ingredients");
   };
@@ -86,12 +103,14 @@ const RecipeTitle = () => {
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
         <ProgressBar currentStep={1} maxStep={4} />
-        <p className="mb-4 text-2xl font-semibold text-gray-700">Title sivu</p>
+        <p className="mb-4 text-2xl font-semibold text-gray-700">
+          Otsikko sivu
+        </p>
         <input
           type="text"
           value={title}
           onChange={(e) => setTitleLocal(e.target.value)}
-          placeholder="Title"
+          placeholder="Otsikko"
           className="mb-4 p-2 border border-gray-300 rounded w-full"
         />
         <select
@@ -100,7 +119,7 @@ const RecipeTitle = () => {
           className="mb-4 p-2 border border-gray-300 rounded w-full"
         >
           <option value="" disabled>
-            Select Category
+            Valitse kategoria
           </option>
           {categories.map((cat) => (
             <option key={cat} value={cat}>
@@ -108,6 +127,38 @@ const RecipeTitle = () => {
             </option>
           ))}
         </select>
+        <select
+          value={mainCategory}
+          onChange={(e) =>
+            setMainCategory(e.target.value as keyof MainIngredientsType)
+          }
+          className="mb-4 p-2 border border-gray-300 rounded w-full"
+        >
+          <option value="" disabled>
+            Valitse pääainesosa
+          </option>
+          {Object.keys(mainIngredients).map((cat) => (
+            <option key={cat} value={cat}>
+              {cat}
+            </option>
+          ))}
+        </select>
+        {mainCategory && (
+          <select
+            value={specificIngredient}
+            onChange={(e) => setSpecificIngredient(e.target.value)}
+            className="mb-4 p-2 border border-gray-300 rounded w-full"
+          >
+            <option value="" disabled>
+              Valitse tarkempi ainesosa
+            </option>
+            {mainIngredients[mainCategory].map((ingredient: string) => (
+              <option key={ingredient} value={ingredient}>
+                {ingredient}
+              </option>
+            ))}
+          </select>
+        )}
         <select
           value={secondary_category}
           onChange={(e) => setsecondary_categoryLocal(e.target.value)}
@@ -119,11 +170,12 @@ const RecipeTitle = () => {
             </option>
           ))}
         </select>
+
         <button
           onClick={handleButtonClick}
           className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-700 w-full"
         >
-          Next
+          Seuraava
         </button>
       </div>
     </div>

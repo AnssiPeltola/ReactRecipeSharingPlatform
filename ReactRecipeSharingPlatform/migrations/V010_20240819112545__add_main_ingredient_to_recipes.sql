@@ -1,0 +1,1 @@
+ALTER TABLE recipes ADD COLUMN main_ingredient VARCHAR(255);

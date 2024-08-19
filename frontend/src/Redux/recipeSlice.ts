@@ -5,6 +5,8 @@ const initialState: RecipeState = {
   title: "",
   category: "",
   secondary_category: "",
+  main_ingredient: "",
+  main_ingredient_category: "",
   ingredients: [],
   instructions: "",
   picture_url: "",
@@ -24,6 +26,12 @@ const recipeSlice = createSlice({
     setsecondary_category: (state, action: PayloadAction<string>) => {
       state.secondary_category = action.payload;
     },
+    setMainIngredient: (state, action: PayloadAction<string>) => {
+      state.main_ingredient = action.payload;
+    },
+    setMainIngredientCategory: (state, action: PayloadAction<string>) => {
+      state.main_ingredient_category = action.payload;
+    },
     setIngredients: (state, action: PayloadAction<Ingredient[]>) => {
       state.ingredients = action.payload;
     },
@@ -40,6 +48,8 @@ const recipeSlice = createSlice({
       state.title = "";
       state.category = "";
       state.secondary_category = "";
+      state.main_ingredient = "";
+      state.main_ingredient_category = "";
       state.ingredients = [];
       state.instructions = "";
       state.picture_url = "";
@@ -52,6 +62,8 @@ export const {
   setTitle,
   setCategory,
   setsecondary_category,
+  setMainIngredient,
+  setMainIngredientCategory,
   setIngredients,
   setInstructions,
   setpicture_url,
