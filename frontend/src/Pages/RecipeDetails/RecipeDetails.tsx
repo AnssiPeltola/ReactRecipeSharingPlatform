@@ -42,7 +42,8 @@ const RecipeDetails = () => {
         <>
           <h1 className="text-3xl font-bold mb-4">{recipe.title}</h1>
           <p className="text-lg mb-4">
-            {recipe.category} - {recipe.secondary_category}
+            {recipe.category} - {recipe.secondary_category} -{" "}
+            {recipe.main_ingredient}
           </p>
           <img
             className="w-full h-auto mb-4 rounded"

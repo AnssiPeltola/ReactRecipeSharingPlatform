@@ -20,6 +20,7 @@ const RecipeOverview = () => {
     formData.append("title", recipeState.title);
     formData.append("category", recipeState.category);
     formData.append("secondary_category", recipeState.secondary_category);
+    formData.append("mainIngredient", recipeState.main_ingredient);
     formData.append("instructions", recipeState.instructions);
     formData.append("user_id", recipeState.user_id.toString());
     formData.append("pictureUrl", recipeState.picture_url ?? "");
@@ -61,6 +62,10 @@ const RecipeOverview = () => {
         <p className="mb-2">
           <span className="font-semibold">Category:</span>{" "}
           {recipeState.category}
+        </p>
+        <p className="mb-2">
+          <span className="font-semibold">Main Ingredient:</span>{" "}
+          {recipeState.main_ingredient}
         </p>
         <p className="mb-2">
           <span className="font-semibold">Secondary Category:</span>{" "}

@@ -3,6 +3,8 @@ export interface RecipeState {
   title: string;
   category: string;
   secondary_category: string;
+  main_ingredient: string;
+  main_ingredient_category: string;
   ingredients: Ingredient[];
   instructions: string;
   user_id: string;
@@ -35,3 +37,37 @@ export interface Comment {
   profile_picture_url: string;
   user_id: number;
 }
+
+export type MainIngredientsType = {
+  Liha: string[];
+  Siipikarja: string[];
+  "Kala ja merenelävät": string[];
+  Kasvispohjaiset: string[];
+  "Viljat ja pastat": string[];
+  "Maitotuotteet ja kananmunat": string[];
+  Muut: string[];
+};
+
+export const mainIngredients: MainIngredientsType = {
+  Liha: ["Naudanliha", "Sianliha", "Lampaanliha", "Riista"],
+  Siipikarja: ["Kana", "Kalkkuna", "Ankka"],
+  "Kala ja merenelävät": [
+    "Lohi",
+    "Tonnikala",
+    "Katkarapu",
+    "Simpukat",
+    "Muu kala",
+  ],
+  Kasvispohjaiset: [
+    "Tofu",
+    "Herneet",
+    "Linssit",
+    "Pavut",
+    "Sienet",
+    "Soijatuotteet",
+    "Peruna",
+  ],
+  "Viljat ja pastat": ["Riisi", "Pasta", "Quinoa", "Bulgur"],
+  "Maitotuotteet ja kananmunat": ["Juusto", "Maito", "Kananmuna"],
+  Muut: ["Pähkinät ja siemenet", "Muu"],
+};

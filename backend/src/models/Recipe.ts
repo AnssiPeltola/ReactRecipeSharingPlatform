@@ -3,6 +3,7 @@ class Recipe {
   user_id: number;
   title: string;
   category: string;
+  mainIngredient?: string;
   secondary_category?: string;
   ingredients: Ingredient[];
   instructions: string;
@@ -13,6 +14,8 @@ class Recipe {
     user_id: number,
     title: string,
     category: string,
+    mainIngredient: string,
+    secondary_category: string,
     ingredients: Ingredient[],
     instructions: string,
     pictureUrl: string
@@ -21,6 +24,8 @@ class Recipe {
     this.user_id = user_id;
     this.title = title;
     this.category = category;
+    this.mainIngredient = mainIngredient;
+    this.secondary_category = secondary_category;
     this.ingredients = ingredients;
     this.instructions = instructions;
     this.pictureUrl = pictureUrl;
