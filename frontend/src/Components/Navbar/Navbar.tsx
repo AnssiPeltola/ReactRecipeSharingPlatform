@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import LoginModal from "../Modal/LoginModal/LoginModal";
+import { LANDING } from "../../Constants/routes";
 
 const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -39,6 +40,7 @@ const Navbar = () => {
         console.log(response.data.message);
         localStorage.removeItem("sessionToken");
         setIsLoggedIn(false);
+        navigate(LANDING);
       })
       .catch((error) => {
         console.error("Error logging out:", error);

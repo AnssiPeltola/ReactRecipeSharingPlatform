@@ -237,10 +237,8 @@ app.get(
   (req, res) => recipeController.isRecipeLiked(req, res)
 );
 
-app.get(
-  "/recipeLikes/:recipeId",
-  passport.authenticate("jwt", { session: false }),
-  (req, res) => recipeController.getRecipeLikes(req, res)
+app.get("/recipeLikes/:recipeId", (req, res) =>
+  recipeController.getRecipeLikes(req, res)
 );
 
 app.post(

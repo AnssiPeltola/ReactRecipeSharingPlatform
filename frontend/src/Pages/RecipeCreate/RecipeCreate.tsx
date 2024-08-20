@@ -12,9 +12,11 @@ import RecipeIngredients from "./RecipeIngredients/RecipeIngredients";
 import RecipePicture from "./RecipePicture/RecipePicture";
 import RecipeOverview from "./RecipeOverview/RecipeOverview";
 import RecipeCreated from "./RecipeCreated/RecipeCreated";
+import "../../Styles/loadingAnimation.css";
 
 const CreateRecipe = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,6 +24,7 @@ const CreateRecipe = () => {
 
     if (!token) {
       setIsLoggedIn(false);
+      setIsLoading(false);
       return;
     }
 
@@ -31,11 +34,22 @@ const CreateRecipe = () => {
       })
       .then((_response) => {
         setIsLoggedIn(true);
+        setIsLoading(false);
       })
       .catch((_error) => {
         setIsLoggedIn(false);
+        setIsLoading(false);
       });
   }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+        <div className="loader"></div>
+        <p className="mt-4 text-lg text-gray-700">Kokit keittiössä...</p>
+      </div>
+    );
+  }
 
   if (!isLoggedIn) {
     return (
