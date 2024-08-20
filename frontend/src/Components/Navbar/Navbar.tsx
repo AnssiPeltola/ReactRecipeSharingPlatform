@@ -3,12 +3,17 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import LoginModal from "../Modal/LoginModal/LoginModal";
 import { LANDING } from "../../Constants/routes";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../Redux/authSlice";
+import { RootState } from "../../Redux/store";
 
 const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const auth = useSelector((state: RootState) => state.auth); // for testing if dispatch worked
 
   useEffect(() => {
     const token = localStorage.getItem("sessionToken");
@@ -40,6 +45,8 @@ const Navbar = () => {
         console.log(response.data.message);
         localStorage.removeItem("sessionToken");
         setIsLoggedIn(false);
+        dispatch(logout());
+        console.log("Auth state after logout:", auth); // for testing if dispatch worked
         navigate(LANDING);
       })
       .catch((error) => {
