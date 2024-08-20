@@ -35,14 +35,8 @@ const LikeButton: React.FC<LikeButtonProps> = ({ recipeId }) => {
 
   const fetchLikeCount = async () => {
     try {
-      const token = localStorage.getItem("sessionToken");
       const response = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/recipeLikes/${recipeId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        `${process.env.REACT_APP_API_BASE_URL}/recipeLikes/${recipeId}`
       );
       setLikeCount(Number(response.data.likes));
     } catch (error) {

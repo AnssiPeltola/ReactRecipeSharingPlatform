@@ -33,12 +33,13 @@ function RecipeSearch() {
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="Reseptin tai raaka-aineen nimi"
           className="border rounded p-2 mb-4"
+          required
         />
         <button
           type="submit"
           className="bg-blue-500 text-white rounded p-2 hover:bg-blue-700"
         >
-          Hae
+          Löydä herkku!
         </button>
       </form>
       {error && <p className="text-red-500 mt-4">{error}</p>}
