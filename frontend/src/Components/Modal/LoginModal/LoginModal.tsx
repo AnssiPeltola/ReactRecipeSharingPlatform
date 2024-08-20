@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Modal from "react-modal";
 import "./LoginModal.css";
+import { useDispatch, useSelector } from "react-redux";
+import { login } from "../../../Redux/authSlice";
+import { RootState } from "../../../Redux/store";
 
 Modal.setAppElement("#root"); // replace '#root' with the id of your app's root element
 
@@ -15,6 +18,12 @@ function LoginModal({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginStatus, setLoginStatus] = useState("");
+  const dispatch = useDispatch();
+  const auth = useSelector((state: RootState) => state.auth);
+
+  useEffect(() => {
+    console.log("Auth state after login:", auth); // Log the auth state
+  }, [auth]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -26,7 +35,9 @@ function LoginModal({
       );
       console.log(response.data);
       if (response.data.message === "Login successful") {
-        localStorage.setItem("sessionToken", response.data.token);
+        const sessionToken = response.data.token;
+        localStorage.setItem("sessionToken", sessionToken);
+        dispatch(login({ sessionToken }));
         window.location.reload();
       } else {
         setLoginStatus("Login failed. Please check your email and password.");
