@@ -1,15 +1,20 @@
 import { createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
 
 interface AuthState {
   isLoggedIn: boolean;
   sessionToken: string | null;
 }
 
-const initialState: AuthState = {
-  isLoggedIn: false,
-  sessionToken: null,
+// Function to load the initial state from localStorage
+const loadState = (): AuthState => {
+  const sessionToken = localStorage.getItem("sessionToken");
+  return {
+    isLoggedIn: !!sessionToken,
+    sessionToken,
+  };
 };
+
+const initialState: AuthState = loadState();
 
 const authSlice = createSlice({
   name: "auth",
@@ -18,10 +23,12 @@ const authSlice = createSlice({
     login(state, action) {
       state.isLoggedIn = true;
       state.sessionToken = action.payload.sessionToken;
+      localStorage.setItem("sessionToken", action.payload.sessionToken);
     },
     logout(state) {
       state.isLoggedIn = false;
       state.sessionToken = null;
+      localStorage.removeItem("sessionToken");
     },
   },
 });
