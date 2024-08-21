@@ -13,7 +13,7 @@ const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const auth = useSelector((state: RootState) => state.auth); // for testing if dispatch worked
+  const auth = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     const token = localStorage.getItem("sessionToken");
@@ -24,19 +24,37 @@ const Navbar = () => {
       return;
     }
 
-    axios
-      .get("/checkAuthentication", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((_response) => {
-        setIsLoggedIn(true);
-        console.log("Authentication status: Logged in");
-      })
-      .catch((error) => {
-        setIsLoggedIn(false);
-        console.error("Error checking authentication status:", error);
-      });
-  }, [location]);
+    if (token && auth.isLoggedIn) {
+      setIsLoggedIn(true);
+      console.log("Authentication status: Logged in");
+      return;
+    }
+  }, [location, auth.isLoggedIn]);
+
+  useEffect(() => {
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === "sessionToken") {
+        const token = event.newValue;
+        if (token) {
+          setIsLoggedIn(true);
+          console.log("Authentication status: Logged in (from storage event)");
+        } else {
+          setIsLoggedIn(false);
+          dispatch(logout());
+          navigate(LANDING);
+          console.log(
+            "Authentication status: Not logged in (from storage event)"
+          );
+        }
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, [dispatch, navigate]);
 
   const handleLogout = () => {
     axios

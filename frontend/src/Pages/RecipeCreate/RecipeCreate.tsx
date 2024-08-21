@@ -13,11 +13,14 @@ import RecipePicture from "./RecipePicture/RecipePicture";
 import RecipeOverview from "./RecipeOverview/RecipeOverview";
 import RecipeCreated from "./RecipeCreated/RecipeCreated";
 import "../../Styles/loadingAnimation.css";
+import { useSelector } from "react-redux";
+import { RootState } from "../../Redux/store";
 
 const CreateRecipe = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+  const auth = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     const token = localStorage.getItem("sessionToken");
@@ -25,22 +28,17 @@ const CreateRecipe = () => {
     if (!token) {
       setIsLoggedIn(false);
       setIsLoading(false);
+      // console.log("Authentication status: Not logged in");
       return;
     }
 
-    axios
-      .get("/checkAuthentication", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((_response) => {
-        setIsLoggedIn(true);
-        setIsLoading(false);
-      })
-      .catch((_error) => {
-        setIsLoggedIn(false);
-        setIsLoading(false);
-      });
-  }, []);
+    if (token && auth.isLoggedIn) {
+      setIsLoggedIn(true);
+      setIsLoading(false);
+      // console.log("Authentication status: Logged in");
+      return;
+    }
+  }, [auth.isLoggedIn]);
 
   if (isLoading) {
     return (
