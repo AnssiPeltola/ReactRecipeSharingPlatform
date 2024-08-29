@@ -63,6 +63,7 @@ const IngredientSearch: React.FC<IngredientSearchProps> = ({
       <input
         type="text"
         value={query}
+        placeholder="Mikä tulee mukaan?"
         onChange={handleInputChange}
         className="border p-2 rounded w-full"
       />

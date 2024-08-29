@@ -19,7 +19,7 @@ import {
   validateSecondaryCategory,
   validateMainCategory,
   validateSpecificIngredient,
-} from "./inputValidations";
+} from "../../../utils/inputValidations";
 
 const RecipeTitle = () => {
   const navigate = useNavigate();
