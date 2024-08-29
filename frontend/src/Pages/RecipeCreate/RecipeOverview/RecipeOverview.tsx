@@ -1,55 +1,88 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../Redux/store";
-import { resetState } from "../../../Redux/recipeSlice";
+import {
+  resetState,
+  setpicture_url,
+  setPreviewUrl,
+} from "../../../Redux/recipeSlice";
 import axios from "axios";
 import ProgressBar from "../../../Components/ProgressBar/ProgressBar";
 
 const RecipeOverview = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
   const recipeState = useSelector((state: RootState) => state.recipe);
+  const previewUrl = useSelector((state: RootState) => state.recipe.previewUrl);
+  const selectedFile = location.state?.selectedFile;
 
-  const imageUrl = recipeState.picture_url
-    ? `${process.env.REACT_APP_API_BASE_URL}/recipePicture/${recipeState.picture_url}`
-    : null;
+  useEffect(() => {
+    if (selectedFile) {
+      dispatch(setPreviewUrl(URL.createObjectURL(selectedFile)));
+    }
+  }, [selectedFile, dispatch]);
 
   const handleButtonClick = async () => {
-    const formData = new FormData();
-    formData.append("title", recipeState.title);
-    formData.append("category", recipeState.category);
-    formData.append("secondary_category", recipeState.secondary_category);
-    formData.append("mainIngredient", recipeState.main_ingredient);
-    formData.append("instructions", recipeState.instructions);
-    formData.append("user_id", recipeState.user_id.toString());
-    formData.append("pictureUrl", recipeState.picture_url ?? "");
+    let pictureUrl = recipeState.picture_url;
+
+    if (selectedFile) {
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+
+      try {
+        const response = await axios.post(
+          `${process.env.REACT_APP_API_BASE_URL}/uploadRecipePicture`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        pictureUrl = response.data.fileId;
+        dispatch(setpicture_url(pictureUrl));
+      } catch (error) {
+        console.error("Failed to upload image", error);
+        return;
+      }
+    }
+
+    const recipeFormData = new FormData();
+    recipeFormData.append("title", recipeState.title);
+    recipeFormData.append("category", recipeState.category);
+    recipeFormData.append("secondary_category", recipeState.secondary_category);
+    recipeFormData.append("mainIngredient", recipeState.main_ingredient);
+    recipeFormData.append("instructions", recipeState.instructions);
+    recipeFormData.append("user_id", recipeState.user_id.toString());
+    recipeFormData.append("pictureUrl", pictureUrl ?? "");
 
     recipeState.ingredients.forEach((ingredient, index) => {
-      formData.append(`ingredients[${index}][quantity]`, ingredient.quantity);
-      formData.append(`ingredients[${index}][unit]`, ingredient.unit);
-      formData.append(`ingredients[${index}][name]`, ingredient.name);
+      recipeFormData.append(
+        `ingredients[${index}][quantity]`,
+        ingredient.quantity
+      );
+      recipeFormData.append(`ingredients[${index}][unit]`, ingredient.unit);
+      recipeFormData.append(`ingredients[${index}][name]`, ingredient.name);
     });
 
     try {
-      const response = await axios.post(
+      await axios.post(
         `${process.env.REACT_APP_API_BASE_URL}/recipeCreate`,
-        formData,
+        recipeFormData,
         {
           headers: {
             "Content-Type": "multipart/form-data",
           },
         }
       );
-      console.log(response.data);
       dispatch(resetState());
+      navigate("/create-recipe/recipe-created");
     } catch (error) {
       console.error(error);
     }
-    navigate("/create-recipe/recipe-created");
   };
-
-  console.log(recipeState);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -84,9 +117,9 @@ const RecipeOverview = () => {
           <span className="font-semibold">Instructions:</span>{" "}
           {recipeState.instructions}
         </p>
-        {imageUrl && (
+        {previewUrl && (
           <img
-            src={imageUrl}
+            src={previewUrl}
             alt="Recipe"
             className="w-full h-auto rounded shadow mb-4"
           />

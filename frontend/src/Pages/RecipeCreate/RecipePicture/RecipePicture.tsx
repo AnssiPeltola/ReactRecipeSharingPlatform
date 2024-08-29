@@ -1,83 +1,100 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../Redux/store";
-import { setpicture_url } from "../../../Redux/recipeSlice";
-import axios from "axios";
+import { setPreviewUrl } from "../../../Redux/recipeSlice";
 import ProgressBar from "../../../Components/ProgressBar/ProgressBar";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 
 const RecipePicture = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const recipeState = useSelector((state: RootState) => state.recipe);
+  const previewUrl = useSelector((state: RootState) => state.recipe.previewUrl);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const imageUrl = recipeState.picture_url
-    ? `${process.env.REACT_APP_API_BASE_URL}/recipePicture/${recipeState.picture_url}`
-    : null;
-
-  useEffect(() => {
-    if (!selectedFile) {
-      return;
-    }
-
-    handleUpload(selectedFile);
-  }, [selectedFile]);
-
   const handleButtonClick = () => {
-    navigate("/create-recipe/recipe-overview");
+    navigate("/create-recipe/recipe-overview", { state: { selectedFile } });
+  };
+
+  const handleBackButton = () => {
+    navigate("/create-recipe/recipe-ingredients");
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
-      setSelectedFile(event.target.files[0]);
+      const file = event.target.files[0];
+      setSelectedFile(file);
+      dispatch(setPreviewUrl(URL.createObjectURL(file)));
     }
   };
 
-  const handleUpload = async (file: File) => {
-    const formData = new FormData();
-    formData.append("file", file);
+  const handleRemovePicture = () => {
+    setSelectedFile(null);
+    dispatch(setPreviewUrl(null));
+    const fileInput = document.getElementById("fileInput") as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = "";
+    }
+  };
 
-    try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_API_BASE_URL}/uploadRecipePicture`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      dispatch(setpicture_url(response.data.fileId));
-    } catch (error) {
-      console.error("Failed to upload image", error);
+  const handleImageBoxClick = (event: React.MouseEvent<HTMLLabelElement>) => {
+    if (previewUrl) {
+      handleRemovePicture();
+      event.preventDefault();
     }
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
+      <div className="bg-white p-8 rounded shadow-md w-full max-w-xl">
         <ProgressBar currentStep={3} maxStep={4} />
-        <p className="text-xl font-bold mb-4">Kuva sivu</p>
+        <p className="text-xl font-bold mb-4">Lisää kuva luomuksellesi</p>
+
         <input
           type="file"
+          id="fileInput"
           onChange={handleFileChange}
-          className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border file:border-gray-400 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 mb-4"
+          className="hidden"
         />
-        <button
-          onClick={handleButtonClick}
-          className="bg-green-500 text-white p-2 rounded mb-4"
+        <label
+          htmlFor="fileInput"
+          className="w-full h-96 border-2 border-collapse border-gray-200 rounded flex items-center justify-center cursor-pointer mb-4 relative group"
+          onClick={handleImageBoxClick}
         >
-          Next
-        </button>
-        {imageUrl && (
-          <img
-            src={imageUrl}
-            alt="Recipe"
-            className="w-full h-auto rounded shadow"
-          />
-        )}
+          {previewUrl ? (
+            <>
+              <img
+                src={previewUrl}
+                alt="Recipe"
+                className="w-full h-full object-contain rounded group-hover:opacity-50"
+              />
+              <FontAwesomeIcon
+                icon={faTrash}
+                className="absolute text-red-500 text-4xl opacity-0 group-hover:opacity-100"
+              />
+            </>
+          ) : (
+            <span className="text-gray-500">
+              Lisää kuva klikkaamalla tästä!
+            </span>
+          )}
+        </label>
+
+        <div className="flex justify-between">
+          <button
+            onClick={handleBackButton}
+            className="bg-red-500 text-white rounded flex-1 mx-2"
+          >
+            Askel taaksepäin!
+          </button>
+          <button
+            onClick={handleButtonClick}
+            className="bg-green-500 text-white p-2 rounded flex-1 mx-2"
+          >
+            Mennäänpäs eteenpäin!
+          </button>
+        </div>
       </div>
     </div>
   );

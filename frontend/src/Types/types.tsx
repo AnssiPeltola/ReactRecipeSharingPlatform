@@ -10,6 +10,7 @@ export interface RecipeState {
   user_id: string;
   picture_url: string;
   nickname?: string;
+  previewUrl: string | null;
 }
 
 export interface Ingredient {
