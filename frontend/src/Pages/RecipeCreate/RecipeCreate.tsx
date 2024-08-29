@@ -67,7 +67,7 @@ const CreateRecipe = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-md p-4">
+      <div className="w-full max-w-4xl p-4">
         <Routes>
           <Route path="/" element={<Navigate to="recipe-title" />} />
           <Route path="recipe-title" element={<RecipeTitle />} />
