@@ -14,8 +14,7 @@ import {
   validateUnit,
   validateIngredientName,
   validateInstructions,
-  SPECIAL_CHAR_ERROR,
-  INGREDIENT_NUMBER_ERROR,
+  validateStep,
 } from "../../../utils/inputValidations";
 
 const RecipeIngredients = () => {
@@ -23,11 +22,15 @@ const RecipeIngredients = () => {
   const dispatch = useDispatch();
   const recipeState = useSelector((state: RootState) => state.recipe);
   const [ingredients, setLocalIngredients] = useState<Ingredient[]>([]);
-  const [instructions, setInstructionsLocal] = useState("");
+  const [steps, setSteps] = useState<string[]>(
+    recipeState.instructions ? recipeState.instructions.split("\n") : [""]
+  );
   const [errorMessages, setErrorMessages] = useState({
     ingredients: [] as string[],
     instructions: "",
+    steps: [] as string[],
   });
+  const charLimit = 1000;
 
   useEffect(() => {
     if (recipeState.ingredients.length === 0) {
@@ -39,7 +42,6 @@ const RecipeIngredients = () => {
     } else {
       setLocalIngredients(recipeState.ingredients);
     }
-    setInstructionsLocal(recipeState.instructions);
   }, [recipeState]);
 
   const handleButtonClick = () => {
@@ -50,25 +52,32 @@ const RecipeIngredients = () => {
         validateIngredientName(ingredient.name)
       );
     });
-    const instructionsError = validateInstructions(instructions);
+    const instructionsError = validateInstructions(steps.join("\n"));
+    const stepErrors = steps.map((step) => validateStep(step));
 
     setErrorMessages({
       ingredients: ingredientErrors,
       instructions: instructionsError,
+      steps: stepErrors,
     });
 
     const hasErrors =
       ingredientErrors.some((error) => error !== "") ||
-      instructionsError !== "";
+      instructionsError !== "" ||
+      stepErrors.some((error) => error !== "");
 
     if (!hasErrors) {
       const ingredientsForAction = ingredients.map(
         ({ id, quantity, unit, name }) => ({ id, quantity, unit, name })
       );
       dispatch(setIngredients(ingredientsForAction));
-      dispatch(setInstructions(instructions));
+      dispatch(setInstructions(steps.join("\n")));
       navigate("/create-recipe/recipe-picture");
     }
+  };
+
+  const handleBackButton = () => {
+    navigate("/create-recipe/recipe-title");
   };
 
   const handleAddMore = () => {
@@ -80,6 +89,9 @@ const RecipeIngredients = () => {
 
   const handleRemove = (id: string) => {
     setLocalIngredients((prevIngredients) => {
+      if (prevIngredients.length <= 1) {
+        return prevIngredients;
+      }
       return prevIngredients.filter((ingredient) => ingredient.id !== id);
     });
   };
@@ -97,10 +109,11 @@ const RecipeIngredients = () => {
       return ingredient;
     });
     setLocalIngredients(newIngredients);
-  };
-
-  const handleBackButton = () => {
-    navigate("/create-recipe/recipe-title");
+    setErrorMessages((prev) => {
+      const newErrors = [...prev.ingredients];
+      newErrors[ingredientIndex] = validateIngredientName(formattedName);
+      return { ...prev, ingredients: newErrors };
+    });
   };
 
   const handleQuantityChange = (index: number, value: string) => {
@@ -149,19 +162,37 @@ const RecipeIngredients = () => {
     });
   };
 
-  const handleInstructionsChange = (value: string) => {
-    setInstructionsLocal(value);
+  const handleStepChange = (value: string, index: number) => {
+    const newSteps = [...steps];
+    newSteps[index] = value;
+    setSteps(newSteps);
     setErrorMessages((prev) => ({
       ...prev,
-      instructions: validateInstructions(value),
+      instructions: validateInstructions(newSteps.join("\n")),
+      steps: newSteps.map((step) => validateStep(step)),
     }));
+  };
+
+  const handleAddStep = () => {
+    setSteps([...steps, ""]);
+  };
+
+  const handleRemoveStep = (index: number) => {
+    setSteps((prevSteps) => {
+      if (prevSteps.length <= 1) {
+        return prevSteps;
+      }
+      return prevSteps.filter((_, i) => i !== index);
+    });
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white p-3 rounded shadow-md w-full max-w-4xl">
         <ProgressBar currentStep={2} maxStep={4} />
-        <p className="text-xl font-bold mb-4">Mitä sapuskaan tarvitaan?</p>
+        <p className="mb-4 text-2xl font-semibold text-gray-700">
+          Mitä sapuskaan tarvitaan?
+        </p>
         {ingredients.map((ingredient, index) => (
           <div
             key={ingredient.id}
@@ -226,27 +257,73 @@ const RecipeIngredients = () => {
             Lisää uusi raaka-aine
           </button>
         </div>
-        <textarea
-          value={instructions}
-          onChange={(e) => handleInstructionsChange(e.target.value)}
-          placeholder="Kuinka sapuska syntyy?"
-          className="border p-2 rounded w-full mb-4"
-        />
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-2xl font-semibold text-gray-700">
+            Kuinka sapuska syntyy?
+          </p>
+          <p className="text-gray-500">
+            {steps.reduce((acc, step) => acc + step.length, 0)}/{charLimit}
+          </p>
+        </div>
+        {steps.map((step, index) => {
+          const totalCharsUsed = steps.reduce(
+            (acc, step) => acc + step.length,
+            0
+          );
+          const remainingChars =
+            charLimit - totalCharsUsed + steps[index].length;
+
+          return (
+            <div
+              key={index}
+              className="mb-4 p-4 border rounded-lg bg-white shadow"
+            >
+              <div className="flex items-center">
+                <textarea
+                  value={step}
+                  onChange={(e) => handleStepChange(e.target.value, index)}
+                  placeholder={`Vaihe ${index + 1}`}
+                  className="border p-2 rounded w-full"
+                  maxLength={remainingChars}
+                />
+                <button
+                  onClick={() => handleRemoveStep(index)}
+                  className="ml-4 text-red-500 hover:text-red-600 transition-colors duration-200 flex items-center justify-center"
+                >
+                  <FontAwesomeIcon icon={faTrash} />
+                </button>
+              </div>
+              {errorMessages.steps[index] && (
+                <div className="text-red-500 text-xm text-center mt-2">
+                  {errorMessages.steps[index]}
+                </div>
+              )}
+            </div>
+          );
+        })}
+        <div className="flex justify-center">
+          <button
+            onClick={handleAddStep}
+            className="bg-blue-500 text-white p-2 rounded mb-4"
+          >
+            Lisää uusi vaihe
+          </button>
+        </div>
         {errorMessages.instructions && (
-          <div className="text-red-500 text-xm text-center">
+          <div className="text-red-500 text-center mt-2">
             {errorMessages.instructions}
           </div>
         )}
         <div className="flex justify-between">
           <button
             onClick={handleBackButton}
-            className="bg-red-500 text-white rounded flex-1 mx-2"
+            className="bg-red-500 hover:bg-red-600 text-white rounded flex-1 mr-2"
           >
             Askel taaksepäin!
           </button>
           <button
             onClick={handleButtonClick}
-            className="bg-green-500 text-white p-2 rounded flex-1 mx-2"
+            className="bg-green-500 hover:bg-green-600 text-white p-2 rounded flex-1 ml-2"
           >
             Mennäänpäs eteenpäin!
           </button>

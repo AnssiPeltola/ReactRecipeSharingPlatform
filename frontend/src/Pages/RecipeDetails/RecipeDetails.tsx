@@ -64,7 +64,14 @@ const RecipeDetails = () => {
               ))}
             </ul>
           </div>
-          <p className="mb-4">{recipe.instructions}</p>
+          <div className="mb-4">
+            <p className="text-2xl font-semibold mb-2">
+              Kokin salaiset liikkeet:
+            </p>
+            {recipe.instructions.split("\r\n").map((step, index) => (
+              <div key={index} className="ml-1">{`${index + 1}. ${step}`}</div>
+            ))}
+          </div>
           <p className="mb-4 font-semibold">
             Keittiökynäilijä {recipe.nickname}
           </p>
