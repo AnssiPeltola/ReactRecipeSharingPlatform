@@ -2,7 +2,8 @@ export const EMPTY_FIELD_ERROR = "Kenttä ei saa olla tyhjä";
 export const SPECIAL_CHAR_ERROR = "ei saa sisältää erikoismerkkejä";
 export const NUMBER_ERROR = "Kenttä saa sisältää vain numeroita";
 export const INSTRUCTIONS_REQUIRED_ERROR = "Ohjeet ovat pakolliset";
-export const INGREDIENT_NUMBER_ERROR = "Ei saa sisältää numeroita"; // New error message
+export const INGREDIENT_NUMBER_ERROR = "Ei saa sisältää numeroita";
+export const EMPTY_STEP_ERROR = "Vaihe ei saa olla tyhjä";
 
 const titleRegex = /^[\p{L}\d\s\-']*$/u;
 const ingredientNameRegex = /^[\p{L}\s\-']*$/u; // Updated regex to exclude numbers
@@ -74,4 +75,8 @@ export function validateIngredientName(name: string): string {
 
 export function validateInstructions(instructions: string): string {
   return instructions.trim() === "" ? INSTRUCTIONS_REQUIRED_ERROR : "";
+}
+
+export function validateStep(step: string): string {
+  return step.trim() === "" ? EMPTY_STEP_ERROR : "";
 }

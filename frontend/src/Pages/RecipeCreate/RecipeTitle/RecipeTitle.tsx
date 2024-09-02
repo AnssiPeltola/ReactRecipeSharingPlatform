@@ -148,6 +148,10 @@ const RecipeTitle = () => {
     }));
   };
 
+  const handleBackToFrontPage = () => {
+    navigate("/");
+  };
+
   const categories = [
     "Alkupalat",
     "Pääruoat",
@@ -310,12 +314,20 @@ const RecipeTitle = () => {
             </div>
           )}
         </div>
-        <button
-          onClick={handleButtonClick}
-          className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-700 w-full"
-        >
-          Mennäänpäs eteenpäin!
-        </button>
+        <div className="flex justify-between">
+          <button
+            onClick={handleBackToFrontPage}
+            className="bg-red-500 hover:bg-red-600 text-white rounded flex-1 mr-2"
+          >
+            Takaisin etusivulle
+          </button>
+          <button
+            onClick={handleButtonClick}
+            className="bg-green-500 hover:bg-green-600 text-white p-2 rounded flex-1 ml-2"
+          >
+            Mennäänpäs eteenpäin!
+          </button>
+        </div>
       </div>
     </div>
   );

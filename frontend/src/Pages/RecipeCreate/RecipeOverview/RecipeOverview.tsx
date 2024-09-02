@@ -84,39 +84,50 @@ const RecipeOverview = () => {
     }
   };
 
+  const handleBackButton = () => {
+    navigate("/create-recipe/recipe-picture");
+  };
+
+  console.log(recipeState);
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
+      <div className="bg-white p-8 rounded shadow-md w-full max-w-lg">
         <ProgressBar currentStep={4} maxStep={4} />
-        <p className="text-2xl font-bold mb-4">Katsaus sivu</p>
-        <p className="mb-2">
-          <span className="font-semibold">Title:</span> {recipeState.title}
+        <p className="mb-4 text-2xl font-semibold text-gray-700">
+          Onko kaikki kohdallaan?
         </p>
         <p className="mb-2">
-          <span className="font-semibold">Category:</span>{" "}
+          <span className="font-semibold">Mestariteos:</span>{" "}
+          {recipeState.title}
+        </p>
+        <p className="mb-2">
+          <span className="font-semibold">Herkun laji:</span>{" "}
           {recipeState.category}
         </p>
         <p className="mb-2">
-          <span className="font-semibold">Main Ingredient:</span>{" "}
+          <span className="font-semibold">Pääelementti:</span>{" "}
           {recipeState.main_ingredient}
         </p>
         <p className="mb-2">
-          <span className="font-semibold">Secondary Category:</span>{" "}
+          <span className="font-semibold">Ruokavalio:</span>{" "}
           {recipeState.secondary_category}
         </p>
-        <div className="mb-4">
-          <p className="font-semibold">Ingredients:</p>
+        <div className="mb-2">
+          <p className="font-semibold">Makujen rakennuspalikat:</p>
           {recipeState.ingredients.map((ingredient, index) => (
             <div
               key={index}
-              className="ml-4"
-            >{`${ingredient.quantity} ${ingredient.unit} ${ingredient.name}`}</div>
+              className="ml-2"
+            >{`• ${ingredient.quantity} ${ingredient.unit} ${ingredient.name}`}</div>
           ))}
         </div>
-        <p className="mb-2">
-          <span className="font-semibold">Instructions:</span>{" "}
-          {recipeState.instructions}
-        </p>
+        <div className="mb-2">
+          <p className="font-semibold">Kokin salaiset liikkeet:</p>
+          {recipeState.instructions.split("\n").map((step, index) => (
+            <div key={index} className="ml-2">{`${index + 1}. ${step}`}</div>
+          ))}
+        </div>
         {previewUrl && (
           <img
             src={previewUrl}
@@ -124,12 +135,20 @@ const RecipeOverview = () => {
             className="w-full h-auto rounded shadow mb-4"
           />
         )}
-        <button
-          onClick={handleButtonClick}
-          className="bg-green-500 text-white p-2 rounded"
-        >
-          Next
-        </button>
+        <div className="flex justify-between">
+          <button
+            onClick={handleBackButton}
+            className="bg-red-500 hover:bg-red-600 text-white rounded flex-1 mr-2"
+          >
+            Askel taaksepäin!
+          </button>
+          <button
+            onClick={handleButtonClick}
+            className="bg-green-500 hover:bg-green-600 text-white p-1 rounded flex-1 ml-2"
+          >
+            Lähetä makumatka maailmalle!
+          </button>
+        </div>
       </div>
     </div>
   );
