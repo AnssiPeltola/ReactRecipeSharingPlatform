@@ -7,11 +7,35 @@ class UserRepository {
   async save(user: User) {
     const client = await pool.connect();
     try {
+      // Check for email uniqueness
+      const emailCheck = await client.query(
+        "SELECT * FROM users WHERE email = $1",
+        [user.email]
+      );
+      if (emailCheck.rows.length > 0) {
+        throw new Error("Email already in use");
+      }
+
+      // Check for nickname uniqueness
+      const nicknameCheck = await client.query(
+        "SELECT * FROM users WHERE nickname = $1",
+        [user.nickname]
+      );
+      if (nicknameCheck.rows.length > 0) {
+        throw new Error("Nickname already in use");
+      }
+
+      // Insert the new user
       const result = await client.query(
         "INSERT INTO users(email, password, nickname) VALUES($1, $2, $3) RETURNING *",
         [user.email, user.password, user.nickname]
       );
       return result.rows[0]; // Return the inserted user
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error("An unexpected error occurred");
     } finally {
       client.release();
     }
