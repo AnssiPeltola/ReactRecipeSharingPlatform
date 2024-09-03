@@ -16,14 +16,28 @@ class UserController {
 
   async register(req: Request, res: Response) {
     const { email, password, nickname } = req.body;
-    const user = await this.userService.register(email, password, nickname);
-    // Log the user in
-    req.user = user;
-    const token = jwt.sign(
-      { id: user.id },
-      process.env.JWT_SECRET || "your-jwt-secret"
-    );
-    res.json({ message: "User registered and logged in successfully", token });
+    try {
+      const user = await this.userService.register(email, password, nickname);
+      // Log the user in
+      req.user = user;
+      const token = jwt.sign(
+        { id: user.id },
+        process.env.JWT_SECRET || "your-jwt-secret"
+      );
+      res.json({
+        message: "User registered and logged in successfully",
+        token,
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        if (error.message === "Email already in use") {
+          return res.status(400).json({ message: error.message });
+        } else if (error.message === "Nickname already in use") {
+          return res.status(400).json({ message: error.message });
+        }
+      }
+      res.status(500).json({ message: "Internal server error" });
+    }
   }
 
   getLoggedInUserEmail(req: Request, res: Response) {
