@@ -29,7 +29,7 @@ function RegisterDetails() {
         }
       );
       console.log(response.data);
-      navigate("/register-picture");
+      navigate("/register/register-picture");
     } catch (error) {
       console.error(error);
     }

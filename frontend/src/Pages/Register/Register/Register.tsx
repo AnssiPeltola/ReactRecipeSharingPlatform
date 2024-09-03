@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { login } from "../../Redux/authSlice";
-import ProgressBar from "../../Components/ProgressBar/ProgressBar";
+import { login } from "../../../Redux/authSlice";
+import ProgressBar from "../../../Components/ProgressBar/ProgressBar";
 
 function Register() {
   const [email, setEmail] = useState("");
@@ -40,7 +40,7 @@ function Register() {
       localStorage.setItem("sessionToken", response.data.token);
       dispatch(login({ sessionToken: response.data.token }));
       console.log(response.data);
-      navigate("/register-details");
+      navigate("/register/register-details");
     } catch (error) {
       console.error(error);
     }
