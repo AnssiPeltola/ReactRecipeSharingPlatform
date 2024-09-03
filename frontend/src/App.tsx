@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import * as ROUTES from "../src/Constants/routes";
 // import TestComponent from './Components/TestComponent/dbtest';
 import Frontpage from "./Pages/Frontpage/frontpage";
-import Register from "./Pages/Register/Register";
+import Register from "./Pages/Register/Register/Register";
 import Login from "./Pages/Login/Login";
 import Navbar from "./Components/Navbar/Navbar";
 import ErrorPage from "./Pages/ErrorPage/ErrorPage";
@@ -14,6 +14,7 @@ import CreateRecipe from "./Pages/RecipeCreate/RecipeCreate";
 import SearchResultsPage from "./Pages/RecipeSearchResults/RecipeSearchResults";
 import RecipeDetails from "./Pages/RecipeDetails/RecipeDetails";
 import ProfilePage from "./Pages/ProfilePage/ProfilePage";
+import RegisterRoute from "./Pages/Register/RegisterRoute/RegisterRoute";
 
 function App() {
   return (
@@ -23,7 +24,7 @@ function App() {
         <main>
           <Routes>
             <Route path={ROUTES.LANDING} element={<Frontpage />} />
-            <Route path={ROUTES.REGISTER} element={<Register />} />
+            <Route path={ROUTES.REGISTER + "/*"} element={<RegisterRoute />} />
             <Route
               path={ROUTES.REGISTER_DETAILS}
               element={<RegisterDetails />}
