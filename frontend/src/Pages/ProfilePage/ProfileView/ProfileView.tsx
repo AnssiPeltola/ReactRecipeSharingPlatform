@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
-import { fetchUserData, setUser } from "../../../Redux/authSlice";
+import { fetchUserData } from "../../../Redux/authSlice";
 import { RootState } from "../../../Redux/store";
 import { useNavigate } from "react-router-dom";
 import UserRecipes from "../../../Components/UserRecipes/UserRecipes";
@@ -33,18 +33,25 @@ const ProfileView = () => {
         {
           headers: { Authorization: `Bearer ${token}` },
           responseType: "arraybuffer",
+          validateStatus: (status) => status < 500,
         }
       );
-      const base64 = btoa(
-        new Uint8Array(response.data).reduce(
-          (data, byte) => data + String.fromCharCode(byte),
-          ""
-        )
-      );
-      const mimeType = response.headers["content-type"];
-      setProfilePicture(`data:${mimeType};base64,${base64}`);
+
+      if (response.status === 404) {
+        setProfilePicture("https://via.placeholder.com/40");
+      } else {
+        const base64 = btoa(
+          new Uint8Array(response.data).reduce(
+            (data, byte) => data + String.fromCharCode(byte),
+            ""
+          )
+        );
+        const mimeType = response.headers["content-type"];
+        setProfilePicture(`data:${mimeType};base64,${base64}`);
+      }
     } catch (error) {
       console.error("Error fetching profile picture:", error);
+      setProfilePicture("https://via.placeholder.com/40");
     }
   };
 
