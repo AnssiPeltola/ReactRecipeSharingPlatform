@@ -28,6 +28,9 @@ export interface User {
   instagram: string;
   tiktok: string;
   experience_level: string;
+  profilePictureId?: number;
+  profilePictureType?: string;
+  profilePictureData?: Buffer;
 }
 
 export interface Comment {
