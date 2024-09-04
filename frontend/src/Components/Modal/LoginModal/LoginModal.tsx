@@ -3,7 +3,8 @@ import axios from "axios";
 import Modal from "react-modal";
 import "./LoginModal.css";
 import { useDispatch } from "react-redux";
-import { login } from "../../../Redux/authSlice";
+import { login, fetchUserData } from "../../../Redux/authSlice";
+import { AppDispatch } from "../../../Redux/store";
 
 Modal.setAppElement("#root");
 
@@ -17,7 +18,7 @@ function LoginModal({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginStatus, setLoginStatus] = useState("");
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>(); // Use the correct type for dispatch
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -32,6 +33,15 @@ function LoginModal({
         const sessionToken = response.data.token;
         localStorage.setItem("sessionToken", sessionToken);
         dispatch(login({ sessionToken }));
+
+        // Fetch user data after login and log the result
+        const resultAction = await dispatch(fetchUserData(sessionToken));
+        if (fetchUserData.fulfilled.match(resultAction)) {
+          console.log("User data:", resultAction.payload);
+        } else {
+          console.error("Failed to fetch user data:", resultAction.error);
+        }
+
         onRequestClose();
       } else {
         setLoginStatus("Login failed. Please check your email and password.");

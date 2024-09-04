@@ -48,6 +48,13 @@ function Register() {
     }
   };
 
+  const handleInputChange =
+    (setter: React.Dispatch<React.SetStateAction<string>>) =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setter(e.target.value);
+      setErrorMessage("");
+    };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
@@ -62,7 +69,7 @@ function Register() {
           <input
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={handleInputChange(setEmail)}
             placeholder="Sähköposti"
             required
             className="w-full p-2 border border-gray-300 rounded"
@@ -70,7 +77,7 @@ function Register() {
           <input
             type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={handleInputChange(setPassword)}
             placeholder="Salasana"
             required
             className="w-full p-2 border border-gray-300 rounded"
@@ -78,7 +85,7 @@ function Register() {
           <input
             type="password"
             value={rePassword}
-            onChange={(e) => setRePassword(e.target.value)}
+            onChange={handleInputChange(setRePassword)}
             placeholder="Salasana uudelleen"
             required
             className="w-full p-2 border border-gray-300 rounded"
@@ -86,7 +93,7 @@ function Register() {
           <input
             type="text"
             value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
+            onChange={handleInputChange(setNickname)}
             placeholder="Käyttäjänimi"
             required
             className="w-full p-2 border border-gray-300 rounded"

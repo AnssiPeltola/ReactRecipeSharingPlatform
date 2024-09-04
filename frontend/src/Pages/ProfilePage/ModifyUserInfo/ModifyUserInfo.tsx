@@ -24,7 +24,9 @@ const ModifyUserInfo = () => {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setUserDetails((prevDetails) => ({
       ...prevDetails,
@@ -111,13 +113,26 @@ const ModifyUserInfo = () => {
           <div className="mb-4">
             <label className="block text-gray-700 font-semibold mb-2">
               Experience Level:
-              <input
-                type="text"
+              <select
                 name="experience_level"
                 value={userDetails.experience_level || ""}
                 onChange={handleChange}
                 className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-              />
+              >
+                <option value="Keittiön noviisi">
+                  Keittiön noviisi (Aloittelija)
+                </option>
+                <option value="Rohkea reseptien testaaja">
+                  Rohkea reseptien testaaja (Perustaso)
+                </option>
+                <option value="Kokkauskulttuurin kehittäjä">
+                  Kokkauskulttuurin kehittäjä (Keskitaso)
+                </option>
+                <option value="Maustemestari">Maustemestari (Edistynyt)</option>
+                <option value="Kauhan konkari">
+                  Kauhan konkari (Ammattilainen)
+                </option>
+              </select>
             </label>
           </div>
           <ProfilePictureUpload onUpload={handleProfilePictureUpload} />

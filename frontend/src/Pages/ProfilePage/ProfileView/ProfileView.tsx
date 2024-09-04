@@ -1,31 +1,29 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
-import { User } from "../../../Types/types";
+import { fetchUserData, setUser } from "../../../Redux/authSlice";
+import { RootState } from "../../../Redux/store";
+import { useNavigate } from "react-router-dom";
 import UserRecipes from "../../../Components/UserRecipes/UserRecipes";
 import LikedRecipes from "../../../Components/LikedRecipes/LikedRecipes";
+import { AppDispatch } from "../../../Redux/store";
 
 const ProfileView = () => {
-  const [userDetails, setUserDetails] = useState<User | null>(null);
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+  const user = useSelector((state: RootState) => state.auth.user);
 
   useEffect(() => {
-    fetchUserDetails();
-    fetchProfilePicture();
-  }, []);
-
-  const fetchUserDetails = async () => {
-    try {
+    if (!user) {
       const token = localStorage.getItem("sessionToken");
-      const response = await axios.get("/getUserDetails", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setUserDetails(response.data);
-    } catch (error) {
-      console.error("Error fetching user details:", error);
+      if (token) {
+        dispatch(fetchUserData(token));
+      }
     }
-  };
+    fetchProfilePicture();
+    console.log("User:", user);
+  }, [user, dispatch]);
 
   const fetchProfilePicture = async () => {
     try {
@@ -59,19 +57,19 @@ const ProfileView = () => {
           className="w-32 h-32 rounded-full mx-auto mb-6 border-4 border-gray-300"
         />
       )}
-      {userDetails && (
+      {user && (
         <div className="bg-white shadow-md rounded-lg p-6 mb-6">
           <p className="text-lg font-semibold mb-2">
-            Nickname: {userDetails.nickname}
+            Nickname: {user.nickname}
           </p>
-          <p className="text-lg mb-2">Location: {userDetails.location}</p>
-          <p className="text-lg mb-2">Bio: {userDetails.bio}</p>
-          <p className="text-lg mb-2">Instagram: {userDetails.instagram}</p>
-          <p className="text-lg mb-2">TikTok: {userDetails.tiktok}</p>
+          <p className="text-lg mb-2">Location: {user.location}</p>
+          <p className="text-lg mb-2">Bio: {user.bio}</p>
+          <p className="text-lg mb-2">Instagram: {user.instagram}</p>
+          <p className="text-lg mb-2">TikTok: {user.tiktok}</p>
           <p className="text-lg mb-2">
-            Experience Level: {userDetails.experience_level}
+            Experience Level: {user.experience_level}
           </p>
-          <p className="text-lg mb-2">Email: {userDetails.email}</p>
+          <p className="text-lg mb-2">Email: {user.email}</p>
         </div>
       )}
       <button
