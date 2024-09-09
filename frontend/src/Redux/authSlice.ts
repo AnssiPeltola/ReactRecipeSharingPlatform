@@ -52,6 +52,12 @@ const authSlice = createSlice({
     setUser(state, action) {
       state.user = action.payload;
     },
+    updateUserProfile(state, action) {
+      if (state.user) {
+        const { password, ...userWithoutPassword } = action.payload;
+        state.user = { ...state.user, ...userWithoutPassword };
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchUserData.fulfilled, (state, action) => {
@@ -60,5 +66,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { login, logout, setUser } = authSlice.actions;
+export const { login, logout, setUser, updateUserProfile } = authSlice.actions;
 export default authSlice.reducer;
