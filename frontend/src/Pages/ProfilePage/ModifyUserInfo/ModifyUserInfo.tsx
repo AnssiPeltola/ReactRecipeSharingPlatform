@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { User } from "../../../Types/types";
 import { useNavigate } from "react-router-dom";
-import ProfilePictureUpload from "../../../Components/ProfilePictureUpload/ProfilePictureUpload";
+import ProfilePictureModal from "../../../Components/ProfilePictureModal/ProfilePictureModal";
 
 const ModifyUserInfo = () => {
   const [userDetails, setUserDetails] = useState<Partial<User> | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -59,7 +60,7 @@ const ModifyUserInfo = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">Modify User Info</h1>
+      <h1 className="text-3xl font-bold mb-6">Muuta käyttäjätietojasi</h1>
       {userDetails && (
         <div className="bg-white shadow-md rounded-lg p-6">
           <div className="mb-4">
@@ -135,23 +136,35 @@ const ModifyUserInfo = () => {
               </select>
             </label>
           </div>
-          <ProfilePictureUpload onUpload={handleProfilePictureUpload} />
+          <div className="mb-4">
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-200"
+            >
+              Muuta profiilikuva
+            </button>
+          </div>
           <div className="flex justify-end mt-6">
             <button
-              onClick={handleSubmit}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-200 mr-2"
+              onClick={handleBack}
+              className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition duration-200 mr-2"
             >
-              Submit
+              Takaisin
             </button>
             <button
-              onClick={handleBack}
-              className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition duration-200"
+              onClick={handleSubmit}
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-200"
             >
-              Back
+              Tallenna
             </button>
           </div>
         </div>
       )}
+      <ProfilePictureModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onUpload={handleProfilePictureUpload}
+      />
     </div>
   );
 };
