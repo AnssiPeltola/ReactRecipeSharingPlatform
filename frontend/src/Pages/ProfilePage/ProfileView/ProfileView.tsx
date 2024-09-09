@@ -67,23 +67,21 @@ const ProfileView = () => {
       {user && (
         <div className="bg-white shadow-md rounded-lg p-6 mb-6">
           <p className="text-lg font-semibold mb-2">
-            Nickname: {user.nickname}
+            Käyttäjänimi: {user.nickname}
           </p>
-          <p className="text-lg mb-2">Location: {user.location}</p>
           <p className="text-lg mb-2">Bio: {user.bio}</p>
+          <p className="text-lg mb-2">Sijainti: {user.location}</p>
           <p className="text-lg mb-2">Instagram: {user.instagram}</p>
           <p className="text-lg mb-2">TikTok: {user.tiktok}</p>
-          <p className="text-lg mb-2">
-            Experience Level: {user.experience_level}
-          </p>
-          <p className="text-lg mb-2">Email: {user.email}</p>
+          <p className="text-lg mb-2">Kokkitasosi: {user.experience_level}</p>
+          <p className="text-lg mb-2">Sähköposti: {user.email}</p>
         </div>
       )}
       <button
         onClick={() => navigate("/profile/modify")}
         className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-200 mb-6"
       >
-        Modify Profile
+        Muokkaa profiilia
       </button>
       <UserRecipes />
       <LikedRecipes />

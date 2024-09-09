@@ -30,7 +30,7 @@ const UserRecipes = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-4">Your Recipes</h2>
+      <h2 className="text-2xl font-bold mb-4">Reseptikokoelmasi</h2>
       {recipes.length > 0 ? (
         <ul className="space-y-4">
           {recipes.map((recipe) => (
@@ -45,7 +45,9 @@ const UserRecipes = () => {
           ))}
         </ul>
       ) : (
-        <p className="text-center text-gray-500">No recipes found.</p>
+        <p className="text-center text-gray-500">
+          Reseptejä ei löydy, vielä...
+        </p>
       )}
     </div>
   );

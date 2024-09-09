@@ -3,11 +3,14 @@ import axios from "axios";
 import { User } from "../../../Types/types";
 import { useNavigate } from "react-router-dom";
 import ProfilePictureModal from "../../../Components/ProfilePictureModal/ProfilePictureModal";
+import { useDispatch } from "react-redux";
+import { updateUserProfile } from "../../../Redux/authSlice";
 
 const ModifyUserInfo = () => {
   const [userDetails, setUserDetails] = useState<Partial<User> | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     fetchUserDetails();
@@ -48,6 +51,12 @@ const ModifyUserInfo = () => {
       await axios.post("/register-details", userDetails, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      if (userDetails) {
+        const { password, ...userWithoutPassword } = userDetails as User & {
+          password?: string;
+        };
+        dispatch(updateUserProfile(userWithoutPassword));
+      }
       navigate(-1);
     } catch (error) {
       console.error("Error updating user details:", error);
@@ -77,7 +86,7 @@ const ModifyUserInfo = () => {
           </div>
           <div className="mb-4">
             <label className="block text-gray-700 font-semibold mb-2">
-              Location:
+              Sijainti:
               <input
                 type="text"
                 name="location"
@@ -113,7 +122,7 @@ const ModifyUserInfo = () => {
           </div>
           <div className="mb-4">
             <label className="block text-gray-700 font-semibold mb-2">
-              Experience Level:
+              Kokkitasosi:
               <select
                 name="experience_level"
                 value={userDetails.experience_level || ""}

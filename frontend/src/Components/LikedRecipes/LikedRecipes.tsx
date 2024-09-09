@@ -40,7 +40,7 @@ const LikedRecipes = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-4">Liked Recipes</h2>
+      <h2 className="text-2xl font-bold mb-4">Hyväksihavaitut herkut</h2>
       {likedRecipes.length > 0 ? (
         <ul className="space-y-4">
           {likedRecipes.map((recipe) => (
@@ -55,7 +55,9 @@ const LikedRecipes = () => {
           ))}
         </ul>
       ) : (
-        <p className="text-center text-gray-500">No liked recipes found.</p>
+        <p className="text-center text-gray-500">
+          Tyhjä herkkulista – aloita tykkääminen!
+        </p>
       )}
     </div>
   );
