@@ -1,32 +1,24 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../../Redux/store";
+import { updateUserProfile } from "../../../Redux/authSlice";
 import { User } from "../../../Types/types";
 import { useNavigate } from "react-router-dom";
 import ProfilePictureModal from "../../../Components/ProfilePictureModal/ProfilePictureModal";
-import { useDispatch } from "react-redux";
-import { updateUserProfile } from "../../../Redux/authSlice";
+import axios from "axios";
 
 const ModifyUserInfo = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const user = useSelector((state: RootState) => state.auth.user);
   const [userDetails, setUserDetails] = useState<Partial<User> | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   useEffect(() => {
-    fetchUserDetails();
-  }, []);
-
-  const fetchUserDetails = async () => {
-    try {
-      const token = localStorage.getItem("sessionToken");
-      const response = await axios.get("/getUserDetails", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setUserDetails(response.data);
-    } catch (error) {
-      console.error("Error fetching user details:", error);
+    if (user) {
+      setUserDetails(user);
     }
-  };
+  }, [user]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
