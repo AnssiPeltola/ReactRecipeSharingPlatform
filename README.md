@@ -1,6 +1,6 @@
 # ReactRecipeSharingPlatform
 
-This is a full-stack web application built with React and TypeScript on the frontend, and Node.js, Express, and Passport.js on the backend. The application uses PostgreSQL for data persistence.
+This is a full-stack web application built with React, TypeScript and Tailwind CSS on the frontend, and Node.js, Express, and Passport.js on the backend. The application uses PostgreSQL for data persistence.
 
 The goal of this project is to create a platform where users can create their own accounts and share their favorite food recipes. Users can add their own recipes for others to see, and search for recipes added by other users. This makes it a great place for food enthusiasts to share and discover new recipes.
 
