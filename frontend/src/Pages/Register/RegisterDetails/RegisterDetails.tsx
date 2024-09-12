@@ -10,7 +10,7 @@ function RegisterDetails() {
   const [location, setLocation] = useState("");
   const [instagram, setInstagram] = useState("");
   const [tiktok, setTiktok] = useState("");
-  const [experienceLevel, setExperienceLevel] = useState("");
+  const [experienceLevel, setExperienceLevel] = useState("Keittiön noviisi");
   const navigate = useNavigate();
   const auth = useSelector((state: RootState) => state.auth);
 

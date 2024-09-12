@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import debounce from "lodash.debounce";
 
 interface IngredientSearchProps {
   onIngredientSelect: (name: string) => void;
@@ -17,44 +18,53 @@ const IngredientSearch: React.FC<IngredientSearchProps> = ({
 }) => {
   const [query, setQuery] = useState(initialValue || "");
   const [results, setResults] = useState<Ingredient[]>([]);
+  const [selected, setSelected] = useState(false);
 
-  const searchIngredients = () => {
-    fetch(`https://world.openfoodfacts.org/data/taxonomies/ingredients.json`)
-      .then((response) => response.json())
-      .then((data) => {
-        const fiNames = Object.entries(data)
-          .filter(
-            ([key, ingredient]: [string, any]) =>
-              ingredient.name &&
-              ingredient.name.fi &&
-              ingredient.name.fi.toLowerCase().includes(query.toLowerCase())
-          )
-          .map(([key, ingredient]: [string, any]) => ({
-            name: ingredient.name.fi,
-          }))
-          .sort((a: any, b: any) => a.name.length - b.name.length);
-        setResults(fiNames);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  };
+  const searchIngredients = useCallback(
+    debounce((query: string) => {
+      fetch(`https://world.openfoodfacts.org/data/taxonomies/ingredients.json`)
+        .then((response) => response.json())
+        .then((data) => {
+          const fiNames = Object.entries(data)
+            .filter(
+              ([key, ingredient]: [string, any]) =>
+                ingredient.name &&
+                ingredient.name.fi &&
+                ingredient.name.fi.toLowerCase().includes(query.toLowerCase())
+            )
+            .map(([key, ingredient]: [string, any]) => ({
+              name: ingredient.name.fi,
+            }))
+            .sort((a: any, b: any) => a.name.length - b.name.length);
+          setResults(fiNames);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }, 300),
+    []
+  );
+
+  useEffect(() => {
+    if (query.length >= 3 && !selected) {
+      searchIngredients(query);
+    } else {
+      setResults([]);
+    }
+  }, [query, searchIngredients, selected]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
+    setSelected(false);
     if (onChange) {
       onChange(e);
-    }
-    if (e.target.value.length < 3) {
-      setResults([]);
-    } else {
-      searchIngredients();
     }
   };
 
   const handleResultClick = (result: any) => {
     setQuery(result.name);
     setResults([]);
+    setSelected(true);
     onIngredientSelect(result.name);
   };
 
