@@ -3,6 +3,8 @@ import axios from "axios";
 import { Comment } from "../../../Types/types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../Redux/store";
 
 interface CommentListProps {
   recipeId: number;
@@ -10,8 +12,8 @@ interface CommentListProps {
 
 const CommentList: React.FC<CommentListProps> = ({ recipeId }) => {
   const [comments, setComments] = useState<Comment[]>([]);
-  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
   const placeholderImageUrl = "https://via.placeholder.com/40";
+  const user = useSelector((state: RootState) => state.auth.user);
 
   const fetchComments = async () => {
     try {
@@ -21,28 +23,6 @@ const CommentList: React.FC<CommentListProps> = ({ recipeId }) => {
       setComments(response.data);
     } catch (err) {
       console.error("Failed to fetch comments", err);
-    }
-  };
-
-  const fetchCurrentUserId = async () => {
-    try {
-      const token = localStorage.getItem("sessionToken");
-      if (!token) {
-        throw new Error("No token found");
-      }
-
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/getUserDetails`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setCurrentUserId(response.data.id);
-      console.log("Current User ID:", response.data.id); // Debugging log
-    } catch (err) {
-      console.error("Failed to fetch current user ID", err);
     }
   };
 
@@ -69,10 +49,9 @@ const CommentList: React.FC<CommentListProps> = ({ recipeId }) => {
 
   useEffect(() => {
     fetchComments();
-    fetchCurrentUserId();
   }, [recipeId]);
 
-  console.log("Comments:", comments); // Debugging log
+  console.log("Comments:", comments);
 
   return (
     <div className="space-y-4">
@@ -95,7 +74,7 @@ const CommentList: React.FC<CommentListProps> = ({ recipeId }) => {
             </div>
             <p className="mt-2">{comment.content}</p>
           </div>
-          {currentUserId === comment.user_id && (
+          {user?.id === comment.user_id && (
             <button
               onClick={() => handleDelete(comment.id)}
               className="absolute top-2 right-2 text-red-500 hover:text-red-600 transition-colors duration-200"

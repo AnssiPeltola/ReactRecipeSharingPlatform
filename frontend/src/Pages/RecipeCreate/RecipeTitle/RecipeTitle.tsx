@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
 import {
   setTitle,
   setCategory,
@@ -23,6 +22,7 @@ import {
 
 const RecipeTitle = () => {
   const navigate = useNavigate();
+  const user = useSelector((state: RootState) => state.auth.user);
   const dispatch = useDispatch();
   const recipeState = useSelector((state: RootState) => state.recipe);
   const [errorMessages, setErrorMessages] = useState({
@@ -57,23 +57,6 @@ const RecipeTitle = () => {
       : ""
   );
 
-  useEffect(() => {
-    const token = localStorage.getItem("sessionToken");
-    if (token) {
-      axios
-        .get(`${process.env.REACT_APP_API_BASE_URL}/getUserDetails`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((response) => {
-          const user_id = response.data.id;
-          dispatch(setuser_id(user_id));
-        })
-        .catch((error) => {
-          console.error("Error fetching user details", error);
-        });
-    }
-  }, [dispatch]);
-
   const handleButtonClick = () => {
     const errors = {
       title: validateTitle(title),
@@ -95,6 +78,9 @@ const RecipeTitle = () => {
       dispatch(setsecondary_category(secondary_category));
       dispatch(setMainIngredient(specificIngredient));
       dispatch(setMainIngredientCategory(mainCategory));
+      if (user && user.id !== undefined) {
+        dispatch(setuser_id(user.id.toString()));
+      }
       console.log(recipeState);
       navigate("/create-recipe/recipe-ingredients");
     }
