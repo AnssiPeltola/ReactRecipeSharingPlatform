@@ -74,7 +74,7 @@ const Navbar = () => {
 
   if (!isLoggedIn) {
     return (
-      <nav className="bg-gray-800 p-4 flex justify-between items-center">
+      <nav className="fixed top-0 left-0 w-full bg-gray-800 p-4 flex justify-between items-center z-50">
         <button onClick={() => navigate("/")}>
           <img
             src="https://via.placeholder.com/40"
@@ -105,7 +105,7 @@ const Navbar = () => {
   }
 
   return (
-    <nav className="bg-gray-800 p-4 flex justify-between items-center">
+    <nav className="fixed top-0 left-0 w-full bg-gray-800 p-4 flex justify-between items-center z-50">
       <button onClick={() => navigate("/")}>
         <img src="https://via.placeholder.com/40" alt="Logo" className="h-10" />
       </button>

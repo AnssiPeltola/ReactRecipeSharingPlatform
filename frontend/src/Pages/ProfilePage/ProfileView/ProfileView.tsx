@@ -84,7 +84,9 @@ const ProfileView = () => {
         Muokkaa profiilia
       </button>
       <UserRecipes />
-      <LikedRecipes />
+      <div className="my-20">
+        <LikedRecipes />
+      </div>
     </div>
   );
 };
