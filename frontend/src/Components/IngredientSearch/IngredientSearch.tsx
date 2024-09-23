@@ -18,7 +18,7 @@ const IngredientSearch: React.FC<IngredientSearchProps> = ({
 }) => {
   const [query, setQuery] = useState(initialValue || "");
   const [results, setResults] = useState<Ingredient[]>([]);
-  const [selected, setSelected] = useState(false);
+  const [selected, setSelected] = useState(!!initialValue);
 
   const searchIngredients = useCallback(
     debounce((query: string) => {
@@ -52,6 +52,11 @@ const IngredientSearch: React.FC<IngredientSearchProps> = ({
       setResults([]);
     }
   }, [query, searchIngredients, selected]);
+
+  useEffect(() => {
+    setQuery(initialValue);
+    setSelected(!!initialValue);
+  }, [initialValue]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
