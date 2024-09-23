@@ -1,7 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import * as ROUTES from "../src/Constants/routes";
-// import TestComponent from './Components/TestComponent/dbtest';
 import Frontpage from "./Pages/Frontpage/frontpage";
 import Register from "./Pages/Register/Register/Register";
 import Login from "./Pages/Login/Login";
@@ -21,7 +20,7 @@ function App() {
     <Router>
       <div id="root">
         <Navbar />
-        <main>
+        <main className="pt-16">
           <Routes>
             <Route path={ROUTES.LANDING} element={<Frontpage />} />
             <Route path={ROUTES.REGISTER + "/*"} element={<RegisterRoute />} />
