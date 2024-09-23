@@ -11,6 +11,7 @@ export interface RecipeState {
   picture_url: string;
   nickname?: string;
   previewUrl: string | null;
+  selectedFile: File | null;
 }
 
 export interface Ingredient {

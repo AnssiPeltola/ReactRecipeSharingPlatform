@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../Redux/store";
-import { setPreviewUrl } from "../../../Redux/recipeSlice";
+import { setPreviewUrl, setSelectedFile } from "../../../Redux/recipeSlice";
 import ProgressBar from "../../../Components/ProgressBar/ProgressBar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
@@ -11,11 +11,13 @@ const RecipePicture = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const previewUrl = useSelector((state: RootState) => state.recipe.previewUrl);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const selectedFile = useSelector(
+    (state: RootState) => state.recipe.selectedFile
+  );
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleButtonClick = () => {
-    navigate("/create-recipe/recipe-overview", { state: { selectedFile } });
+    navigate("/create-recipe/recipe-overview");
   };
 
   const handleBackButton = () => {
@@ -26,7 +28,7 @@ const RecipePicture = () => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
       if (file.type.startsWith("image/")) {
-        setSelectedFile(file);
+        dispatch(setSelectedFile(file));
         dispatch(setPreviewUrl(URL.createObjectURL(file)));
         setErrorMessage(null);
       } else {
@@ -36,7 +38,7 @@ const RecipePicture = () => {
   };
 
   const handleRemovePicture = () => {
-    setSelectedFile(null);
+    dispatch(setSelectedFile(null));
     dispatch(setPreviewUrl(null));
     const fileInput = document.getElementById("fileInput") as HTMLInputElement;
     if (fileInput) {

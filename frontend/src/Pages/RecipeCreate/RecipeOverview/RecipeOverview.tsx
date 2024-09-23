@@ -12,11 +12,12 @@ import ProgressBar from "../../../Components/ProgressBar/ProgressBar";
 
 const RecipeOverview = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const dispatch = useDispatch();
   const recipeState = useSelector((state: RootState) => state.recipe);
   const previewUrl = useSelector((state: RootState) => state.recipe.previewUrl);
-  const selectedFile = location.state?.selectedFile;
+  const selectedFile = useSelector(
+    (state: RootState) => state.recipe.selectedFile
+  );
 
   useEffect(() => {
     if (selectedFile) {

@@ -16,6 +16,22 @@ export const store = configureStore({
     recipe: recipeReducer,
     auth: persistedAuthReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [
+          "persist/PERSIST",
+          "persist/REHYDRATE",
+          "persist/REGISTER",
+          "persist/PAUSE",
+          "persist/PURGE",
+          "persist/FLUSH",
+          "recipe/setSelectedFile",
+          "recipe/setPreviewUrl",
+        ],
+        ignoredPaths: ["recipe.selectedFile"],
+      },
+    }),
 });
 
 export const persistor = persistStore(store);
