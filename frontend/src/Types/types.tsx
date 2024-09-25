@@ -48,9 +48,12 @@ export type MainIngredientsType = {
   Liha: string[];
   Siipikarja: string[];
   "Kala ja merenelävät": string[];
-  Kasvispohjaiset: string[];
+  Kasvikset: string[];
+  Kasviproteiinit: string[];
   "Viljat ja pastat": string[];
   "Maitotuotteet ja kananmunat": string[];
+  "Pähkinät ja siemenet": string[];
+  "Marjat ja hedelmät": string[];
   Muut: string[];
 };
 
@@ -64,16 +67,45 @@ export const mainIngredients: MainIngredientsType = {
     "Simpukat",
     "Muu kala",
   ],
-  Kasvispohjaiset: [
+  Kasvikset: [
+    "Parsakaali",
+    "Kesäkurpitsa",
+    "Bataatti",
+    "Pinaatti",
+    "Peruna",
+    "Porkkana",
+  ],
+  Kasviproteiinit: [
     "Tofu",
     "Herneet",
     "Linssit",
     "Pavut",
     "Sienet",
     "Soijatuotteet",
-    "Peruna",
+    "Seitan",
+    "Härkis",
+    "Nyhtökaura",
   ],
-  "Viljat ja pastat": ["Riisi", "Pasta", "Quinoa", "Bulgur"],
+  "Viljat ja pastat": [
+    "Riisi",
+    "Pasta",
+    "Quinoa",
+    "Bulgur",
+    "Ohrasuurimot",
+    "Kaurahiutaleet",
+  ],
   "Maitotuotteet ja kananmunat": ["Juusto", "Maito", "Kananmuna"],
-  Muut: ["Pähkinät ja siemenet", "Muu"],
+  "Pähkinät ja siemenet": [
+    "Mantelit",
+    "Cashew-pähkinät",
+    "Auringonkukansiemenet",
+  ],
+  "Marjat ja hedelmät": [
+    "Mansikat",
+    "Mustikat",
+    "Omenat",
+    "Banaanit",
+    "Kuivatut hedelmät",
+  ],
+  Muut: ["Muu", "Mausteet", "Hunaja"],
 };

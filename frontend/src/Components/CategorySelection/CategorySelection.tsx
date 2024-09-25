@@ -23,6 +23,7 @@ const categories = [
 ];
 
 const secondaryCategories = [
+  "Ei erityisruokavaliota",
   "Gluteeniton",
   "Kasvisruoka",
   "Vegaaninen",
