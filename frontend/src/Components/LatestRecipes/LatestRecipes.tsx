@@ -41,11 +41,11 @@ const LatestRecipes = () => {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="text-center text-gray-500">Loading...</div>;
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return <div className="text-center text-red-500">Error: {error}</div>;
   }
 
   if (recipes.length === 0) {
@@ -62,11 +62,11 @@ const LatestRecipes = () => {
   }
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold text-center text-gray-800">
+    <div className="container mx-auto">
+      <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
         Vasta naputellut ruokaoivallukset
       </h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {recipes.map((recipe) => (
           <Link to={`/recipe/${recipe.id}`} key={recipe.id} className="block">
             <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200">
