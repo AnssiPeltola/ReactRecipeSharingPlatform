@@ -15,18 +15,29 @@ class RecipeController {
   }
 
   async createRecipe(req: Request, res: Response) {
-    const recipe = await this.recipeService.createRecipe(req.body);
-    res.json(recipe);
+    try {
+      const recipe = await this.recipeService.createRecipe(req.body);
+      res.status(201).json(recipe);
+    } catch (error) {
+      console.error("Error creating recipe:", error);
+      if ((error as Error).message.includes("User with id")) {
+        res.status(400).json({ message: (error as Error).message });
+      } else {
+        res.status(500).json({ message: "Error creating recipe" });
+      }
+    }
   }
 
   uploadFile = async (req: Request, res: Response) => {
     const file = req.file;
+    const { recipeId } = req.body; // Assuming recipeId is sent in the request body
+
     if (!file) {
       return res.status(400).send("No file uploaded");
     }
 
     try {
-      const fileId = await this.recipeService.uploadFile(file);
+      const fileId = await this.recipeService.uploadFile(file, recipeId);
       return res.json({ fileId });
     } catch (error) {
       // Handle error
@@ -229,6 +240,18 @@ class RecipeController {
       res.json(latestRecipes);
     } catch (error) {
       res.status(500).json({ message: "Error fetching latest recipes" });
+    }
+  }
+
+  async updateRecipePicture(req: Request, res: Response) {
+    const { recipeId, pictureUrl } = req.body;
+
+    try {
+      await this.recipeService.updateRecipePicture(recipeId, pictureUrl);
+      res.status(200).json({ message: "Recipe picture updated successfully" });
+    } catch (error) {
+      console.error("Error updating recipe picture:", error);
+      res.status(500).json({ message: "Error updating recipe picture" });
     }
   }
 }

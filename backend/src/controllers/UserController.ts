@@ -189,6 +189,38 @@ class UserController {
       res.status(500).send("Internal server error");
     }
   }
+
+  async deleteAccount(req: Request, res: Response) {
+    const user = req.user as AuthenticatedUser;
+    const userId = user.id;
+
+    try {
+      const success = await this.userService.deleteAccount(userId);
+      if (!success) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      req.logout((err) => {
+        if (err) {
+          console.error("Error logging out:", err);
+          return res.status(500).json({ message: "Error logging out" });
+        }
+        res.status(200).json({ message: "Account deleted successfully" });
+      });
+    } catch (error) {
+      console.error("Error deleting account:", error);
+      res.status(500).json({ message: "Error deleting account" });
+    }
+  }
+
+  async logout(req: Request, res: Response) {
+    req.logout((err) => {
+      if (err) {
+        console.error("Error logging out:", err);
+        return res.status(500).json({ message: "Error logging out" });
+      }
+      res.status(200).json({ message: "Logged out successfully" });
+    });
+  }
 }
 
 export default UserController;

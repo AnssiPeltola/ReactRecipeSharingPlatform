@@ -8,6 +8,17 @@ class RecipeRepository {
     try {
       await client.query("BEGIN"); // Start transaction
 
+      // Check if the user exists
+      const userCheckQuery: QueryConfig = {
+        text: "SELECT id FROM users WHERE id = $1",
+        values: [recipe.user_id],
+      };
+      const userCheckResult = await client.query(userCheckQuery);
+
+      if (userCheckResult.rowCount === 0) {
+        throw new Error(`User with id ${recipe.user_id} does not exist`);
+      }
+
       // Insert the recipe
       const recipeInsertQuery: QueryConfig = {
         text: `
@@ -77,12 +88,15 @@ class RecipeRepository {
     }
   }
 
-  async uploadFile(file: Express.Multer.File): Promise<number> {
+  async uploadFile(
+    file: Express.Multer.File,
+    recipeId: number
+  ): Promise<number> {
     const { originalname: name, mimetype: type, buffer: data } = file;
 
     const query: QueryConfig = {
-      text: "INSERT INTO recipe_pictures (name, type, data) VALUES ($1, $2, $3) RETURNING id",
-      values: [name, type, data],
+      text: "INSERT INTO recipe_pictures (recipe_id, name, type, data) VALUES ($1, $2, $3, $4) RETURNING id",
+      values: [recipeId, name, type, data],
     };
 
     const result = await pool.query(query);
@@ -287,6 +301,15 @@ class RecipeRepository {
       console.error("Error querying the database", error);
       throw error;
     }
+  }
+
+  async updateRecipePicture(recipeId: number, pictureUrl: string) {
+    const query: QueryConfig = {
+      text: "UPDATE recipe_pictures SET recipe_id = $1 WHERE id = $2",
+      values: [recipeId, pictureUrl],
+    };
+
+    await pool.query(query);
   }
 }
 

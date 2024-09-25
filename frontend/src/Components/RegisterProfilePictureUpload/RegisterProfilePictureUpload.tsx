@@ -3,6 +3,9 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { useDispatch } from "react-redux";
+import { fetchUserData } from "../../Redux/authSlice";
+import { AppDispatch } from "../../Redux/store";
 
 const RegisterProfilePictureUpload = ({
   onUpload,
@@ -13,6 +16,7 @@ const RegisterProfilePictureUpload = ({
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -60,6 +64,16 @@ const RegisterProfilePictureUpload = ({
         }
       );
       onUpload(response.data.fileId);
+
+      // Fetch user details and dispatch to Redux store
+      const userDetailsResponse = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/getUserDetails`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      dispatch(fetchUserData(userDetailsResponse.data));
+
       navigate("/profile");
     } catch (error) {
       console.error("Error uploading profile picture:", error);

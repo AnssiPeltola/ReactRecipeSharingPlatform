@@ -172,6 +172,15 @@ class UserRepository {
       return null;
     }
   }
+
+  async deleteAccount(userId: number) {
+    const query: QueryConfig = {
+      text: "DELETE FROM users WHERE id = $1 RETURNING *",
+      values: [userId],
+    };
+    const result = await pool.query(query);
+    return (result.rowCount ?? 0) > 0;
+  }
 }
 
 export default UserRepository;

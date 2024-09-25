@@ -9,13 +9,32 @@ class RecipeService {
   }
 
   async createRecipe(recipeData: any) {
-    const recipe = await this.recipeRepository.createRecipe(recipeData);
-    return recipe;
+    // Validate the incoming data
+    if (
+      !recipeData.title ||
+      !recipeData.category ||
+      !recipeData.mainIngredient ||
+      !recipeData.instructions ||
+      !recipeData.user_id
+    ) {
+      throw new Error("Missing required fields");
+    }
+
+    try {
+      const recipe = await this.recipeRepository.createRecipe(recipeData);
+      return recipe;
+    } catch (error) {
+      console.error("Error in RecipeService.createRecipe:", error);
+      throw error;
+    }
   }
 
-  async uploadFile(file: Express.Multer.File): Promise<number> {
+  async uploadFile(
+    file: Express.Multer.File,
+    recipeId: number
+  ): Promise<number> {
     try {
-      const fileId = await this.recipeRepository.uploadFile(file);
+      const fileId = await this.recipeRepository.uploadFile(file, recipeId);
       return fileId;
     } catch (error) {
       // Handle error
@@ -74,6 +93,16 @@ class RecipeService {
 
   async getLatestRecipes() {
     return await this.recipeRepository.getLatestRecipes();
+  }
+
+  async updateRecipePicture(recipeId: number, pictureUrl: string) {
+    try {
+      await this.recipeRepository.updateRecipePicture(recipeId, pictureUrl);
+    } catch (error) {
+      // Handle error
+      console.error(error);
+      throw error;
+    }
   }
 }
 

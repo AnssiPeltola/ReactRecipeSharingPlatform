@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import UserRecipes from "../../../Components/UserRecipes/UserRecipes";
 import LikedRecipes from "../../../Components/LikedRecipes/LikedRecipes";
 import { AppDispatch } from "../../../Redux/store";
+import { logout } from "../../../Redux/authSlice";
 
 const ProfileView = () => {
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
@@ -55,6 +56,38 @@ const ProfileView = () => {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    if (
+      window.confirm(
+        "Are you sure you want to delete your account? This action cannot be undone."
+      )
+    ) {
+      try {
+        const token = localStorage.getItem("sessionToken");
+        if (!token) {
+          throw new Error("No token found");
+        }
+
+        // Delete user account
+        await axios.delete(
+          `${process.env.REACT_APP_API_BASE_URL}/user/delete`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        // Clear user data and redirect to homepage
+        localStorage.removeItem("sessionToken");
+        dispatch(logout());
+        navigate("/");
+      } catch (err) {
+        console.error("Failed to delete account", err);
+      }
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto p-4">
       {profilePicture && (
@@ -82,6 +115,12 @@ const ProfileView = () => {
         className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-200 mb-6"
       >
         Muokkaa profiilia
+      </button>
+      <button
+        onClick={handleDeleteAccount}
+        className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition duration-200 mb-6"
+      >
+        Poista tili
       </button>
       <UserRecipes />
       <div className="my-20">
