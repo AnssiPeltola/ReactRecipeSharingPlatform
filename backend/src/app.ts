@@ -151,6 +151,12 @@ app.get("/profile_picture/:id", (req, res) =>
   userController.getProfilePictureById(req, res)
 );
 
+app.delete(
+  "/user/delete",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => userController.deleteAccount(req, res)
+);
+
 // Recipe routes below this line ----------------------------
 
 app.post("/recipeCreate", upload.single("file"), (req, res) =>
@@ -264,5 +270,11 @@ app.get("/latestRecipes", async (req, res) => {
     res.status(500).json({ message: "Error fetching latest recipes" });
   }
 });
+
+app.post(
+  "/updateRecipePicture",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => recipeController.updateRecipePicture(req, res)
+);
 
 export default app;

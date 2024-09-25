@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../Redux/store";
 import {
@@ -18,6 +18,8 @@ const RecipeOverview = () => {
   const selectedFile = useSelector(
     (state: RootState) => state.recipe.selectedFile
   );
+  const user = useSelector((state: RootState) => state.auth.user); // Get user from Redux store
+  const token = localStorage.getItem("sessionToken");
 
   useEffect(() => {
     if (selectedFile) {
@@ -31,6 +33,9 @@ const RecipeOverview = () => {
     if (selectedFile) {
       const formData = new FormData();
       formData.append("file", selectedFile);
+      if (recipeState.id !== undefined) {
+        formData.append("recipeId", recipeState.id.toString()); // Add recipeId to the form data
+      }
 
       try {
         const response = await axios.post(
@@ -39,6 +44,7 @@ const RecipeOverview = () => {
           {
             headers: {
               "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${token}`, // Include the JWT token
             },
           }
         );
@@ -50,38 +56,56 @@ const RecipeOverview = () => {
       }
     }
 
-    const recipeFormData = new FormData();
-    recipeFormData.append("title", recipeState.title);
-    recipeFormData.append("category", recipeState.category);
-    recipeFormData.append("secondary_category", recipeState.secondary_category);
-    recipeFormData.append("mainIngredient", recipeState.main_ingredient);
-    recipeFormData.append("instructions", recipeState.instructions);
-    recipeFormData.append("user_id", recipeState.user_id.toString());
-    recipeFormData.append("pictureUrl", pictureUrl ?? "");
+    const recipeFormData = {
+      title: recipeState.title,
+      category: recipeState.category,
+      secondary_category: recipeState.secondary_category,
+      mainIngredient: recipeState.main_ingredient,
+      instructions: recipeState.instructions,
+      user_id: user?.id, // Use the user ID from Redux store
+      pictureUrl: pictureUrl ?? "",
+      ingredients: recipeState.ingredients.map((ingredient) => ({
+        quantity: ingredient.quantity,
+        unit: ingredient.unit,
+        name: ingredient.name,
+      })),
+    };
 
-    recipeState.ingredients.forEach((ingredient, index) => {
-      recipeFormData.append(
-        `ingredients[${index}][quantity]`,
-        ingredient.quantity
-      );
-      recipeFormData.append(`ingredients[${index}][unit]`, ingredient.unit);
-      recipeFormData.append(`ingredients[${index}][name]`, ingredient.name);
-    });
+    console.log("Sending recipe data:", recipeFormData);
 
     try {
-      await axios.post(
+      const recipeResponse = await axios.post(
         `${process.env.REACT_APP_API_BASE_URL}/recipeCreate`,
         recipeFormData,
         {
           headers: {
-            "Content-Type": "multipart/form-data",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Include the JWT token
           },
         }
       );
+
+      // Get the created recipe ID
+      const recipeId = recipeResponse.data.id;
+
+      // If a picture was uploaded, update the picture with the recipe ID
+      if (selectedFile && pictureUrl) {
+        await axios.post(
+          `${process.env.REACT_APP_API_BASE_URL}/updateRecipePicture`,
+          { recipeId, pictureUrl },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`, // Include the JWT token
+            },
+          }
+        );
+      }
+
       dispatch(resetState());
       navigate("/create-recipe/recipe-created");
     } catch (error) {
-      console.error(error);
+      console.error("Error creating recipe:", error);
     }
   };
 

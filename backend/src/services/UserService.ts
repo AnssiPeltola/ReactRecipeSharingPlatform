@@ -83,6 +83,10 @@ class UserService {
   async getProfilePictureById(id: string) {
     return await this.userRepository.getProfilePictureById(id);
   }
+
+  async deleteAccount(userId: number) {
+    return this.userRepository.deleteAccount(userId);
+  }
 }
 
 export default UserService;
