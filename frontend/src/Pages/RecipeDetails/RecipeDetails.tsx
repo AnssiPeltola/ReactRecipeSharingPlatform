@@ -46,7 +46,7 @@ const RecipeDetails = () => {
             {recipe.main_ingredient}
           </p>
           <img
-            className="w-full h-auto mb-4 rounded"
+            className="w-full h-auto mb-4 rounded object-contain"
             src={
               recipe.picture_url
                 ? `${process.env.REACT_APP_API_BASE_URL}/recipePicture/${recipe.picture_url}`

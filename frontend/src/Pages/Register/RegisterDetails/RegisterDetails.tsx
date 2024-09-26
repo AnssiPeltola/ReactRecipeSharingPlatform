@@ -108,7 +108,7 @@ function RegisterDetails() {
             type="submit"
             className="w-full py-2 text-white bg-blue-500 rounded hover:bg-blue-700"
           >
-            Continue
+            Mennäänpäs eteenpäin!
           </button>
         </form>
       </div>

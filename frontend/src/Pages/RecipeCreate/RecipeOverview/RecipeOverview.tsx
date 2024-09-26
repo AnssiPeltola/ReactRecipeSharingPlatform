@@ -34,7 +34,7 @@ const RecipeOverview = () => {
       const formData = new FormData();
       formData.append("file", selectedFile);
       if (recipeState.id !== undefined) {
-        formData.append("recipeId", recipeState.id.toString()); // Add recipeId to the form data
+        formData.append("recipeId", recipeState.id.toString());
       }
 
       try {
@@ -44,7 +44,7 @@ const RecipeOverview = () => {
           {
             headers: {
               "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${token}`, // Include the JWT token
+              Authorization: `Bearer ${token}`,
             },
           }
         );
@@ -62,7 +62,7 @@ const RecipeOverview = () => {
       secondary_category: recipeState.secondary_category,
       mainIngredient: recipeState.main_ingredient,
       instructions: recipeState.instructions,
-      user_id: user?.id, // Use the user ID from Redux store
+      user_id: user?.id,
       pictureUrl: pictureUrl ?? "",
       ingredients: recipeState.ingredients.map((ingredient) => ({
         quantity: ingredient.quantity,
@@ -80,7 +80,7 @@ const RecipeOverview = () => {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // Include the JWT token
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -96,7 +96,7 @@ const RecipeOverview = () => {
           {
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`, // Include the JWT token
+              Authorization: `Bearer ${token}`,
             },
           }
         );

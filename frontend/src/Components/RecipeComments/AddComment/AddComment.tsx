@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../Redux/store";
 
 interface AddCommentProps {
   recipeId: number;
@@ -11,6 +13,7 @@ const AddComment: React.FC<AddCommentProps> = ({
   onCommentAdded,
 }) => {
   const [content, setContent] = useState("");
+  const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,12 +39,16 @@ const AddComment: React.FC<AddCommentProps> = ({
     }
   };
 
+  if (!isLoggedIn) {
+    return null;
+  }
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        placeholder="Add a comment"
+        placeholder="Anna palautetta sapuskasta!"
         required
         className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
@@ -49,7 +56,7 @@ const AddComment: React.FC<AddCommentProps> = ({
         type="submit"
         className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors duration-200"
       >
-        Submit
+        Lähetä makutuomio!
       </button>
     </form>
   );

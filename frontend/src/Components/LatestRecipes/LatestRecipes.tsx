@@ -77,7 +77,7 @@ const LatestRecipes = () => {
                     : placeholderImageUrl
                 }
                 alt={recipe.title}
-                className="w-full h-48 object-cover"
+                className="w-full h-48 object-contain"
               />
               <div className="p-4">
                 <h3 className="text-lg font-semibold">{recipe.title}</h3>

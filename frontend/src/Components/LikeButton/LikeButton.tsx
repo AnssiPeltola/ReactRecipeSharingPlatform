@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStar } from "@fortawesome/free-solid-svg-icons";
+import { faThumbsUp } from "@fortawesome/free-solid-svg-icons";
+import { RootState } from "../../Redux/store";
+import { useSelector } from "react-redux";
 
 interface LikeButtonProps {
   recipeId: string;
@@ -10,11 +12,12 @@ interface LikeButtonProps {
 const LikeButton: React.FC<LikeButtonProps> = ({ recipeId }) => {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
+  const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
 
   useEffect(() => {
     checkIfLiked();
     fetchLikeCount();
-  }, []);
+  }, [isLoggedIn]);
 
   const checkIfLiked = async () => {
     try {
@@ -83,16 +86,18 @@ const LikeButton: React.FC<LikeButtonProps> = ({ recipeId }) => {
 
   return (
     <div className="flex items-center space-x-2">
-      <button
-        onClick={liked ? handleUnlike : handleLike}
-        className={`px-4 py-2 rounded ${
-          liked ? "bg-red-500 text-white" : "bg-blue-500 text-white"
-        } hover:opacity-75 transition-opacity duration-200`}
-      >
-        {liked ? "Unlike" : "Like"}
-      </button>
-      <FontAwesomeIcon icon={faStar} className="mx-2 text-yellow-500" />
-      <p className="text-gray-700">{likeCount} likes</p>
+      {isLoggedIn && (
+        <button
+          onClick={liked ? handleUnlike : handleLike}
+          className={`px-4 py-2 rounded ${
+            liked ? "bg-red-500 text-white" : "bg-blue-500 text-white"
+          } hover:opacity-75 transition-opacity duration-200`}
+        >
+          {liked ? "Peukku pois!" : "Tähän peukku!"}
+        </button>
+      )}
+      <FontAwesomeIcon icon={faThumbsUp} className="mx-2 text-blue-500" />
+      <p className="text-gray-700">{likeCount} Makupeukkua</p>
     </div>
   );
 };
