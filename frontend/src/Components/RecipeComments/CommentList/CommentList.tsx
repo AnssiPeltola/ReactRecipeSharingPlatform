@@ -69,7 +69,7 @@ const CommentList: React.FC<CommentListProps> = ({ recipeId }) => {
             <div className="flex justify-between items-center">
               <p className="font-semibold">{comment.nickname}</p>
               <p className="text-gray-500 text-sm mr-8">
-                {new Date(comment.timestamp).toLocaleString()}
+                {new Date(comment.timestamp).toLocaleDateString()}
               </p>
             </div>
             <p className="mt-2">{comment.content}</p>
