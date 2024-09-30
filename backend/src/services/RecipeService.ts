@@ -104,6 +104,10 @@ class RecipeService {
       throw error;
     }
   }
+
+  async getTopRecipesWeek() {
+    return await this.recipeRepository.getTopRecipesWeek();
+  }
 }
 
 export default RecipeService;

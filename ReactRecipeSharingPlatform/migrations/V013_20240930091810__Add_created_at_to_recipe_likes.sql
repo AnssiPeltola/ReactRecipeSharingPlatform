@@ -1,0 +1,2 @@
+ALTER TABLE recipe_likes
+ADD COLUMN created_at TIMESTAMP DEFAULT NOW();

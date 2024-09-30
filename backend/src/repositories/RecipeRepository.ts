@@ -311,6 +311,28 @@ class RecipeRepository {
 
     await pool.query(query);
   }
+
+  async getTopRecipesWeek(): Promise<Recipe[]> {
+    const query = {
+      text: `
+        SELECT r.id AS recipe_id, r.title, r.picture_url, COUNT(rl.id) AS like_count
+        FROM recipe_likes rl
+        JOIN recipes r ON rl.recipe_id = r.id
+        WHERE rl.created_at >= NOW() - INTERVAL '1 week'
+        GROUP BY r.id
+        ORDER BY like_count DESC
+        LIMIT 6;
+      `,
+    };
+
+    try {
+      const { rows } = await pool.query(query);
+      return rows;
+    } catch (error) {
+      console.error("Error querying the database", error);
+      throw error;
+    }
+  }
 }
 
 export default RecipeRepository;

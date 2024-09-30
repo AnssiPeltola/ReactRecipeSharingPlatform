@@ -3,6 +3,7 @@ import RecipeSearch from "../../Components/RecipeSearch/RecipeSearch";
 import RandomRecipeButton from "../../Components/RandomRecipeButton/RandomRecipeButton";
 import CategorySelection from "../../Components/CategorySelection/CategorySelection";
 import LatestRecipes from "../../Components/LatestRecipes/LatestRecipes";
+import TopRecipesWeek from "../../Components/TopRecipesWeek/TopRecipesWeek";
 
 function Frontpage() {
   return (
@@ -23,6 +24,9 @@ function Frontpage() {
       </div>
       <div className="mb-6">
         <LatestRecipes />
+      </div>
+      <div className="mb-6">
+        <TopRecipesWeek />
       </div>
     </div>
   );

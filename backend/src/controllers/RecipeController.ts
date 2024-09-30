@@ -254,6 +254,17 @@ class RecipeController {
       res.status(500).json({ message: "Error updating recipe picture" });
     }
   }
+
+  async getTopRecipesWeek(req: Request, res: Response) {
+    try {
+      const topRecipes = await this.recipeService.getTopRecipesWeek();
+      res.json(topRecipes);
+    } catch (error) {
+      res
+        .status(500)
+        .json({ message: "Error fetching top recipes of the week" });
+    }
+  }
 }
 
 export default RecipeController;
