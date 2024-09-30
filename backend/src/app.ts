@@ -277,4 +277,12 @@ app.post(
   (req, res) => recipeController.updateRecipePicture(req, res)
 );
 
+app.get("/topRecipesWeek", async (req, res) => {
+  try {
+    await recipeController.getTopRecipesWeek(req, res);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching top recipes of the week" });
+  }
+});
+
 export default app;
