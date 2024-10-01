@@ -39,7 +39,7 @@ const ProfileView = () => {
       );
 
       if (response.status === 404) {
-        setProfilePicture("https://via.placeholder.com/40");
+        setProfilePicture("/placeholder-user.png"); // Local placeholder image
       } else {
         const base64 = btoa(
           new Uint8Array(response.data).reduce(
@@ -52,7 +52,7 @@ const ProfileView = () => {
       }
     } catch (error) {
       console.error("Error fetching profile picture:", error);
-      setProfilePicture("https://via.placeholder.com/40");
+      setProfilePicture("/placeholder-user.png"); // Local placeholder image
     }
   };
 
