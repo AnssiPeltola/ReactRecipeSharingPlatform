@@ -28,6 +28,24 @@ class RecipeController {
     }
   }
 
+  async updateRecipe(req: Request, res: Response) {
+    try {
+      const recipeId = parseInt(req.params.recipeId, 10);
+      if (isNaN(recipeId)) {
+        throw new Error("Invalid recipe ID");
+      }
+      const recipe = await this.recipeService.updateRecipe(recipeId, req.body);
+      res.status(200).json(recipe);
+    } catch (error) {
+      console.error("Error updating recipe:", error);
+      if ((error as Error).message.includes("User with id")) {
+        res.status(400).json({ message: (error as Error).message });
+      } else {
+        res.status(500).json({ message: "Error updating recipe" });
+      }
+    }
+  }
+
   uploadFile = async (req: Request, res: Response) => {
     const file = req.file;
     const { recipeId } = req.body; // Assuming recipeId is sent in the request body

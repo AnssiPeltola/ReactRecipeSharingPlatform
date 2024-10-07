@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../Redux/store";
 import IngredientSearch from "../../../Components/IngredientSearch/IngredientSearch";
@@ -19,6 +19,7 @@ import {
 
 const RecipeIngredients = () => {
   const navigate = useNavigate();
+  const { recipeId } = useParams<{ recipeId: string }>(); // Get recipeId from URL
   const dispatch = useDispatch();
   const recipeState = useSelector((state: RootState) => state.recipe);
   const [ingredients, setLocalIngredients] = useState<Ingredient[]>([]);
@@ -40,8 +41,14 @@ const RecipeIngredients = () => {
         { id: uuidv4(), quantity: "", unit: "", name: "" },
       ]);
     } else {
-      setLocalIngredients(recipeState.ingredients);
+      setLocalIngredients(
+        recipeState.ingredients.map((ingredient) => ({
+          ...ingredient,
+          id: ingredient.id || uuidv4(),
+        }))
+      );
     }
+    console.log("Recipe State in RecipeIngredients:", recipeState);
   }, [recipeState]);
 
   const handleButtonClick = () => {
@@ -72,12 +79,24 @@ const RecipeIngredients = () => {
       );
       dispatch(setIngredients(ingredientsForAction));
       dispatch(setInstructions(steps.join("\n")));
-      navigate("/create-recipe/recipe-picture");
+      console.log(
+        "Updated Recipe State before navigation from ingredients page:",
+        recipeState
+      );
+      navigate(
+        recipeId
+          ? `/edit-recipe/${recipeId}/recipe-picture`
+          : "/create-recipe/recipe-picture"
+      );
     }
   };
 
   const handleBackButton = () => {
-    navigate("/create-recipe/recipe-title");
+    navigate(
+      recipeId
+        ? `/edit-recipe/${recipeId}/recipe-title`
+        : "/create-recipe/recipe-title"
+    );
   };
 
   const handleAddMore = () => {
@@ -185,6 +204,8 @@ const RecipeIngredients = () => {
       return prevSteps.filter((_, i) => i !== index);
     });
   };
+
+  console.log("Recipe State in RecipeIngredients:", recipeState);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">

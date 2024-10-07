@@ -1,6 +1,8 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useSelector } from "react-redux";
+import { RootState } from "../../Redux/store";
 import { RecipeState } from "../../Types/types";
 import LikeButton from "../../Components/LikeButton/LikeButton";
 import AddComment from "../../Components/RecipeComments/AddComment/AddComment";
@@ -10,6 +12,8 @@ const placeholderImageUrl = "https://via.placeholder.com/150";
 
 const RecipeDetails = () => {
   const { recipeId } = useParams<{ recipeId: string }>();
+  const navigate = useNavigate();
+  const user = useSelector((state: RootState) => state.auth.user);
   const [recipe, setRecipe] = useState<RecipeState | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -34,7 +38,9 @@ const RecipeDetails = () => {
   if (error)
     return <div className="text-center mt-4 text-red-500">Error: {error}</div>;
 
-  console.log(recipe);
+  const handleEditClick = () => {
+    navigate(`/edit-recipe/${recipeId}`);
+  };
 
   return (
     <div className="max-w-4xl mx-auto p-4">
@@ -68,7 +74,7 @@ const RecipeDetails = () => {
             <p className="text-2xl font-semibold mb-2">
               Kokin salaiset liikkeet:
             </p>
-            {recipe.instructions.split("\r\n").map((step, index) => (
+            {recipe.instructions.split(/\r?\n/).map((step, index) => (
               <div key={index} className="ml-1">{`${index + 1}. ${step}`}</div>
             ))}
           </div>
@@ -83,6 +89,14 @@ const RecipeDetails = () => {
             />
           </div>
           <CommentList recipeId={parseInt(recipe.id || "")} />
+          {user && user.id?.toString() === recipe.user_id.toString() && (
+            <button
+              onClick={handleEditClick}
+              className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded mt-4"
+            >
+              Muokkaa reseptiä
+            </button>
+          )}
         </>
       )}
     </div>

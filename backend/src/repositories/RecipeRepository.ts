@@ -88,6 +88,97 @@ class RecipeRepository {
     }
   }
 
+  async updateRecipe(recipeId: number, recipe: Recipe) {
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN"); // Start transaction
+
+      // Check if the user exists
+      const userCheckQuery: QueryConfig = {
+        text: "SELECT id FROM users WHERE id = $1",
+        values: [recipe.user_id],
+      };
+      const userCheckResult = await client.query(userCheckQuery);
+
+      if (userCheckResult.rowCount === 0) {
+        throw new Error(`User with id ${recipe.user_id} does not exist`);
+      }
+
+      // Update the recipe
+      const recipeUpdateQuery: QueryConfig = {
+        text: `
+          UPDATE recipes
+          SET title = $1, category = $2, secondary_category = $3, main_ingredient = $4, instructions = $5, picture_url = $6
+          WHERE id = $7
+        `,
+        values: [
+          recipe.title,
+          recipe.category,
+          recipe.secondary_category || null,
+          recipe.mainIngredient,
+          recipe.instructions,
+          recipe.pictureUrl,
+          recipeId,
+        ],
+      };
+      await client.query(recipeUpdateQuery);
+
+      // Delete existing ingredients
+      const deleteIngredientsQuery: QueryConfig = {
+        text: "DELETE FROM recipe_ingredients WHERE recipe_id = $1",
+        values: [recipeId],
+      };
+      await client.query(deleteIngredientsQuery);
+
+      // Handle ingredients
+      for (const ingredient of recipe.ingredients) {
+        let ingredientId;
+
+        // Check if ingredient exists
+        const ingredientCheckQuery: QueryConfig = {
+          text: "SELECT id FROM ingredients WHERE name = $1",
+          values: [ingredient.name],
+        };
+        const ingredientCheckResult = await client.query(ingredientCheckQuery);
+
+        if (ingredientCheckResult.rows.length > 0) {
+          // Ingredient exists
+          ingredientId = ingredientCheckResult.rows[0].id;
+        } else {
+          // Insert new ingredient
+          const ingredientInsertQuery: QueryConfig = {
+            text: "INSERT INTO ingredients(name) VALUES($1) RETURNING id",
+            values: [ingredient.name],
+          };
+          const ingredientInsertResult = await client.query(
+            ingredientInsertQuery
+          );
+          ingredientId = ingredientInsertResult.rows[0].id;
+        }
+
+        // Insert into recipe_ingredients
+        const recipeIngredientsInsertQuery: QueryConfig = {
+          text: "INSERT INTO recipe_ingredients(recipe_id, ingredient_id, quantity, unit) VALUES($1, $2, $3, $4)",
+          values: [
+            recipeId,
+            ingredientId,
+            ingredient.quantity,
+            ingredient.unit,
+          ],
+        };
+        await client.query(recipeIngredientsInsertQuery);
+      }
+
+      await client.query("COMMIT"); // Commit transaction
+      return { ...recipe, id: recipeId }; // Return the updated recipe with ID
+    } catch (error) {
+      await client.query("ROLLBACK"); // Rollback transaction on error
+      throw error; // Rethrow the error
+    } finally {
+      client.release();
+    }
+  }
+
   async uploadFile(
     file: Express.Multer.File,
     recipeId: number
