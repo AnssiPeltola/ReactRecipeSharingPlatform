@@ -167,6 +167,12 @@ app.post("/recipeUpdate/:recipeId", upload.single("file"), (req, res) =>
   recipeController.updateRecipe(req, res)
 );
 
+app.delete(
+  "/recipe/delete/:recipeId",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => recipeController.deleteRecipe(req, res)
+);
+
 app.post("/uploadRecipePicture", upload.single("file"), (req, res) =>
   recipeController.uploadFile(req, res)
 );

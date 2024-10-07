@@ -53,6 +53,10 @@ class RecipeService {
     }
   }
 
+  async deleteRecipe(recipeId: number, userId: number) {
+    return this.recipeRepository.deleteRecipe(recipeId, userId);
+  }
+
   async uploadFile(
     file: Express.Multer.File,
     recipeId: number
