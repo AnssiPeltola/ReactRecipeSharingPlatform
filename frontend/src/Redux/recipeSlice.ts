@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RecipeState, Ingredient } from "../Types/types";
+import { v4 as uuidv4 } from "uuid";
 
 const initialState: RecipeState = {
   title: "",
@@ -63,7 +64,15 @@ const recipeSlice = createSlice({
       state.picture_url = "";
       state.user_id = "";
       state.previewUrl = null;
-      state.selectedFile = null; // Add this line
+      state.selectedFile = null;
+    },
+    setRecipeState: (state, action: PayloadAction<RecipeState>) => {
+      const newState = { ...state, ...action.payload };
+      newState.ingredients = newState.ingredients.map((ingredient) => ({
+        ...ingredient,
+        id: ingredient.id || uuidv4(),
+      }));
+      return newState;
     },
   },
 });
@@ -79,8 +88,9 @@ export const {
   setpicture_url,
   setuser_id,
   setPreviewUrl,
-  setSelectedFile, // Add this line
+  setSelectedFile,
   resetState,
+  setRecipeState,
 } = recipeSlice.actions;
 
 export default recipeSlice.reducer;

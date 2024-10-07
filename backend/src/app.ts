@@ -163,6 +163,10 @@ app.post("/recipeCreate", upload.single("file"), (req, res) =>
   recipeController.createRecipe(req, res)
 );
 
+app.post("/recipeUpdate/:recipeId", upload.single("file"), (req, res) =>
+  recipeController.updateRecipe(req, res)
+);
+
 app.post("/uploadRecipePicture", upload.single("file"), (req, res) =>
   recipeController.uploadFile(req, res)
 );

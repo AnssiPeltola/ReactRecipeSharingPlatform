@@ -1,27 +1,54 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../Redux/store";
-import { setPreviewUrl, setSelectedFile } from "../../../Redux/recipeSlice";
+import {
+  setPreviewUrl,
+  setSelectedFile,
+  setpicture_url,
+} from "../../../Redux/recipeSlice";
 import ProgressBar from "../../../Components/ProgressBar/ProgressBar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
 
 const RecipePicture = () => {
   const navigate = useNavigate();
+  const { recipeId } = useParams<{ recipeId: string }>();
   const dispatch = useDispatch();
   const previewUrl = useSelector((state: RootState) => state.recipe.previewUrl);
+  const recipeState = useSelector((state: RootState) => state.recipe);
   const selectedFile = useSelector(
     (state: RootState) => state.recipe.selectedFile
   );
+  const [existingPictureUrl, setExistingPictureUrl] = useState<string | null>(
+    null
+  );
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleButtonClick = () => {
-    navigate("/create-recipe/recipe-overview");
-  };
+  useEffect(() => {
+    if (recipeState.picture_url) {
+      fetchExistingPicture(recipeState.picture_url);
+    }
+  }, [recipeState.picture_url]);
 
-  const handleBackButton = () => {
-    navigate("/create-recipe/recipe-ingredients");
+  useEffect(() => {
+    if (selectedFile) {
+      dispatch(setPreviewUrl(URL.createObjectURL(selectedFile)));
+    }
+  }, [selectedFile, dispatch]);
+
+  const fetchExistingPicture = async (pictureId: string) => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/recipePicture/${pictureId}`,
+        { responseType: "blob" }
+      );
+      const imageUrl = URL.createObjectURL(response.data);
+      setExistingPictureUrl(imageUrl);
+    } catch (error) {
+      console.error("Error fetching existing picture:", error);
+    }
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,6 +57,7 @@ const RecipePicture = () => {
       if (file.type.startsWith("image/")) {
         dispatch(setSelectedFile(file));
         dispatch(setPreviewUrl(URL.createObjectURL(file)));
+        setExistingPictureUrl(null); // Clear existing picture when a new file is selected
         setErrorMessage(null);
       } else {
         setErrorMessage("Valitse kelvollinen kuvatiedosto.");
@@ -40,6 +68,8 @@ const RecipePicture = () => {
   const handleRemovePicture = () => {
     dispatch(setSelectedFile(null));
     dispatch(setPreviewUrl(null));
+    dispatch(setpicture_url(""));
+    setExistingPictureUrl(null);
     const fileInput = document.getElementById("fileInput") as HTMLInputElement;
     if (fileInput) {
       fileInput.value = "";
@@ -47,11 +77,35 @@ const RecipePicture = () => {
   };
 
   const handleImageBoxClick = (event: React.MouseEvent<HTMLLabelElement>) => {
-    if (previewUrl) {
+    if (previewUrl || existingPictureUrl) {
       handleRemovePicture();
       event.preventDefault();
     }
   };
+
+  const handleButtonClick = () => {
+    // Ensure the state is updated before navigating
+    if (selectedFile) {
+      dispatch(setSelectedFile(selectedFile));
+      dispatch(setPreviewUrl(previewUrl));
+    }
+    console.log("Recipe State before navigating to overview:", recipeState);
+    navigate(
+      recipeId
+        ? `/edit-recipe/${recipeId}/recipe-overview`
+        : "/create-recipe/recipe-overview"
+    );
+  };
+
+  const handleBackButton = () => {
+    navigate(
+      recipeId
+        ? `/edit-recipe/${recipeId}/recipe-ingredients`
+        : "/create-recipe/recipe-ingredients"
+    );
+  };
+
+  console.log("Recipe State in RecipePicture:", recipeState);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -73,10 +127,10 @@ const RecipePicture = () => {
           className="w-full h-96 border-2 border-collapse border-gray-200 rounded flex items-center justify-center cursor-pointer mb-4 relative group"
           onClick={handleImageBoxClick}
         >
-          {previewUrl ? (
+          {previewUrl || existingPictureUrl ? (
             <>
               <img
-                src={previewUrl}
+                src={previewUrl ?? existingPictureUrl ?? undefined}
                 alt="Recipe"
                 className="w-full h-full object-contain rounded group-hover:opacity-50"
               />

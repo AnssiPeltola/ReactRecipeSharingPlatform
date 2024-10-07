@@ -6,11 +6,17 @@ import {
   resetState,
   setpicture_url,
   setPreviewUrl,
+  setRecipeState,
 } from "../../../Redux/recipeSlice";
 import axios from "axios";
 import ProgressBar from "../../../Components/ProgressBar/ProgressBar";
 
-const RecipeOverview = () => {
+interface RecipeOverviewProps {
+  mode: "create" | "edit";
+  recipeId?: string;
+}
+
+const RecipeOverview: React.FC<RecipeOverviewProps> = ({ mode, recipeId }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const recipeState = useSelector((state: RootState) => state.recipe);
@@ -26,6 +32,23 @@ const RecipeOverview = () => {
       dispatch(setPreviewUrl(URL.createObjectURL(selectedFile)));
     }
   }, [selectedFile, dispatch]);
+
+  useEffect(() => {
+    if (mode === "edit" && recipeId) {
+      fetchRecipeData(recipeId);
+    }
+  }, [mode, recipeId, dispatch]);
+
+  const fetchRecipeData = async (id: string) => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/recipes/${id}`
+      );
+      dispatch(setRecipeState(response.data));
+    } catch (error) {
+      console.error("Error fetching recipe data:", error);
+    }
+  };
 
   const handleButtonClick = async () => {
     let pictureUrl = recipeState.picture_url;
@@ -74,8 +97,13 @@ const RecipeOverview = () => {
     console.log("Sending recipe data:", recipeFormData);
 
     try {
-      const recipeResponse = await axios.post(
-        `${process.env.REACT_APP_API_BASE_URL}/recipeCreate`,
+      const endpoint: string =
+        mode === "create"
+          ? `${process.env.REACT_APP_API_BASE_URL}/recipeCreate`
+          : `${process.env.REACT_APP_API_BASE_URL}/recipeUpdate/${recipeState.id}`;
+
+      const recipeResponse: { data: { id: string } } = await axios.post(
+        endpoint,
         recipeFormData,
         {
           headers: {
@@ -85,14 +113,14 @@ const RecipeOverview = () => {
         }
       );
 
-      // Get the created recipe ID
-      const recipeId = recipeResponse.data.id;
+      // Get the created or updated recipe ID
+      const newRecipeId: string = recipeResponse.data.id;
 
       // If a picture was uploaded, update the picture with the recipe ID
       if (selectedFile && pictureUrl) {
         await axios.post(
           `${process.env.REACT_APP_API_BASE_URL}/updateRecipePicture`,
-          { recipeId, pictureUrl },
+          { recipeId: newRecipeId, pictureUrl },
           {
             headers: {
               "Content-Type": "application/json",
@@ -105,12 +133,19 @@ const RecipeOverview = () => {
       dispatch(resetState());
       navigate("/create-recipe/recipe-created");
     } catch (error) {
-      console.error("Error creating recipe:", error);
+      console.error(
+        `Error ${mode === "create" ? "creating" : "updating"} recipe:`,
+        error
+      );
     }
   };
 
   const handleBackButton = () => {
-    navigate("/create-recipe/recipe-picture");
+    navigate(
+      mode === "edit"
+        ? `/edit-recipe/${recipeState.id}/recipe-picture`
+        : "/create-recipe/recipe-picture"
+    );
   };
 
   console.log(recipeState);

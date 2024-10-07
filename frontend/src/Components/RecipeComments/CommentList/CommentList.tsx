@@ -51,7 +51,7 @@ const CommentList: React.FC<CommentListProps> = ({ recipeId }) => {
     fetchComments();
   }, [recipeId]);
 
-  console.log("Comments:", comments);
+  // console.log("Comments:", comments);
 
   return (
     <div className="space-y-4">

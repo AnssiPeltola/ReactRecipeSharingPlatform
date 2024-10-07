@@ -29,6 +29,30 @@ class RecipeService {
     }
   }
 
+  async updateRecipe(recipeId: number, recipeData: any) {
+    // Validate the incoming data
+    if (
+      !recipeData.title ||
+      !recipeData.category ||
+      !recipeData.mainIngredient ||
+      !recipeData.instructions ||
+      !recipeData.user_id
+    ) {
+      throw new Error("Missing required fields");
+    }
+
+    try {
+      const recipe = await this.recipeRepository.updateRecipe(
+        recipeId,
+        recipeData
+      );
+      return recipe;
+    } catch (error) {
+      console.error("Error in RecipeService.updateRecipe:", error);
+      throw error;
+    }
+  }
+
   async uploadFile(
     file: Express.Multer.File,
     recipeId: number

@@ -8,8 +8,8 @@ import Navbar from "./Components/Navbar/Navbar";
 import ErrorPage from "./Pages/ErrorPage/ErrorPage";
 import RegisterDetails from "./Pages/Register/RegisterDetails/RegisterDetails";
 import RegisterProfilePicture from "./Pages/Register/RegisterProfilePicture/RegisterProfilePicture";
-import IngredientSearch from "./Components/IngredientSearch/IngredientSearch";
-import CreateRecipe from "./Pages/RecipeCreate/RecipeCreate";
+import CreateRecipeWrapper from "./Components/CreateRecipeWrapper/CreateRecipeWrapper";
+import EditRecipeWrapper from "./Components/EditRecipeWrapper/EditRecipeWrapper";
 import SearchResultsPage from "./Pages/RecipeSearchResults/RecipeSearchResults";
 import RecipeDetails from "./Pages/RecipeDetails/RecipeDetails";
 import ProfilePage from "./Pages/ProfilePage/ProfilePage";
@@ -33,10 +33,13 @@ function App() {
               element={<RegisterProfilePicture />}
             />
             <Route path={ROUTES.LOGIN} element={<Login />} />
-            {/* <Route path={ROUTES.INGREDIENT_SEARCH} element={<IngredientSearch />} /> */}
             <Route
               path={ROUTES.CREATERECIPE + "/*"}
-              element={<CreateRecipe />}
+              element={<CreateRecipeWrapper />}
+            />
+            <Route
+              path={ROUTES.EDIT_RECIPE + "/*"}
+              element={<EditRecipeWrapper />}
             />
             <Route
               path={ROUTES.SEARCH_RESULTS}

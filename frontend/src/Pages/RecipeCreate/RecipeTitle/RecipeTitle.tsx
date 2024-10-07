@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setTitle,
@@ -8,6 +8,7 @@ import {
   setMainIngredient,
   setMainIngredientCategory,
   setuser_id,
+  setRecipeState,
 } from "../../../Redux/recipeSlice";
 import { RootState } from "../../../Redux/store";
 import ProgressBar from "../../../Components/ProgressBar/ProgressBar";
@@ -19,9 +20,11 @@ import {
   validateMainCategory,
   validateSpecificIngredient,
 } from "../../../utils/inputValidations";
+import axios from "axios";
 
 const RecipeTitle = () => {
   const navigate = useNavigate();
+  const { recipeId } = useParams<{ recipeId: string }>();
   const user = useSelector((state: RootState) => state.auth.user);
   const dispatch = useDispatch();
   const recipeState = useSelector((state: RootState) => state.recipe);
@@ -57,6 +60,42 @@ const RecipeTitle = () => {
       : ""
   );
 
+  useEffect(() => {
+    if (recipeId && !recipeState.title) {
+      // Only fetch data if the recipe state is not already populated
+      fetchRecipeData(recipeId);
+    }
+    console.log("Recipe State in RecipeTitle:", recipeState);
+  }, [recipeId]);
+
+  useEffect(() => {
+    if (!mainCategory && specificIngredient) {
+      const derivedMainCategory = Object.keys(mainIngredients).find(
+        (category) =>
+          mainIngredients[category as keyof MainIngredientsType].includes(
+            specificIngredient
+          )
+      ) as keyof MainIngredientsType | "";
+      setMainCategory(derivedMainCategory);
+    }
+  }, [specificIngredient, mainCategory]);
+
+  const fetchRecipeData = async (id: string) => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/recipe/${id}`
+      );
+      dispatch(setRecipeState(response.data));
+      setTitleLocal(response.data.title);
+      setCategoryLocal(response.data.category);
+      setsecondary_categoryLocal(response.data.secondary_category);
+      setMainCategory(response.data.main_ingredient_category || "");
+      setSpecificIngredient(response.data.main_ingredient || "");
+    } catch (error) {
+      console.error("Error fetching recipe data:", error);
+    }
+  };
+
   const handleButtonClick = () => {
     const errors = {
       title: validateTitle(title),
@@ -81,8 +120,12 @@ const RecipeTitle = () => {
       if (user && user.id !== undefined) {
         dispatch(setuser_id(user.id.toString()));
       }
-      console.log(recipeState);
-      navigate("/create-recipe/recipe-ingredients");
+      console.log("Updated Recipe State before navigation:", recipeState);
+      navigate(
+        recipeId
+          ? `/edit-recipe/${recipeId}/recipe-ingredients`
+          : "/create-recipe/recipe-ingredients"
+      );
     }
   };
 
@@ -106,9 +149,11 @@ const RecipeTitle = () => {
   ) => {
     const value = e.target.value as keyof MainIngredientsType | "";
     setMainCategory(value);
+    setSpecificIngredient(""); // Reset specific ingredient when main category changes
     setErrorMessages((prev) => ({
       ...prev,
       mainCategory: validateMainCategory(value),
+      specificIngredient: "", // Reset specific ingredient error
     }));
   };
 
