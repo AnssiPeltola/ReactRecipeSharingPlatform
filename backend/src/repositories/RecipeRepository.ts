@@ -179,6 +179,40 @@ class RecipeRepository {
     }
   }
 
+  async deleteRecipe(recipeId: number, userId: number) {
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN"); // Start transaction
+
+      // Check if the recipe belongs to the user
+      const recipeCheckQuery: QueryConfig = {
+        text: "SELECT id FROM recipes WHERE id = $1 AND user_id = $2",
+        values: [recipeId, userId],
+      };
+      const recipeCheckResult = await client.query(recipeCheckQuery);
+
+      if (recipeCheckResult.rowCount === 0) {
+        throw new Error("You do not have permission to delete this recipe");
+      }
+
+      // Delete the recipe
+      const deleteRecipeQuery: QueryConfig = {
+        text: "DELETE FROM recipes WHERE id = $1",
+        values: [recipeId],
+      };
+      await client.query(deleteRecipeQuery);
+
+      await client.query("COMMIT"); // Commit transaction
+      return true;
+    } catch (error) {
+      await client.query("ROLLBACK"); // Rollback transaction on error
+      console.error("Error deleting recipe:", error);
+      return false;
+    } finally {
+      client.release();
+    }
+  }
+
   async uploadFile(
     file: Express.Multer.File,
     recipeId: number

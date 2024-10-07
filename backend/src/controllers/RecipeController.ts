@@ -46,6 +46,27 @@ class RecipeController {
     }
   }
 
+  async deleteRecipe(req: Request, res: Response) {
+    const user = req.user as AuthenticatedUser;
+    const userId = user.id;
+    const recipeId = parseInt(req.params.recipeId, 10);
+
+    try {
+      const success = await this.recipeService.deleteRecipe(recipeId, userId);
+      if (!success) {
+        return res
+          .status(403)
+          .json({
+            message: "You do not have permission to delete this recipe",
+          });
+      }
+      res.status(200).json({ message: "Recipe deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting recipe:", error);
+      res.status(500).json({ message: "Error deleting recipe" });
+    }
+  }
+
   uploadFile = async (req: Request, res: Response) => {
     const file = req.file;
     const { recipeId } = req.body; // Assuming recipeId is sent in the request body

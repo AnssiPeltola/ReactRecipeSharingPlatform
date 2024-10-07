@@ -7,6 +7,7 @@ import { RecipeState } from "../../Types/types";
 import LikeButton from "../../Components/LikeButton/LikeButton";
 import AddComment from "../../Components/RecipeComments/AddComment/AddComment";
 import CommentList from "../../Components/RecipeComments/CommentList/CommentList";
+import RecipeDeleteConfirmModal from "../../Components/RecipeDeleteConfirmModal/RecipeDeleteConfirmModal";
 
 const placeholderImageUrl = "https://via.placeholder.com/150";
 
@@ -17,6 +18,10 @@ const RecipeDetails = () => {
   const [recipe, setRecipe] = useState<RecipeState | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showModal, setShowModal] = useState(false);
+
+  const openModal = () => setShowModal(true);
+  const closeModal = () => setShowModal(false);
 
   const fetchRecipe = async () => {
     setLoading(true);
@@ -40,6 +45,24 @@ const RecipeDetails = () => {
 
   const handleEditClick = () => {
     navigate(`/edit-recipe/${recipeId}`);
+  };
+
+  const handleDeleteClick = async () => {
+    try {
+      const token = localStorage.getItem("sessionToken");
+      await axios.delete(
+        `${process.env.REACT_APP_API_BASE_URL}/recipe/delete/${recipe?.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          params: { userId: user?.id },
+        }
+      );
+      navigate("/");
+    } catch (error) {
+      console.error("Error deleting recipe:", error);
+    }
   };
 
   return (
@@ -90,13 +113,26 @@ const RecipeDetails = () => {
           </div>
           <CommentList recipeId={parseInt(recipe.id || "")} />
           {user && user.id?.toString() === recipe.user_id.toString() && (
-            <button
-              onClick={handleEditClick}
-              className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded mt-4"
-            >
-              Muokkaa reseptiä
-            </button>
+            <>
+              <button
+                onClick={handleEditClick}
+                className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded mt-4"
+              >
+                Muokkaa reseptiä
+              </button>
+              <button
+                onClick={openModal}
+                className="bg-red-500 hover:bg-red-600 text-white p-2 rounded mt-4 ml-2"
+              >
+                Poista resepti
+              </button>
+            </>
           )}
+          <RecipeDeleteConfirmModal
+            show={showModal}
+            onClose={closeModal}
+            onConfirm={handleDeleteClick}
+          />
         </>
       )}
     </div>
