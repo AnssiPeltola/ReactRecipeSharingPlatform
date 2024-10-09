@@ -7,7 +7,7 @@ import { RecipeState } from "../../Types/types";
 import LikeButton from "../../Components/LikeButton/LikeButton";
 import AddComment from "../../Components/RecipeComments/AddComment/AddComment";
 import CommentList from "../../Components/RecipeComments/CommentList/CommentList";
-import RecipeDeleteConfirmModal from "../../Components/RecipeDeleteConfirmModal/RecipeDeleteConfirmModal";
+import ConfirmModal from "../../Components/Modal/ConfirmModal/ConfirmModal";
 
 const placeholderImageUrl = "https://via.placeholder.com/150";
 
@@ -128,10 +128,14 @@ const RecipeDetails = () => {
               </button>
             </>
           )}
-          <RecipeDeleteConfirmModal
+          <ConfirmModal
             show={showModal}
             onClose={closeModal}
             onConfirm={handleDeleteClick}
+            title="Vahvista poisto"
+            message="Haluatko varmasti poistaa tämän reseptin? Tätä toimintoa ei voi peruuttaa."
+            confirmText="Kyllä, poista resepti"
+            cancelText="Ei, jätä resepti"
           />
         </>
       )}
