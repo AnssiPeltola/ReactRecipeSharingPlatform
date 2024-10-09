@@ -87,6 +87,10 @@ class UserService {
   async deleteAccount(userId: number) {
     return this.userRepository.deleteAccount(userId);
   }
+
+  async getPublicUserDetails(id: number) {
+    return await this.userRepository.findPublicById(id);
+  }
 }
 
 export default UserService;

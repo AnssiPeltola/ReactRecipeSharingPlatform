@@ -221,6 +221,18 @@ class UserController {
       res.status(200).json({ message: "Logged out successfully" });
     });
   }
+
+  async getPublicUserDetails(req: any, res: any) {
+    const { id } = req.params;
+    try {
+      const userDetails = await this.userService.getPublicUserDetails(
+        Number(id)
+      );
+      res.json(userDetails);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching user details" });
+    }
+  }
 }
 
 export default UserController;

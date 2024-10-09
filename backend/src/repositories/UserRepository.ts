@@ -181,6 +181,34 @@ class UserRepository {
     const result = await pool.query(query);
     return (result.rowCount ?? 0) > 0;
   }
+
+  async findPublicById(id: number) {
+    const client = await pool.connect();
+    try {
+      const result = await client.query(
+        `
+        SELECT 
+          users.id, 
+          users.nickname, 
+          users.bio, 
+          users.location, 
+          users.instagram, 
+          users.tiktok, 
+          users.experience_level, 
+          profile_pictures.id AS profile_picture_id, 
+          profile_pictures.type AS profile_picture_type, 
+          profile_pictures.data AS profile_picture_data 
+        FROM users 
+        LEFT JOIN profile_pictures ON users.id = profile_pictures.user_id 
+        WHERE users.id = $1
+      `,
+        [id]
+      );
+      return result.rows[0]; // Return the user with the given id and profile picture info
+    } finally {
+      client.release();
+    }
+  }
 }
 
 export default UserRepository;
