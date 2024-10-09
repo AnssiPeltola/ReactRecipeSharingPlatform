@@ -3,7 +3,7 @@ import axios from "axios";
 import { RecipeState } from "../../Types/types";
 import { Link } from "react-router-dom";
 
-const placeholderImageUrl = "https://via.placeholder.com/150";
+const placeholderImageUrl = "/placeholder-food.png";
 
 interface UserRecipesProps {
   userId: string;

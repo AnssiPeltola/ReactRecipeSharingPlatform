@@ -10,8 +10,9 @@ import CommentList from "../../Components/RecipeComments/CommentList/CommentList
 import ConfirmModal from "../../Components/Modal/ConfirmModal/ConfirmModal";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import "../../Styles/loadingAnimation.css";
 
-const placeholderImageUrl = "https://via.placeholder.com/150";
+const placeholderImageUrl = "/placeholder-food.png";
 
 const RecipeDetails = () => {
   const { recipeId } = useParams<{ recipeId: string }>();
@@ -41,10 +42,6 @@ const RecipeDetails = () => {
     fetchRecipe();
   }, [recipeId]);
 
-  if (loading) return <div className="text-center mt-4">Loading...</div>;
-  if (error)
-    return <div className="text-center mt-4 text-red-500">Error: {error}</div>;
-
   const handleEditClick = () => {
     navigate(`/edit-recipe/${recipeId}`);
   };
@@ -66,6 +63,19 @@ const RecipeDetails = () => {
       console.error("Error deleting recipe:", error);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+        <div className="loader"></div>
+        <p className="mt-4 text-lg text-gray-700">Ladataan...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return <div className="text-center mt-4 text-red-500">Error: {error}</div>;
+  }
 
   return (
     <div className="max-w-4xl mx-auto p-4">
