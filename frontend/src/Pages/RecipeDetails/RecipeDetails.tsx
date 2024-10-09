@@ -8,6 +8,8 @@ import LikeButton from "../../Components/LikeButton/LikeButton";
 import AddComment from "../../Components/RecipeComments/AddComment/AddComment";
 import CommentList from "../../Components/RecipeComments/CommentList/CommentList";
 import ConfirmModal from "../../Components/Modal/ConfirmModal/ConfirmModal";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const placeholderImageUrl = "https://via.placeholder.com/150";
 
@@ -101,7 +103,11 @@ const RecipeDetails = () => {
               <div key={index} className="ml-1">{`${index + 1}. ${step}`}</div>
             ))}
           </div>
-          <p className="mb-4 font-semibold">
+          <p
+            className="mb-4 font-semibold cursor-pointer text-blue-500 hover:bg-blue-100 transition duration-200 inline-flex items-center"
+            onClick={() => navigate(`/profile/user/${recipe.user_id}`)}
+          >
+            <FontAwesomeIcon icon={faUser} className="mr-2" />
             Keittiökynäilijä {recipe.nickname}
           </p>
           <LikeButton recipeId={recipe.id || ""} />

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import ProfileView from "./ProfileView/ProfileView";
 import ModifyUserInfo from "./ModifyUserInfo/ModifyUserInfo";
+import OtherUserProfileView from "./OtherUserProfileView/OtherUserProfileView";
 import { useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
 import "../../Styles/loadingAnimation.css";
@@ -61,6 +62,7 @@ const ProfilePage = () => {
         <Route path="/" element={<Navigate to="view" />} />
         <Route path="view" element={<ProfileView />} />
         <Route path="modify" element={<ModifyUserInfo />} />
+        <Route path="user/:userId" element={<OtherUserProfileView />} />
       </Routes>
     </div>
   );

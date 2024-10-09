@@ -120,7 +120,7 @@ const ProfileView = () => {
           Poista tili
         </button>
       </div>
-      <UserRecipes />
+      <UserRecipes userId={user?.id?.toString() || ""} />
       <div className="my-20">
         <LikedRecipes />
       </div>

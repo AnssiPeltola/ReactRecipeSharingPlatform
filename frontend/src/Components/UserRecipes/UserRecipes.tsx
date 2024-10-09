@@ -5,26 +5,23 @@ import { Link } from "react-router-dom";
 
 const placeholderImageUrl = "https://via.placeholder.com/150";
 
-const UserRecipes = () => {
+interface UserRecipesProps {
+  userId: string;
+}
+
+const UserRecipes: React.FC<UserRecipesProps> = ({ userId }) => {
   const [recipes, setRecipes] = useState<RecipeState[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const recipesPerPage = 9;
 
   useEffect(() => {
     fetchUserRecipes();
-  }, []);
+  }, [userId]);
 
   const fetchUserRecipes = async () => {
     try {
-      const token = localStorage.getItem("sessionToken");
-      if (!token) {
-        throw new Error("No token found");
-      }
       const response = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/getUserRecipes`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        `${process.env.REACT_APP_API_BASE_URL}/user/${userId}/recipes`
       );
       setRecipes(response.data);
     } catch (error) {
@@ -40,7 +37,7 @@ const UserRecipes = () => {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4">Reseptikokoelmasi</h2>
+      <h2 className="text-2xl font-bold mb-4">Reseptikokoelma</h2>
       {recipes.length > 0 ? (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

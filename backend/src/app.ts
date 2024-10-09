@@ -157,6 +157,10 @@ app.delete(
   (req, res) => userController.deleteAccount(req, res)
 );
 
+app.get("/user/:id", (req, res) =>
+  userController.getPublicUserDetails(req, res)
+);
+
 // Recipe routes below this line ----------------------------
 
 app.post("/recipeCreate", upload.single("file"), (req, res) =>
@@ -228,6 +232,16 @@ app.get(
     }
   }
 );
+
+app.get("/user/:userId/recipes", async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const recipes = await recipeController.getUserRecipes(Number(userId));
+    res.json(recipes);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching user recipes" });
+  }
+});
 
 app.post(
   "/likeRecipe/:id",
