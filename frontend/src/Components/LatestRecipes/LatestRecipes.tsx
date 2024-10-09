@@ -2,13 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { RecipeState } from "../../Types/types";
 import { LANDING } from "../../Constants/routes";
+import "../../Styles/loadingAnimation.css";
 
 interface ExtendedRecipeState extends RecipeState {
   id: string;
   pictureUrl: string;
 }
 
-const placeholderImageUrl = "https://via.placeholder.com/150";
+const placeholderImageUrl = "/placeholder-food.png";
 
 const LatestRecipes = () => {
   const [recipes, setRecipes] = useState<ExtendedRecipeState[]>([]);
@@ -41,7 +42,11 @@ const LatestRecipes = () => {
   }, []);
 
   if (loading) {
-    return <div className="text-center text-gray-500">Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="loader"></div>
+      </div>
+    );
   }
 
   if (error) {

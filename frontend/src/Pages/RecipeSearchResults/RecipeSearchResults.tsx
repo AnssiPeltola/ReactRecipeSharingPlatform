@@ -4,7 +4,7 @@ import { RecipeState } from "../../Types/types";
 import RecipeSearch from "../../Components/RecipeSearch/RecipeSearch";
 import { LANDING } from "../../Constants/routes";
 
-const placeholderImageUrl = "https://via.placeholder.com/150";
+const placeholderImageUrl = "/placeholder-food.png";
 
 const SearchResultsPage = () => {
   const location = useLocation();

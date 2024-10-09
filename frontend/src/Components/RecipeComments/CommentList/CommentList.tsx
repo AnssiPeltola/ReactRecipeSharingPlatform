@@ -12,7 +12,7 @@ interface CommentListProps {
 
 const CommentList: React.FC<CommentListProps> = ({ recipeId }) => {
   const [comments, setComments] = useState<Comment[]>([]);
-  const placeholderImageUrl = "https://via.placeholder.com/40";
+  const placeholderImageUrl = "/placeholder-user.png";
   const user = useSelector((state: RootState) => state.auth.user);
 
   const fetchComments = async () => {

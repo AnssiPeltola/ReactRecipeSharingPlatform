@@ -1,0 +1,9 @@
+.navbar {
+  height: 64px; /* Fixed height for the navbar */
+}
+
+.logo {
+  height: 100%; /* Make the logo fill the height of the navbar */
+  max-height: 70px; /* Ensure the logo doesn't exceed the navbar height */
+  width: auto; /* Maintain aspect ratio */
+}

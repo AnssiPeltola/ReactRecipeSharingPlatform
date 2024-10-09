@@ -6,6 +6,7 @@ import { LANDING } from "../../Constants/routes";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../Redux/authSlice";
 import { RootState } from "../../Redux/store";
+import "./Navbar.css"; // Import the CSS file
 
 const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -74,13 +75,9 @@ const Navbar = () => {
 
   if (!isLoggedIn) {
     return (
-      <nav className="fixed top-0 left-0 w-full bg-gray-800 p-4 flex justify-between items-center z-50">
+      <nav className="navbar fixed top-0 left-0 w-full bg-gray-800 p-4 flex justify-between items-center z-50">
         <button onClick={() => navigate("/")}>
-          <img
-            src="https://via.placeholder.com/40"
-            alt="Logo"
-            className="h-10"
-          />
+          <img src="recipeLogo.webp" alt="Logo" className="logo" />
         </button>
         <div className="flex space-x-4">
           <button
@@ -105,9 +102,9 @@ const Navbar = () => {
   }
 
   return (
-    <nav className="fixed top-0 left-0 w-full bg-gray-800 p-4 flex justify-between items-center z-50">
+    <nav className="navbar fixed top-0 left-0 w-full bg-gray-800 p-4 flex justify-between items-center z-50">
       <button onClick={() => navigate("/")}>
-        <img src="https://via.placeholder.com/40" alt="Logo" className="h-10" />
+        <img src="recipeLogo.webp" alt="Logo" className="logo" />
       </button>
       <div className="flex space-x-4">
         <button
