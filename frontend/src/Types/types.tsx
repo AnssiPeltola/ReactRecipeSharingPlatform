@@ -2,6 +2,7 @@ export interface RecipeState {
   id?: string;
   title: string;
   category: string;
+  created_at: string;
   secondary_category: string;
   main_ingredient: string;
   main_ingredient_category: string;

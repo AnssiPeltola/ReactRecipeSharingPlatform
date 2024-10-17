@@ -185,7 +185,11 @@ const RecipeOverview: React.FC<RecipeOverviewProps> = ({ mode, recipeId }) => {
         <div className="mb-2">
           <p className="font-semibold">Kokin salaiset liikkeet:</p>
           {recipeState.instructions.split("\n").map((step, index) => (
-            <div key={index} className="ml-2">{`${index + 1}. ${step}`}</div>
+            <div
+              key={index}
+              className="ml-2 break-words"
+              style={{ wordBreak: "break-word", overflowWrap: "break-word" }}
+            >{`${index + 1}. ${step}`}</div>
           ))}
         </div>
         {previewUrl && (

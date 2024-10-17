@@ -12,6 +12,7 @@ const initialState: RecipeState = {
   instructions: "",
   picture_url: "",
   user_id: "",
+  created_at: "",
   previewUrl: null,
   selectedFile: null,
 };
@@ -47,6 +48,9 @@ const recipeSlice = createSlice({
     setuser_id: (state, action: PayloadAction<string>) => {
       state.user_id = action.payload;
     },
+    setCreatedAt: (state, action: PayloadAction<string>) => {
+      state.created_at = action.payload;
+    },
     setPreviewUrl: (state, action: PayloadAction<string | null>) => {
       state.previewUrl = action.payload;
     },
@@ -63,6 +67,7 @@ const recipeSlice = createSlice({
       state.instructions = "";
       state.picture_url = "";
       state.user_id = "";
+      state.created_at = "";
       state.previewUrl = null;
       state.selectedFile = null;
     },
@@ -87,6 +92,7 @@ export const {
   setInstructions,
   setpicture_url,
   setuser_id,
+  setCreatedAt,
   setPreviewUrl,
   setSelectedFile,
   resetState,

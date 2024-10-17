@@ -110,7 +110,11 @@ const RecipeDetails = () => {
               Kokin salaiset liikkeet:
             </p>
             {recipe.instructions.split(/\r?\n/).map((step, index) => (
-              <div key={index} className="ml-1">{`${index + 1}. ${step}`}</div>
+              <div
+                key={index}
+                className="ml-1 break-words"
+                style={{ wordBreak: "break-word", overflowWrap: "break-word" }}
+              >{`${index + 1}. ${step}`}</div>
             ))}
           </div>
           <p
@@ -119,6 +123,9 @@ const RecipeDetails = () => {
           >
             <FontAwesomeIcon icon={faUser} className="mr-2" />
             Keittiökynäilijä {recipe.nickname}
+          </p>
+          <p className="mb-4">
+            Resepti luotu: {new Date(recipe.created_at).toLocaleDateString()}
           </p>
           <LikeButton recipeId={recipe.id || ""} />
           <div className="mt-4">
