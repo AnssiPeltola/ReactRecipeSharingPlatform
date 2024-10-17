@@ -37,6 +37,9 @@ const TopRecipesWeek: React.FC = () => {
   if (topRecipes.length === 0) {
     return (
       <div className="text-center">
+        <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
+          Tämän viikon suosikkiannokset
+        </h1>
         <p className="text-xl font-semibold mb-4">Reseptejä ei löytynyt!</p>
       </div>
     );
