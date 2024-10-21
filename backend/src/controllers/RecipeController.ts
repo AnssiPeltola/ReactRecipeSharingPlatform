@@ -54,11 +54,9 @@ class RecipeController {
     try {
       const success = await this.recipeService.deleteRecipe(recipeId, userId);
       if (!success) {
-        return res
-          .status(403)
-          .json({
-            message: "You do not have permission to delete this recipe",
-          });
+        return res.status(403).json({
+          message: "You do not have permission to delete this recipe",
+        });
       }
       res.status(200).json({ message: "Recipe deleted successfully" });
     } catch (error) {
@@ -241,10 +239,18 @@ class RecipeController {
 
   async getComments(req: Request, res: Response) {
     const { recipeId } = req.params;
+    const { page = 1, limit = 10 } = req.query; // Default to page 1 and limit 10
 
     try {
-      const comments = await this.recipeService.getComments(Number(recipeId));
-      res.status(200).json(comments);
+      const comments = await this.recipeService.getComments(
+        Number(recipeId),
+        Number(page),
+        Number(limit)
+      );
+      const totalComments = await this.recipeService.getTotalComments(
+        Number(recipeId)
+      );
+      res.status(200).json({ comments, totalComments });
     } catch (error) {
       console.error("Error fetching comments:", error);
       res.status(500).json({ message: "Error fetching comments" });

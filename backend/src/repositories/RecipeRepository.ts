@@ -384,7 +384,8 @@ class RecipeRepository {
     return result.rows[0];
   }
 
-  async getComments(recipeId: number) {
+  async getComments(recipeId: number, page: number, limit: number) {
+    const offset = (page - 1) * limit;
     const query: QueryConfig = {
       text: `
         SELECT c.id, c.content, c.timestamp, c.user_id, u.nickname, pp.id AS profile_picture_id
@@ -393,8 +394,9 @@ class RecipeRepository {
         LEFT JOIN profile_pictures pp ON u.id = pp.user_id
         WHERE c.recipe_id = $1
         ORDER BY c.timestamp DESC
+        LIMIT $2 OFFSET $3
       `,
-      values: [recipeId],
+      values: [recipeId, limit, offset],
     };
     const result = await pool.query(query);
     return result.rows.map((row) => ({
@@ -403,6 +405,15 @@ class RecipeRepository {
         ? `/profile_picture/${row.profile_picture_id}`
         : null,
     }));
+  }
+
+  async getTotalComments(recipeId: number) {
+    const query: QueryConfig = {
+      text: `SELECT COUNT(*) FROM recipe_comments WHERE recipe_id = $1`,
+      values: [recipeId],
+    };
+    const result = await pool.query(query);
+    return parseInt(result.rows[0].count, 10);
   }
 
   async deleteComment(commentId: number, userId: number) {
