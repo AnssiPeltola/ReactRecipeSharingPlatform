@@ -71,6 +71,14 @@ const CreateRecipe: React.FC<CreateRecipeProps> = ({ mode, recipeId }) => {
     }
   };
 
+  const handleCancel = () => {
+    if (mode === "edit" && recipeId) {
+      navigate(`/recipe/${recipeId}`);
+    } else {
+      navigate("/");
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
@@ -113,7 +121,7 @@ const CreateRecipe: React.FC<CreateRecipeProps> = ({ mode, recipeId }) => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 pt-16">
       <div className="w-full max-w-4xl p-4">
         <Routes>
           <Route path="/" element={<Navigate to="recipe-title" />} />
@@ -126,6 +134,16 @@ const CreateRecipe: React.FC<CreateRecipeProps> = ({ mode, recipeId }) => {
           />
           <Route path="recipe-created" element={<RecipeCreated />} />
         </Routes>
+        {mode === "edit" && (
+          <div className="flex justify-center mt-4">
+            <button
+              onClick={handleCancel}
+              className="px-4 py-2 text-white bg-red-500 rounded hover:bg-red-700"
+            >
+              Peruuta reseptin muokkaaminen
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
