@@ -111,8 +111,12 @@ class RecipeService {
     return this.recipeRepository.addComment(recipeId, userId, content);
   }
 
-  async getComments(recipeId: number) {
-    return this.recipeRepository.getComments(recipeId);
+  async getComments(recipeId: number, page: number, limit: number) {
+    return this.recipeRepository.getComments(recipeId, page, limit);
+  }
+
+  async getTotalComments(recipeId: number) {
+    return this.recipeRepository.getTotalComments(recipeId);
   }
 
   async deleteComment(commentId: number, userId: number) {
