@@ -213,7 +213,7 @@ const RecipeTitle = () => {
   ];
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-fit bg-gray-100">
       <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
         <ProgressBar currentStep={1} maxStep={4} />
         <p className="mb-4 text-2xl font-semibold text-gray-700">

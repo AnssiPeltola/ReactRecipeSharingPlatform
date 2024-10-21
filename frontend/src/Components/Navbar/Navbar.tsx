@@ -77,7 +77,7 @@ const Navbar = () => {
     return (
       <nav className="navbar fixed top-0 left-0 w-full bg-gray-800 p-4 flex justify-between items-center z-50">
         <button onClick={() => navigate("/")}>
-          <img src="recipeLogo.webp" alt="Logo" className="logo" />
+          <img src="/recipeLogo.webp" alt="Logo" className="logo" />
         </button>
         <div className="flex space-x-4">
           <button
@@ -104,7 +104,7 @@ const Navbar = () => {
   return (
     <nav className="navbar fixed top-0 left-0 w-full bg-gray-800 p-4 flex justify-between items-center z-50">
       <button onClick={() => navigate("/")}>
-        <img src="recipeLogo.webp" alt="Logo" className="logo" />
+        <img src="/recipeLogo.webp" alt="Logo" className="logo" />
       </button>
       <div className="flex space-x-4">
         <button

@@ -108,7 +108,7 @@ const RecipePicture = () => {
   console.log("Recipe State in RecipePicture:", recipeState);
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-fit bg-gray-100">
       <div className="bg-white p-8 rounded shadow-md w-full max-w-xl">
         <ProgressBar currentStep={3} maxStep={4} />
         <p className="mb-4 text-2xl font-semibold text-gray-700">
