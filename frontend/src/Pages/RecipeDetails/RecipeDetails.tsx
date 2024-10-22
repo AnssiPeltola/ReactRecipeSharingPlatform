@@ -74,7 +74,27 @@ const RecipeDetails = () => {
   }
 
   if (error) {
-    return <div className="text-center mt-4 text-red-500">Error: {error}</div>;
+    return (
+      <div className="flex flex-col items-center justify-center h-screen">
+        <div className="text-center mt-4 text-red-500">
+          <p>Reseptiä ei löytynyt.</p>
+        </div>
+        <div className="mt-4">
+          <button
+            onClick={() => navigate("/")}
+            className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-700"
+          >
+            Siirry etusivulle
+          </button>
+          <button
+            onClick={() => window.location.reload()}
+            className="ml-4 px-4 py-2 text-white bg-green-500 rounded hover:bg-green-700"
+          >
+            Päivitä sivu
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
