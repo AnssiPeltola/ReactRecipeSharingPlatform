@@ -1,17 +1,67 @@
-import React, { useState } from "react";
-import { useLocation, Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 import { RecipeState } from "../../Types/types";
 import RecipeSearch from "../../Components/RecipeSearch/RecipeSearch";
 import { LANDING } from "../../Constants/routes";
+import Pagination from "@mui/material/Pagination";
+import Stack from "@mui/material/Stack";
+import axios from "axios";
 
 const placeholderImageUrl = "/placeholder-food.png";
 
 const SearchResultsPage = () => {
   const location = useLocation();
-  const state = location.state as { recipes: RecipeState[] } | undefined;
+  const navigate = useNavigate();
+  const state = location.state as
+    | { recipes: RecipeState[]; totalRecipes: number; searchTerm: string }
+    | undefined;
 
-  const [currentPage, setCurrentPage] = useState(1);
+  const [recipes, setRecipes] = useState<RecipeState[]>(state?.recipes || []);
+  const [totalRecipes, setTotalRecipes] = useState<number>(
+    state?.totalRecipes || 0
+  );
+  const [currentPage, setCurrentPage] = useState<number>(
+    location.state?.currentPage || 1
+  );
   const recipesPerPage = 9;
+
+  useEffect(() => {
+    if (state) {
+      setRecipes(state.recipes);
+      setTotalRecipes(state.totalRecipes);
+    }
+  }, [state]);
+
+  useEffect(() => {
+    if (currentPage !== 1) {
+      fetchRecipes(currentPage);
+    }
+  }, [currentPage]);
+
+  const fetchRecipes = async (page: number) => {
+    try {
+      const response = await axios.get(
+        `/search?query=${encodeURIComponent(
+          state?.searchTerm || ""
+        )}&page=${page}&limit=${recipesPerPage}`
+      );
+      setRecipes(response.data.recipes);
+      setTotalRecipes(response.data.totalRecipes);
+    } catch (err) {
+      console.error("Failed to fetch recipes", err);
+    }
+  };
+
+  const handlePageChange = (
+    event: React.ChangeEvent<unknown>,
+    page: number
+  ) => {
+    setCurrentPage(page);
+    fetchRecipes(page);
+    navigate(location.pathname, {
+      state: { ...location.state, currentPage: page },
+    });
+  };
 
   if (!state || !state.recipes || state.recipes.length === 0) {
     return (
@@ -31,18 +81,17 @@ const SearchResultsPage = () => {
     );
   }
 
-  const loadMoreRecipes = () => {
-    setCurrentPage((prevPage) => prevPage + 1);
-  };
-
-  const displayedRecipes = state.recipes.slice(0, currentPage * recipesPerPage);
-
   return (
     <div className="max-w-4xl mx-auto p-4">
       <h2 className="text-2xl font-bold mb-4">Hakutulokset</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {displayedRecipes.map((recipe) => (
-          <Link to={`/recipe/${recipe.id}`} key={recipe.id} className="block">
+        {recipes.map((recipe) => (
+          <Link
+            to={`/recipe/${recipe.id}`}
+            state={{ currentPage }}
+            key={recipe.id}
+            className="block"
+          >
             <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200">
               <img
                 src={
@@ -60,16 +109,14 @@ const SearchResultsPage = () => {
           </Link>
         ))}
       </div>
-      {displayedRecipes.length < state.recipes.length && (
-        <div className="text-center mt-4">
-          <button
-            onClick={loadMoreRecipes}
-            className="bg-blue-500 text-white p-2 rounded"
-          >
-            Näytä lisää reseptejä
-          </button>
-        </div>
-      )}
+      <Stack spacing={2} className="mt-4" alignItems="center">
+        <Pagination
+          count={Math.ceil(totalRecipes / recipesPerPage)}
+          page={currentPage}
+          onChange={handlePageChange}
+          color="primary"
+        />
+      </Stack>
       <div className="mt-8 flex justify-center items-center flex-col">
         <h2 className="text-2xl font-bold mb-4">Etsitkö jotain muuta?</h2>
         <RecipeSearch />

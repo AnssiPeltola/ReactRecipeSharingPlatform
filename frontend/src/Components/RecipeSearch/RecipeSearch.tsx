@@ -5,7 +5,6 @@ import * as ROUTES from "../../Constants/routes";
 
 function RecipeSearch() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [recipes, setRecipes] = useState<{ id: number; title: string }[]>([]);
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
@@ -15,9 +14,15 @@ function RecipeSearch() {
     setError("");
     try {
       const response = await axios.get(
-        `/search?query=${encodeURIComponent(searchTerm)}`
+        `/search?query=${encodeURIComponent(searchTerm)}&page=1&limit=9`
       );
-      navigate(ROUTES.SEARCH_RESULTS, { state: { recipes: response.data } });
+      navigate(ROUTES.SEARCH_RESULTS, {
+        state: {
+          recipes: response.data.recipes,
+          totalRecipes: response.data.totalRecipes,
+          searchTerm,
+        },
+      });
     } catch (error) {
       console.error("Search failed:", error);
       setError("Failed to fetch recipes. Please try again.");

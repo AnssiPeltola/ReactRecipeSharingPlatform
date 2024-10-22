@@ -40,9 +40,15 @@ const CategorySelection = () => {
       const response = await axios.get(
         `${
           process.env.REACT_APP_API_BASE_URL
-        }/search?query=${encodeURIComponent(category)}`
+        }/search?query=${encodeURIComponent(category)}&page=1&limit=9`
       );
-      navigate(SEARCH_RESULTS, { state: { recipes: response.data } });
+      navigate(SEARCH_RESULTS, {
+        state: {
+          recipes: response.data.recipes,
+          totalRecipes: response.data.totalRecipes,
+          searchTerm: category,
+        },
+      });
     } catch (error) {
       console.error("Error fetching recipes:", error);
     }
