@@ -84,16 +84,22 @@ class RecipeController {
   };
 
   async searchRecipes(req: Request, res: Response) {
+    const { query } = req.query;
+    const { page = 1, limit = 9 } = req.query;
+
     try {
-      const { query } = req.query;
-      if (!query || typeof query !== "string") {
-        return res.status(400).send("Query parameter is required");
-      }
-      const recipes = await this.recipeService.searchRecipes(query);
-      res.json(recipes);
+      const recipes = await this.recipeService.getRecipes(
+        String(query),
+        Number(page),
+        Number(limit)
+      );
+      const totalRecipes = await this.recipeService.getTotalRecipes(
+        String(query)
+      );
+      res.status(200).json({ recipes, totalRecipes });
     } catch (error) {
-      console.error(error);
-      res.status(500).send("An error occurred while searching for recipes");
+      console.error("Error fetching recipes:", error);
+      res.status(500).json({ message: "Error fetching recipes" });
     }
   }
 

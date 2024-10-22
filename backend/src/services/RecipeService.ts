@@ -75,6 +75,14 @@ class RecipeService {
     return this.recipeRepository.searchByIngredientOrName(searchTerm);
   }
 
+  async getRecipes(searchTerm: string, page: number, limit: number) {
+    return this.recipeRepository.getRecipes(searchTerm, page, limit);
+  }
+
+  async getTotalRecipes(searchTerm: string) {
+    return this.recipeRepository.getTotalRecipes(searchTerm);
+  }
+
   async getRecipeById(id: number): Promise<Recipe | null> {
     return this.recipeRepository.getRecipeById(id);
   }

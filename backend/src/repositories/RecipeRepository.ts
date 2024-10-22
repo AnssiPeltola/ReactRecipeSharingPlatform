@@ -291,6 +291,39 @@ class RecipeRepository {
     }
   }
 
+  async getRecipes(searchTerm: string, page: number, limit: number) {
+    const offset = (page - 1) * limit;
+    const query: QueryConfig = {
+      text: `
+        SELECT r.id, r.title, r.picture_url
+        FROM recipes r
+        WHERE r.title ILIKE $1
+          OR r.category ILIKE $1
+          OR r.secondary_category ILIKE $1
+        ORDER BY r.created_at DESC
+        LIMIT $2 OFFSET $3
+      `,
+      values: [`%${searchTerm}%`, limit, offset],
+    };
+    const result = await pool.query(query);
+    return result.rows;
+  }
+
+  async getTotalRecipes(searchTerm: string) {
+    const query: QueryConfig = {
+      text: `
+        SELECT COUNT(*) 
+        FROM recipes 
+        WHERE title ILIKE $1
+          OR category ILIKE $1
+          OR secondary_category ILIKE $1
+      `,
+      values: [`%${searchTerm}%`],
+    };
+    const result = await pool.query(query);
+    return parseInt(result.rows[0].count, 10);
+  }
+
   async getRandomRecipeId(): Promise<number | null> {
     const query = {
       text: "SELECT id FROM recipes ORDER BY RANDOM() LIMIT 1",
