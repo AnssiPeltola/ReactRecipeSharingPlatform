@@ -6,8 +6,10 @@ import OtherUserProfileView from "./OtherUserProfileView/OtherUserProfileView";
 import { useSelector } from "react-redux";
 import { RootState } from "../../Redux/store";
 import "../../Styles/loadingAnimation.css";
+import LoginModal from "../../Components/Modal/LoginModal/LoginModal";
 
 const ProfilePage = () => {
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -19,14 +21,12 @@ const ProfilePage = () => {
     if (!token) {
       setIsLoggedIn(false);
       setLoading(false);
-      // console.log("Authentication status: Not logged in");
       return;
     }
 
     if (token && auth.isLoggedIn) {
       setIsLoggedIn(true);
       setLoading(false);
-      // console.log("Authentication status: Logged in");
       return;
     }
   }, [auth.isLoggedIn]);
@@ -44,14 +44,24 @@ const ProfilePage = () => {
     return (
       <div className="flex flex-col items-center justify-center h-screen">
         <p className="mb-4 text-lg text-gray-700">
-          You need to log in to view your profile.
+          Sinun on kirjauduttava sisään nähdäksesi profiili.
         </p>
         <button
-          onClick={() => navigate("/")}
+          onClick={() => setIsLoginOpen(true)}
           className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-700"
         >
-          Go to Homepage
+          Kirjaudu sisään
         </button>
+        <button
+          onClick={() => navigate("/")}
+          className="mt-4 px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-700"
+        >
+          Siirry etusivulle
+        </button>
+        <LoginModal
+          isOpen={isLoginOpen}
+          onRequestClose={() => setIsLoginOpen(false)}
+        />
       </div>
     );
   }
