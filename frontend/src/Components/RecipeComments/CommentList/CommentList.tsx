@@ -6,6 +6,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../Redux/store";
+import Pagination from "@mui/material/Pagination";
+import Stack from "@mui/material/Stack";
 import "../../../Styles/loadingAnimation.css";
 
 interface CommentListProps {
@@ -20,10 +22,11 @@ const CommentList: React.FC<CommentListProps> = ({ recipeId }) => {
   const commentsPerPage = 10;
   const user = useSelector((state: RootState) => state.auth.user);
   const placeholderImageUrl = "/placeholder-user.png";
-  const navigate = useNavigate(); // Use navigate hook
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchComments(1, true);
+    fetchTotalComments();
   }, [recipeId]);
 
   const fetchComments = async (page: number, reset = false) => {
@@ -48,6 +51,25 @@ const CommentList: React.FC<CommentListProps> = ({ recipeId }) => {
     }
   };
 
+  const fetchTotalComments = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/recipe/${recipeId}/comments/total`
+      );
+      setTotalComments(response.data.totalComments);
+    } catch (err) {
+      console.error("Failed to fetch total comments", err);
+    }
+  };
+
+  const handlePageChange = (
+    event: React.ChangeEvent<unknown>,
+    page: number
+  ) => {
+    setCurrentPage(page);
+    fetchComments(page, true);
+  };
+
   const handleDelete = async (commentId: number) => {
     try {
       const token = localStorage.getItem("sessionToken");
@@ -70,12 +92,6 @@ const CommentList: React.FC<CommentListProps> = ({ recipeId }) => {
     } catch (err) {
       console.error("Failed to delete comment", err);
     }
-  };
-
-  const loadMoreComments = () => {
-    const nextPage = currentPage + 1;
-    setCurrentPage(nextPage);
-    fetchComments(nextPage);
   };
 
   const handleProfileClick = (userId: number) => {
@@ -129,16 +145,14 @@ const CommentList: React.FC<CommentListProps> = ({ recipeId }) => {
           <div className="loader"></div>
         </div>
       )}
-      {!loading && comments.length < totalComments && (
-        <div className="text-center mt-4">
-          <button
-            onClick={loadMoreComments}
-            className="bg-blue-500 text-white p-2 rounded"
-          >
-            Näytä lisää kommentteja
-          </button>
-        </div>
-      )}
+      <Stack spacing={2} className="mt-4" alignItems="center">
+        <Pagination
+          count={Math.ceil(totalComments / commentsPerPage)}
+          page={currentPage}
+          onChange={handlePageChange}
+          color="primary"
+        />
+      </Stack>
     </div>
   );
 };
