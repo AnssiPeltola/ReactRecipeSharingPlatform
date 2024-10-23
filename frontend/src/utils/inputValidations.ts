@@ -4,10 +4,12 @@ export const NUMBER_ERROR = "Kenttä saa sisältää vain numeroita";
 export const INSTRUCTIONS_REQUIRED_ERROR = "Ohjeet ovat pakolliset";
 export const INGREDIENT_NUMBER_ERROR = "Ei saa sisältää numeroita";
 export const EMPTY_STEP_ERROR = "Vaihe ei saa olla tyhjä";
+export const MAX_QUANTITY_ERROR = "Määrä ei voi olla suurempi kuin 9999.99";
+export const DECIMAL_ERROR = "Määrässä voi olla enintään kaksi desimaalia";
 
 const titleRegex = /^[\p{L}\d\s\-']*$/u;
-const ingredientNameRegex = /^[\p{L}\s\-']*$/u; // Updated regex to exclude numbers
-const numberRegex = /\d/; // Regex to check for numbers
+const ingredientNameRegex = /^[\p{L}\s\-']*$/u;
+const numberRegex = /\d/;
 
 export function validateTitle(title: string): string {
   if (title.trim() === "") {
@@ -49,9 +51,24 @@ export function validateSpecificIngredient(specificIngredient: string): string {
 export function validateQuantity(quantity: string): string {
   if (quantity.trim() === "") {
     return EMPTY_FIELD_ERROR;
-  } else if (isNaN(Number(quantity))) {
+  }
+
+  const normalizedQuantity = quantity.replace(",", ".");
+
+  if (isNaN(Number(normalizedQuantity))) {
     return NUMBER_ERROR;
   }
+
+  const numericValue = parseFloat(normalizedQuantity);
+  if (numericValue > 9999.99) {
+    return MAX_QUANTITY_ERROR;
+  }
+
+  const decimalPart = normalizedQuantity.split(".")[1];
+  if (decimalPart && decimalPart.length > 2) {
+    return DECIMAL_ERROR;
+  }
+
   return "";
 }
 

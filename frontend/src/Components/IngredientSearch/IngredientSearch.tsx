@@ -83,7 +83,7 @@ const IngredientSearch: React.FC<IngredientSearchProps> = ({
         className="border p-2 rounded w-full"
       />
       {results.length > 0 && (
-        <div className="absolute bg-white border rounded w-full mt-1 z-10">
+        <div className="absolute bg-white border rounded w-full mt-1 z-10 max-h-52 overflow-y-auto">
           {results.map((result, index) => (
             <p
               key={index}
