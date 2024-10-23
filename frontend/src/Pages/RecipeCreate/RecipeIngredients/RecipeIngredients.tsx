@@ -226,6 +226,7 @@ const RecipeIngredients = () => {
                 value={ingredient.quantity}
                 onChange={(e) => handleQuantityChange(index, e.target.value)}
                 className="border p-2 rounded w-2/12"
+                maxLength={7}
               />
               <select
                 value={ingredient.unit}
