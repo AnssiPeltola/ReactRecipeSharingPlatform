@@ -295,11 +295,14 @@ class RecipeRepository {
     const offset = (page - 1) * limit;
     const query: QueryConfig = {
       text: `
-        SELECT r.id, r.title, r.picture_url
+        SELECT DISTINCT r.id, r.title, r.picture_url, r.created_at
         FROM recipes r
+        LEFT JOIN recipe_ingredients ri ON r.id = ri.recipe_id
+        LEFT JOIN ingredients i ON ri.ingredient_id = i.id
         WHERE r.title ILIKE $1
           OR r.category ILIKE $1
           OR r.secondary_category ILIKE $1
+          OR i.name ILIKE $1
         ORDER BY r.created_at DESC
         LIMIT $2 OFFSET $3
       `,
@@ -312,11 +315,14 @@ class RecipeRepository {
   async getTotalRecipes(searchTerm: string) {
     const query: QueryConfig = {
       text: `
-        SELECT COUNT(*) 
-        FROM recipes 
-        WHERE title ILIKE $1
-          OR category ILIKE $1
-          OR secondary_category ILIKE $1
+        SELECT COUNT(DISTINCT r.id) 
+        FROM recipes r
+        LEFT JOIN recipe_ingredients ri ON r.id = ri.recipe_id
+        LEFT JOIN ingredients i ON ri.ingredient_id = i.id
+        WHERE r.title ILIKE $1
+          OR r.category ILIKE $1
+          OR r.secondary_category ILIKE $1
+          OR i.name ILIKE $1
       `,
       values: [`%${searchTerm}%`],
     };
