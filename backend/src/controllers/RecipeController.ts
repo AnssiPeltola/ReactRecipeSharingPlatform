@@ -316,6 +316,25 @@ class RecipeController {
         .json({ message: "Error fetching top recipes of the week" });
     }
   }
+
+  async getUniqueRecipeNamesAndIngredients(req: Request, res: Response) {
+    try {
+      const searchTerm = req.query.query as string;
+      const results =
+        await this.recipeService.getUniqueRecipeNamesAndIngredients(searchTerm);
+      res.status(200).json(results);
+    } catch (error) {
+      console.error(
+        "Error fetching unique recipe names and ingredients:",
+        error
+      );
+      res
+        .status(500)
+        .json({
+          message: "Error fetching unique recipe names and ingredients",
+        });
+    }
+  }
 }
 
 export default RecipeController;
