@@ -148,6 +148,12 @@ class RecipeService {
   async getTopRecipesWeek() {
     return await this.recipeRepository.getTopRecipesWeek();
   }
+
+  async getUniqueRecipeNamesAndIngredients(
+    searchTerm: string
+  ): Promise<string[]> {
+    return this.recipeRepository.getUniqueRecipeNamesAndIngredients(searchTerm);
+  }
 }
 
 export default RecipeService;

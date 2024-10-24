@@ -309,4 +309,8 @@ app.get("/topRecipesWeek", async (req, res) => {
   }
 });
 
+app.get("/unique-recipe-names-and-ingredients", (req, res) =>
+  recipeController.getUniqueRecipeNamesAndIngredients(req, res)
+);
+
 export default app;

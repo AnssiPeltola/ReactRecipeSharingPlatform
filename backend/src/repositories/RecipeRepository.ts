@@ -508,6 +508,36 @@ class RecipeRepository {
       throw error;
     }
   }
+
+  async getUniqueRecipeNamesAndIngredients(
+    searchTerm: string
+  ): Promise<string[]> {
+    const query: QueryConfig = {
+      text: `
+        SELECT name, priority FROM (
+          SELECT r.title AS name, 
+                 CASE 
+                   WHEN r.title ILIKE $1 THEN 1
+                   ELSE 2
+                 END AS priority
+          FROM recipes r
+          WHERE r.title ILIKE $2
+          UNION
+          SELECT i.name AS name, 
+                 CASE 
+                   WHEN i.name ILIKE $1 THEN 3
+                   ELSE 4
+                 END AS priority
+          FROM ingredients i
+          WHERE i.name ILIKE $2
+        ) AS combined
+        ORDER BY priority, name
+      `,
+      values: [searchTerm, `%${searchTerm}%`],
+    };
+    const result = await pool.query(query);
+    return result.rows.map((row) => row.name);
+  }
 }
 
 export default RecipeRepository;

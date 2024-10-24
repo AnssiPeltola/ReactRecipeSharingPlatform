@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import debounce from "lodash.debounce";
 
 interface IngredientSearchProps {
@@ -19,6 +19,7 @@ const IngredientSearch: React.FC<IngredientSearchProps> = ({
   const [query, setQuery] = useState(initialValue || "");
   const [results, setResults] = useState<Ingredient[]>([]);
   const [selected, setSelected] = useState(!!initialValue);
+  const resultsRef = useRef<HTMLDivElement>(null);
 
   const searchIngredients = useCallback(
     debounce((query: string) => {
@@ -73,6 +74,22 @@ const IngredientSearch: React.FC<IngredientSearchProps> = ({
     onIngredientSelect(result.name);
   };
 
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      resultsRef.current &&
+      !resultsRef.current.contains(event.target as Node)
+    ) {
+      setResults([]);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <div className="relative">
       <input
@@ -83,7 +100,10 @@ const IngredientSearch: React.FC<IngredientSearchProps> = ({
         className="border p-2 rounded w-full"
       />
       {results.length > 0 && (
-        <div className="absolute bg-white border rounded w-full mt-1 z-10 max-h-52 overflow-y-auto">
+        <div
+          ref={resultsRef}
+          className="absolute bg-white border rounded w-full mt-1 z-10 max-h-52 overflow-y-auto"
+        >
           {results.map((result, index) => (
             <p
               key={index}
