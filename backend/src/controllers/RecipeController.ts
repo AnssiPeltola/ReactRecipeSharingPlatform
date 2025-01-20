@@ -84,14 +84,15 @@ class RecipeController {
   };
 
   async searchRecipes(req: Request, res: Response) {
-    const { query } = req.query;
+    const { query, sortBy = "created_at" } = req.query;
     const { page = 1, limit = 9 } = req.query;
 
     try {
       const recipes = await this.recipeService.getRecipes(
         String(query),
         Number(page),
-        Number(limit)
+        Number(limit),
+        String(sortBy)
       );
       const totalRecipes = await this.recipeService.getTotalRecipes(
         String(query)
@@ -328,11 +329,9 @@ class RecipeController {
         "Error fetching unique recipe names and ingredients:",
         error
       );
-      res
-        .status(500)
-        .json({
-          message: "Error fetching unique recipe names and ingredients",
-        });
+      res.status(500).json({
+        message: "Error fetching unique recipe names and ingredients",
+      });
     }
   }
 }

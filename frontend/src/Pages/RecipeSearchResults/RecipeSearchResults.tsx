@@ -23,6 +23,9 @@ const SearchResultsPage = () => {
   const [currentPage, setCurrentPage] = useState<number>(
     location.state?.currentPage || 1
   );
+  const [sortBy, setSortBy] = useState<string>(
+    location.state?.sortBy || "created_at"
+  );
   const recipesPerPage = 9;
 
   useEffect(() => {
@@ -33,17 +36,15 @@ const SearchResultsPage = () => {
   }, [state]);
 
   useEffect(() => {
-    if (currentPage !== 1) {
-      fetchRecipes(currentPage);
-    }
-  }, [currentPage]);
+    fetchRecipes(currentPage, sortBy);
+  }, [currentPage, sortBy]);
 
-  const fetchRecipes = async (page: number) => {
+  const fetchRecipes = async (page: number, sortBy: string) => {
     try {
       const response = await axios.get(
         `/search?query=${encodeURIComponent(
           state?.searchTerm || ""
-        )}&page=${page}&limit=${recipesPerPage}`
+        )}&page=${page}&limit=${recipesPerPage}&sortBy=${sortBy}`
       );
       setRecipes(response.data.recipes);
       setTotalRecipes(response.data.totalRecipes);
@@ -57,9 +58,18 @@ const SearchResultsPage = () => {
     page: number
   ) => {
     setCurrentPage(page);
-    fetchRecipes(page);
+    fetchRecipes(page, sortBy);
     navigate(location.pathname, {
-      state: { ...location.state, currentPage: page },
+      state: { ...location.state, currentPage: page, sortBy },
+    });
+  };
+
+  const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const newSortBy = event.target.value;
+    setSortBy(newSortBy);
+    fetchRecipes(currentPage, newSortBy);
+    navigate(location.pathname, {
+      state: { ...location.state, sortBy: newSortBy },
     });
   };
 
@@ -87,6 +97,24 @@ const SearchResultsPage = () => {
       <p className="text-lg mb-4">
         Löydettiin {totalRecipes} reseptiä hakusanalla "{state?.searchTerm}"
       </p>
+      <div className="mb-4">
+        <label htmlFor="sort" className="mr-2">
+          Järjestä:
+        </label>
+        <select
+          id="sort"
+          value={sortBy}
+          onChange={handleSortChange}
+          className="p-2 border rounded"
+        >
+          <option value="title">Nimen mukaan</option>
+          <option value="category">Kategorian mukaan</option>
+          <option value="created_at">Uusimmat ensin</option>
+          <option value="oldest">Vanhimmat ensin</option>
+          <option value="most_liked">Eniten tykätyt</option>
+          <option value="most_commented">Eniten kommentoidut</option>
+        </select>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {recipes.map((recipe) => (
           <Link
