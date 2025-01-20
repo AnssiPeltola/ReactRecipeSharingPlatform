@@ -291,11 +291,46 @@ class RecipeRepository {
     }
   }
 
-  async getRecipes(searchTerm: string, page: number, limit: number) {
+  async getRecipes(
+    searchTerm: string,
+    page: number,
+    limit: number,
+    sortBy: string
+  ): Promise<Recipe[]> {
     const offset = (page - 1) * limit;
+    let orderByClause = "";
+    let additionalSelectClause = "";
+
+    switch (sortBy) {
+      case "title":
+        orderByClause = "ORDER BY r.title";
+        break;
+      case "category":
+        orderByClause = "ORDER BY r.category";
+        break;
+      case "created_at":
+        orderByClause = "ORDER BY r.created_at DESC";
+        break;
+      case "oldest":
+        orderByClause = "ORDER BY r.created_at ASC";
+        break;
+      case "most_liked":
+        additionalSelectClause =
+          ", (SELECT COUNT(*) FROM recipe_likes rl WHERE rl.recipe_id = r.id) AS like_count";
+        orderByClause = "ORDER BY like_count DESC";
+        break;
+      case "most_commented":
+        additionalSelectClause =
+          ", (SELECT COUNT(*) FROM recipe_comments rc WHERE rc.recipe_id = r.id) AS comment_count";
+        orderByClause = "ORDER BY comment_count DESC";
+        break;
+      default:
+        orderByClause = "ORDER BY r.created_at DESC";
+    }
+
     const query: QueryConfig = {
       text: `
-        SELECT DISTINCT r.id, r.title, r.picture_url, r.created_at
+        SELECT DISTINCT r.id, r.title, r.picture_url, r.created_at, r.category ${additionalSelectClause}
         FROM recipes r
         LEFT JOIN recipe_ingredients ri ON r.id = ri.recipe_id
         LEFT JOIN ingredients i ON ri.ingredient_id = i.id
@@ -303,7 +338,7 @@ class RecipeRepository {
           OR r.category ILIKE $1
           OR r.secondary_category ILIKE $1
           OR i.name ILIKE $1
-        ORDER BY r.created_at DESC
+        ${orderByClause}
         LIMIT $2 OFFSET $3
       `,
       values: [`%${searchTerm}%`, limit, offset],
