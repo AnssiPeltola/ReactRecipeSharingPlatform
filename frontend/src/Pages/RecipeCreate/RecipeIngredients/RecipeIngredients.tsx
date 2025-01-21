@@ -192,8 +192,13 @@ const RecipeIngredients = () => {
     }));
   };
 
+  const getTotalChars = () => steps.reduce((acc, step) => acc + step.length, 0);
+  const isCharLimitReached = getTotalChars() >= charLimit;
+
   const handleAddStep = () => {
-    setSteps([...steps, ""]);
+    if (!isCharLimitReached) {
+      setSteps([...steps, ""]);
+    }
   };
 
   const handleRemoveStep = (index: number) => {
@@ -323,10 +328,20 @@ const RecipeIngredients = () => {
             </div>
           );
         })}
-        <div className="flex justify-center">
+        <div className="flex flex-col items-center">
+          {isCharLimitReached && (
+            <div className="text-red-500 text-sm mb-2">
+              Merkkimäärän raja saavutettu (1000 merkkiä)
+            </div>
+          )}
           <button
             onClick={handleAddStep}
-            className="bg-blue-500 text-white p-2 rounded mb-4"
+            className={`bg-blue-500 text-white p-2 rounded mb-4 ${
+              isCharLimitReached
+                ? "opacity-50 cursor-not-allowed"
+                : "hover:bg-blue-600"
+            }`}
+            disabled={isCharLimitReached}
           >
             Lisää uusi vaihe
           </button>
