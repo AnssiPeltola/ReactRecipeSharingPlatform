@@ -29,9 +29,12 @@ const RecipeDetails = () => {
   const fetchRecipe = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`/recipe/${recipeId}`);
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/recipe/${recipeId}`
+      );
       setRecipe(response.data);
     } catch (err) {
+      console.error("Error fetching recipe:", err);
       setError("Failed to fetch recipe details.");
     } finally {
       setLoading(false);
@@ -103,7 +106,7 @@ const RecipeDetails = () => {
         <>
           <h1 className="text-3xl font-bold mb-4">{recipe.title}</h1>
           <p className="text-lg mb-4">
-            {recipe.category} - {recipe.secondary_category} -{" "}
+            {recipe.category} - {recipe.secondary_categories.join(", ")} -{" "}
             {recipe.main_ingredient}
           </p>
           <img

@@ -6,9 +6,9 @@ class RecipeRepository {
   async createRecipe(recipe: Recipe) {
     const client = await pool.connect();
     try {
-      await client.query("BEGIN"); // Start transaction
+      await client.query("BEGIN");
 
-      // Check if the user exists
+      // Check if user exists (unchanged)
       const userCheckQuery: QueryConfig = {
         text: "SELECT id FROM users WHERE id = $1",
         values: [recipe.user_id],
@@ -19,25 +19,54 @@ class RecipeRepository {
         throw new Error(`User with id ${recipe.user_id} does not exist`);
       }
 
-      // Insert the recipe
+      // Insert the recipe (removed secondary_category)
       const recipeInsertQuery: QueryConfig = {
         text: `
-          INSERT INTO recipes(user_id, title, category, secondary_category, main_ingredient, instructions, picture_url)
-          VALUES($1, $2, $3, $4, $5, $6, $7)
+          INSERT INTO recipes(user_id, title, category, main_ingredient, instructions, picture_url)
+          VALUES($1, $2, $3, $4, $5, $6)
           RETURNING id
         `,
         values: [
           recipe.user_id,
           recipe.title,
           recipe.category,
-          recipe.secondary_category || null,
           recipe.mainIngredient,
           recipe.instructions,
           recipe.pictureUrl,
         ],
       };
       const recipeResult = await client.query(recipeInsertQuery);
-      const recipeId = recipeResult.rows[0].id; // Get the inserted recipe ID
+      const recipeId = recipeResult.rows[0].id;
+
+      // Handle secondary categories
+      if (
+        recipe.secondary_categories &&
+        recipe.secondary_categories.length > 0
+      ) {
+        for (const categoryName of recipe.secondary_categories) {
+          // Insert or get category ID
+          const categoryQuery: QueryConfig = {
+            text: `
+              INSERT INTO secondary_categories (name)
+              VALUES ($1)
+              ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name
+              RETURNING id
+            `,
+            values: [categoryName],
+          };
+          const categoryResult = await client.query(categoryQuery);
+          const categoryId = categoryResult.rows[0].id;
+
+          // Link category to recipe
+          await client.query({
+            text: `
+              INSERT INTO recipe_secondary_categories (recipe_id, category_id)
+              VALUES ($1, $2)
+            `,
+            values: [recipeId, categoryId],
+          });
+        }
+      }
 
       // Handle ingredients
       for (const ingredient of recipe.ingredients) {
@@ -78,11 +107,11 @@ class RecipeRepository {
         await client.query(recipeIngredientsInsertQuery);
       }
 
-      await client.query("COMMIT"); // Commit transaction
-      return { ...recipe, id: recipeId }; // Return the inserted recipe with ID
+      await client.query("COMMIT");
+      return { ...recipe, id: recipeId };
     } catch (error) {
-      await client.query("ROLLBACK"); // Rollback transaction on error
-      throw error; // Rethrow the error
+      await client.query("ROLLBACK");
+      throw error;
     } finally {
       client.release();
     }
@@ -91,9 +120,9 @@ class RecipeRepository {
   async updateRecipe(recipeId: number, recipe: Recipe) {
     const client = await pool.connect();
     try {
-      await client.query("BEGIN"); // Start transaction
+      await client.query("BEGIN");
 
-      // Check if the user exists
+      // Check if the user exists (unchanged)
       const userCheckQuery: QueryConfig = {
         text: "SELECT id FROM users WHERE id = $1",
         values: [recipe.user_id],
@@ -104,17 +133,16 @@ class RecipeRepository {
         throw new Error(`User with id ${recipe.user_id} does not exist`);
       }
 
-      // Update the recipe
+      // Update the recipe (removed secondary_category)
       const recipeUpdateQuery: QueryConfig = {
         text: `
           UPDATE recipes
-          SET title = $1, category = $2, secondary_category = $3, main_ingredient = $4, instructions = $5, picture_url = $6
-          WHERE id = $7
+          SET title = $1, category = $2, main_ingredient = $3, instructions = $4, picture_url = $5
+          WHERE id = $6
         `,
         values: [
           recipe.title,
           recipe.category,
-          recipe.secondary_category || null,
           recipe.mainIngredient,
           recipe.instructions,
           recipe.pictureUrl,
@@ -123,12 +151,46 @@ class RecipeRepository {
       };
       await client.query(recipeUpdateQuery);
 
+      // Handle secondary categories
+      await client.query({
+        text: "DELETE FROM recipe_secondary_categories WHERE recipe_id = $1",
+        values: [recipeId],
+      });
+
+      if (
+        recipe.secondary_categories &&
+        recipe.secondary_categories.length > 0
+      ) {
+        for (const categoryName of recipe.secondary_categories) {
+          // Insert or get category ID
+          const categoryQuery: QueryConfig = {
+            text: `
+              INSERT INTO secondary_categories (name)
+              VALUES ($1)
+              ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name
+              RETURNING id
+            `,
+            values: [categoryName],
+          };
+          const categoryResult = await client.query(categoryQuery);
+          const categoryId = categoryResult.rows[0].id;
+
+          // Link category to recipe
+          await client.query({
+            text: `
+              INSERT INTO recipe_secondary_categories (recipe_id, category_id)
+              VALUES ($1, $2)
+            `,
+            values: [recipeId, categoryId],
+          });
+        }
+      }
+
       // Delete existing ingredients
-      const deleteIngredientsQuery: QueryConfig = {
+      await client.query({
         text: "DELETE FROM recipe_ingredients WHERE recipe_id = $1",
         values: [recipeId],
-      };
-      await client.query(deleteIngredientsQuery);
+      });
 
       // Handle ingredients
       for (const ingredient of recipe.ingredients) {
@@ -169,11 +231,11 @@ class RecipeRepository {
         await client.query(recipeIngredientsInsertQuery);
       }
 
-      await client.query("COMMIT"); // Commit transaction
-      return { ...recipe, id: recipeId }; // Return the updated recipe with ID
+      await client.query("COMMIT");
+      return { ...recipe, id: recipeId };
     } catch (error) {
-      await client.query("ROLLBACK"); // Rollback transaction on error
-      throw error; // Rethrow the error
+      await client.query("ROLLBACK");
+      throw error;
     } finally {
       client.release();
     }
@@ -242,27 +304,53 @@ class RecipeRepository {
 
   async searchByIngredientOrName(searchTerm: string): Promise<Recipe[]> {
     const query = `
-      SELECT DISTINCT recipes.* FROM recipes
-      LEFT JOIN recipe_ingredients ON recipes.id = recipe_ingredients.recipe_id
-      LEFT JOIN ingredients ON recipe_ingredients.ingredient_id = ingredients.id
-      WHERE recipes.title ILIKE $1 
-        OR ingredients.name ILIKE $1
-        OR recipes.category ILIKE $1
-        OR recipes.secondary_category ILIKE $1
+      SELECT DISTINCT r.*, 
+        STRING_AGG(DISTINCT sc.name, ', ') as secondary_categories
+      FROM recipes r
+      LEFT JOIN recipe_ingredients ri ON r.id = ri.recipe_id
+      LEFT JOIN ingredients i ON ri.ingredient_id = i.id
+      LEFT JOIN recipe_secondary_categories rsc ON r.id = rsc.recipe_id
+      LEFT JOIN secondary_categories sc ON rsc.category_id = sc.id
+      WHERE r.title ILIKE $1 
+        OR i.name ILIKE $1
+        OR r.category ILIKE $1
+        OR sc.name ILIKE $1
+      GROUP BY r.id
     `;
     const result = await pool.query(query, [`%${searchTerm}%`]);
-    return result.rows;
+
+    // Transform the results to include secondary_categories as an array
+    return result.rows.map((row) => ({
+      ...row,
+      secondary_categories: row.secondary_categories
+        ? row.secondary_categories.split(", ")
+        : [],
+    }));
   }
 
   async getRecipeById(id: number): Promise<Recipe | null> {
     const query = {
       text: `
-        SELECT r.*, ri.quantity, ri.unit, i.name AS ingredient_name, u.nickname
-        FROM recipes r
-        INNER JOIN recipe_ingredients ri ON r.id = ri.recipe_id
-        INNER JOIN ingredients i ON ri.ingredient_id = i.id
-        INNER JOIN users u ON r.user_id = u.id
-        WHERE r.id = $1
+        WITH recipe_basics AS (
+          SELECT 
+            r.*,
+            u.nickname,
+            STRING_AGG(DISTINCT sc.name, ', ') as secondary_categories
+          FROM recipes r
+          INNER JOIN users u ON r.user_id = u.id
+          LEFT JOIN recipe_secondary_categories rsc ON r.id = rsc.recipe_id
+          LEFT JOIN secondary_categories sc ON rsc.category_id = sc.id
+          WHERE r.id = $1
+          GROUP BY r.id, u.nickname
+        )
+        SELECT 
+          rb.*,
+          ri.quantity,
+          ri.unit,
+          i.name AS ingredient_name
+        FROM recipe_basics rb
+        LEFT JOIN recipe_ingredients ri ON rb.id = ri.recipe_id
+        LEFT JOIN ingredients i ON ri.ingredient_id = i.id
       `,
       values: [id],
     };
@@ -281,7 +369,10 @@ class RecipeRepository {
           quantity: row.quantity,
           unit: row.unit,
         })),
-        nickname: rows[0].nickname, // Include the nickname
+        nickname: rows[0].nickname,
+        secondary_categories: rows[0].secondary_categories
+          ? rows[0].secondary_categories.split(", ")
+          : [],
       };
 
       return recipe;
@@ -330,21 +421,43 @@ class RecipeRepository {
 
     const query: QueryConfig = {
       text: `
-        SELECT DISTINCT r.id, r.title, r.picture_url, r.created_at, r.category ${additionalSelectClause}
+        SELECT DISTINCT 
+          r.id, 
+          r.title, 
+          r.picture_url, 
+          r.created_at, 
+          r.category,
+          STRING_AGG(DISTINCT sc.name, ', ') as secondary_categories
+          ${additionalSelectClause}
         FROM recipes r
         LEFT JOIN recipe_ingredients ri ON r.id = ri.recipe_id
         LEFT JOIN ingredients i ON ri.ingredient_id = i.id
+        LEFT JOIN recipe_secondary_categories rsc ON r.id = rsc.recipe_id
+        LEFT JOIN secondary_categories sc ON rsc.category_id = sc.id
         WHERE r.title ILIKE $1
           OR r.category ILIKE $1
-          OR r.secondary_category ILIKE $1
           OR i.name ILIKE $1
+          OR sc.name ILIKE $1
+        GROUP BY 
+          r.id, 
+          r.title, 
+          r.picture_url, 
+          r.created_at, 
+          r.category
         ${orderByClause}
         LIMIT $2 OFFSET $3
       `,
       values: [`%${searchTerm}%`, limit, offset],
     };
     const result = await pool.query(query);
-    return result.rows;
+
+    // Transform the results to include secondary_categories as an array
+    return result.rows.map((row) => ({
+      ...row,
+      secondary_categories: row.secondary_categories
+        ? row.secondary_categories.split(", ")
+        : [],
+    }));
   }
 
   async getTotalRecipes(searchTerm: string) {
@@ -354,10 +467,12 @@ class RecipeRepository {
         FROM recipes r
         LEFT JOIN recipe_ingredients ri ON r.id = ri.recipe_id
         LEFT JOIN ingredients i ON ri.ingredient_id = i.id
+        LEFT JOIN recipe_secondary_categories rsc ON r.id = rsc.recipe_id
+        LEFT JOIN secondary_categories sc ON rsc.category_id = sc.id
         WHERE r.title ILIKE $1
           OR r.category ILIKE $1
-          OR r.secondary_category ILIKE $1
           OR i.name ILIKE $1
+          OR sc.name ILIKE $1
       `,
       values: [`%${searchTerm}%`],
     };

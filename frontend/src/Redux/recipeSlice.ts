@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 const initialState: RecipeState = {
   title: "",
   category: "",
-  secondary_category: "",
+  secondary_categories: [],
   main_ingredient: "",
   main_ingredient_category: "",
   ingredients: [],
@@ -27,8 +27,18 @@ const recipeSlice = createSlice({
     setCategory: (state, action: PayloadAction<string>) => {
       state.category = action.payload;
     },
-    setsecondary_category: (state, action: PayloadAction<string>) => {
-      state.secondary_category = action.payload;
+    setSecondaryCategories: (state, action: PayloadAction<string[]>) => {
+      state.secondary_categories = action.payload;
+    },
+    addSecondaryCategory: (state, action: PayloadAction<string>) => {
+      if (!state.secondary_categories.includes(action.payload)) {
+        state.secondary_categories.push(action.payload);
+      }
+    },
+    removeSecondaryCategory: (state, action: PayloadAction<string>) => {
+      state.secondary_categories = state.secondary_categories.filter(
+        (category) => category !== action.payload
+      );
     },
     setMainIngredient: (state, action: PayloadAction<string>) => {
       state.main_ingredient = action.payload;
@@ -60,7 +70,7 @@ const recipeSlice = createSlice({
     resetState: (state) => {
       state.title = "";
       state.category = "";
-      state.secondary_category = "";
+      state.secondary_categories = [];
       state.main_ingredient = "";
       state.main_ingredient_category = "";
       state.ingredients = [];
@@ -85,7 +95,9 @@ const recipeSlice = createSlice({
 export const {
   setTitle,
   setCategory,
-  setsecondary_category,
+  setSecondaryCategories,
+  addSecondaryCategory,
+  removeSecondaryCategory,
   setMainIngredient,
   setMainIngredientCategory,
   setIngredients,

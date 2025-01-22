@@ -4,7 +4,7 @@ class Recipe {
   title: string;
   category: string;
   mainIngredient?: string;
-  secondary_category?: string;
+  secondary_categories?: string[];
   ingredients: Ingredient[];
   instructions: string;
   pictureUrl: string;
@@ -15,7 +15,7 @@ class Recipe {
     title: string,
     category: string,
     mainIngredient: string,
-    secondary_category: string,
+    secondary_categories: string[],
     ingredients: Ingredient[],
     instructions: string,
     pictureUrl: string
@@ -25,7 +25,7 @@ class Recipe {
     this.title = title;
     this.category = category;
     this.mainIngredient = mainIngredient;
-    this.secondary_category = secondary_category;
+    this.secondary_categories = secondary_categories;
     this.ingredients = ingredients;
     this.instructions = instructions;
     this.pictureUrl = pictureUrl;

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   setTitle,
   setCategory,
-  setsecondary_category,
+  setSecondaryCategories,
   setMainIngredient,
   setMainIngredientCategory,
   setuser_id,
@@ -42,10 +42,10 @@ const RecipeTitle = () => {
   const [category, setCategoryLocal] = useState(
     recipeState && recipeState.category ? recipeState.category : ""
   );
-  const [secondary_category, setsecondary_categoryLocal] = useState(
-    recipeState && recipeState.secondary_category
-      ? recipeState.secondary_category
-      : ""
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(
+    recipeState && recipeState.secondary_categories
+      ? recipeState.secondary_categories
+      : []
   );
   const [mainCategory, setMainCategory] = useState<
     keyof MainIngredientsType | ""
@@ -88,7 +88,7 @@ const RecipeTitle = () => {
       dispatch(setRecipeState(response.data));
       setTitleLocal(response.data.title);
       setCategoryLocal(response.data.category);
-      setsecondary_categoryLocal(response.data.secondary_category);
+      setSelectedCategories(response.data.secondary_categories || []);
       setMainCategory(response.data.main_ingredient_category || "");
       setSpecificIngredient(response.data.main_ingredient || "");
     } catch (error) {
@@ -100,7 +100,7 @@ const RecipeTitle = () => {
     const errors = {
       title: validateTitle(title),
       category: validateCategory(category),
-      secondaryCategory: validateSecondaryCategory(secondary_category),
+      secondaryCategory: validateSecondaryCategory(selectedCategories),
       mainCategory: validateMainCategory(mainCategory),
       specificIngredient: validateSpecificIngredient(specificIngredient),
     };
@@ -114,7 +114,7 @@ const RecipeTitle = () => {
     if (!hasErrors) {
       dispatch(setTitle(title));
       dispatch(setCategory(category));
-      dispatch(setsecondary_category(secondary_category));
+      dispatch(setSecondaryCategories(selectedCategories));
       dispatch(setMainIngredient(specificIngredient));
       dispatch(setMainIngredientCategory(mainCategory));
       if (user && user.id !== undefined) {
@@ -168,15 +168,14 @@ const RecipeTitle = () => {
     }));
   };
 
-  const handleSecondaryCategoryChange = (
-    e: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    const value = e.target.value;
-    setsecondary_categoryLocal(value);
-    setErrorMessages((prev) => ({
-      ...prev,
-      secondaryCategory: validateSecondaryCategory(value),
-    }));
+  const handleCategoryCheckbox = (category: string) => {
+    setSelectedCategories((prev) => {
+      if (prev.includes(category)) {
+        return prev.filter((cat) => cat !== category);
+      } else {
+        return [...prev, category];
+      }
+    });
   };
 
   const handleBackToFrontPage = () => {
@@ -211,6 +210,35 @@ const RecipeTitle = () => {
     "Keto",
     "Vähähiilihydraattinen",
   ];
+
+  const renderSecondaryCategories = () => (
+    <div className="mb-4">
+      <label className="block text-gray-700 mb-2">
+        Mitä ruokavalioita tämä annos noudattaa? (Voit valita useita)
+      </label>
+      <div className="space-y-2">
+        {secondaryCategories.map((category) => (
+          <div key={category} className="flex items-center">
+            <input
+              type="checkbox"
+              id={category}
+              checked={selectedCategories.includes(category)}
+              onChange={() => handleCategoryCheckbox(category)}
+              className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+            />
+            <label htmlFor={category} className="ml-2 text-gray-700">
+              {category}
+            </label>
+          </div>
+        ))}
+      </div>
+      {errorMessages.secondaryCategory && (
+        <div className="text-red-500 text-xm text-center">
+          {errorMessages.secondaryCategory}
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <div className="flex items-center justify-center min-h-fit bg-gray-100">
@@ -317,34 +345,7 @@ const RecipeTitle = () => {
             )}
           </div>
         )}
-        <div className="mb-4">
-          <label
-            className="block text-gray-700 mb-2"
-            htmlFor="secondaryCategory"
-          >
-            Noudattaako tämä annos dieettiä?
-          </label>
-          <select
-            id="secondaryCategory"
-            value={secondary_category}
-            onChange={handleSecondaryCategoryChange}
-            className="p-2 border border-gray-300 rounded w-full"
-          >
-            <option value="" disabled>
-              Valitse ruokavalio
-            </option>
-            {secondaryCategories.map((secCat) => (
-              <option key={secCat} value={secCat}>
-                {secCat}
-              </option>
-            ))}
-          </select>
-          {errorMessages.secondaryCategory && (
-            <div className="text-red-500 text-xm text-center">
-              {errorMessages.secondaryCategory}
-            </div>
-          )}
-        </div>
+        {renderSecondaryCategories()}
         <div className="flex justify-between">
           <button
             onClick={handleBackToFrontPage}
