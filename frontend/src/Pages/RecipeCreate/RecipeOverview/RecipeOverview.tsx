@@ -82,7 +82,7 @@ const RecipeOverview: React.FC<RecipeOverviewProps> = ({ mode, recipeId }) => {
     const recipeFormData = {
       title: recipeState.title,
       category: recipeState.category,
-      secondary_category: recipeState.secondary_category,
+      secondary_categories: recipeState.secondary_categories,
       mainIngredient: recipeState.main_ingredient,
       instructions: recipeState.instructions,
       user_id: user?.id,
@@ -171,7 +171,7 @@ const RecipeOverview: React.FC<RecipeOverviewProps> = ({ mode, recipeId }) => {
         </p>
         <p className="mb-2">
           <span className="font-semibold">Ruokavalio:</span>{" "}
-          {recipeState.secondary_category}
+          {recipeState.secondary_categories.join(", ")}
         </p>
         <div className="mb-2">
           <p className="font-semibold">Makujen rakennuspalikat:</p>

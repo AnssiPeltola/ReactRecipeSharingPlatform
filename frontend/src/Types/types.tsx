@@ -3,7 +3,7 @@ export interface RecipeState {
   title: string;
   category: string;
   created_at: string;
-  secondary_category: string;
+  secondary_categories: string[];
   main_ingredient: string;
   main_ingredient_category: string;
   ingredients: Ingredient[];

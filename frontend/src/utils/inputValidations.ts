@@ -6,6 +6,8 @@ export const INGREDIENT_NUMBER_ERROR = "Ei saa sisältää numeroita";
 export const EMPTY_STEP_ERROR = "Vaihe ei saa olla tyhjä";
 export const MAX_QUANTITY_ERROR = "Määrä ei voi olla suurempi kuin 9999.99";
 export const DECIMAL_ERROR = "Määrässä voi olla enintään kaksi desimaalia";
+export const EMPTY_SECONDARY_CATEGORY_ERROR =
+  "Valitse vähintään yksi ruokavalio";
 
 const titleRegex = /^[\p{L}\d\s\-']*$/u;
 const ingredientNameRegex = /^[\p{L}\s\-']*$/u;
@@ -27,9 +29,9 @@ export function validateCategory(category: string): string {
   return "";
 }
 
-export function validateSecondaryCategory(secondaryCategory: string): string {
-  if (secondaryCategory.trim() === "") {
-    return EMPTY_FIELD_ERROR;
+export function validateSecondaryCategory(categories: string[]): string {
+  if (!categories || categories.length === 0) {
+    return EMPTY_SECONDARY_CATEGORY_ERROR;
   }
   return "";
 }
