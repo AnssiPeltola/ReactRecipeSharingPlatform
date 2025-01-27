@@ -8,7 +8,9 @@ import {
   clearRecipes,
   setNoMoreRecipes,
   addSeenRecipe,
+  setFilters,
 } from "../../Redux/Reducers/recipeSwiperSlice";
+import RecipeSwiperFilters from "../../Components/RecipeSwiperFilters/RecipeSwiperFilters";
 
 const RecipeSwiper = () => {
   const navigate = useNavigate();
@@ -20,9 +22,14 @@ const RecipeSwiper = () => {
     error,
     noMoreRecipes,
     seenRecipeIds,
+    filters,
   } = useSelector((state: RootState) => state.recipeSwiper);
 
   const currentRecipe = recipes[currentIndex];
+
+  const hasActiveFilters = Object.values(filters).some(
+    (value) => value && (Array.isArray(value) ? value.length > 0 : true)
+  );
 
   useEffect(() => {
     console.log("Component mounted - clearing and refetching recipes");
@@ -46,8 +53,11 @@ const RecipeSwiper = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <p>Ladataan reseptejä...</p>
+      <div className="flex flex-col items-center min-h-screen p-4">
+        <RecipeSwiperFilters />
+        <div className="flex justify-center items-center mt-8">
+          <p>Ladataan reseptejä...</p>
+        </div>
       </div>
     );
   }
@@ -62,19 +72,44 @@ const RecipeSwiper = () => {
 
   if (noMoreRecipes || (!currentRecipe && !loading)) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <p className="text-xl text-gray-700 mb-4">
-          Ei enempää reseptejä saatavilla.
-        </p>
-        <button
-          onClick={() => {
-            dispatch(clearRecipes());
-            dispatch(fetchMoreRecipes());
-          }}
-          className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-700"
-        >
-          Kokeile uudelleen
-        </button>
+      <div className="flex flex-col items-center min-h-screen p-4">
+        <RecipeSwiperFilters />
+        {hasActiveFilters ? (
+          <div className="text-center mt-8">
+            <p className="text-xl text-gray-700 mb-4">
+              Valituilla suodattimilla ei löytynyt reseptejä.
+            </p>
+            <p className="text-gray-600 mb-4">
+              Kokeile muuttaa suodattimia tai tyhjennä ne kokonaan.
+            </p>
+            <button
+              onClick={() => {
+                dispatch(setFilters({}));
+                dispatch(clearRecipes());
+                dispatch(fetchMoreRecipes());
+              }}
+              className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-700"
+            >
+              Tyhjennä suodattimet
+            </button>
+          </div>
+        ) : (
+          <div className="text-center mt-8">
+            <p className="text-xl text-gray-700 mb-4">
+              Ei enempää reseptejä saatavilla.
+            </p>
+            <button
+              onClick={() => {
+                dispatch(setFilters({}));
+                dispatch(clearRecipes());
+                dispatch(fetchMoreRecipes());
+              }}
+              className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-700"
+            >
+              Kokeile uudelleen
+            </button>
+          </div>
+        )}
       </div>
     );
   }
@@ -98,7 +133,8 @@ const RecipeSwiper = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4">
+    <div className="flex flex-col items-center min-h-screen p-4">
+      <RecipeSwiperFilters />
       <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-6">
         <h2 className="text-xl font-bold mb-4">{currentRecipe.title}</h2>
         <p className="text-gray-600 mb-2">

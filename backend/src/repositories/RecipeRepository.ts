@@ -720,17 +720,18 @@ class RecipeRepository {
             AND NOT r.id = ANY($2::int[])
             AND ($3::VARCHAR IS NULL OR r.category = $3)
             AND ($4::VARCHAR IS NULL OR r.main_ingredient = $4)
-            AND ($5::VARCHAR[] IS NULL OR r.id IN (
-              SELECT recipe_id 
+            AND ($5::VARCHAR[] IS NULL OR (
+              SELECT COUNT(DISTINCT sc.name)
               FROM recipe_secondary_categories rsc
               JOIN secondary_categories sc ON rsc.category_id = sc.id
-              WHERE sc.name = ANY($5)
-            ))
+              WHERE rsc.recipe_id = r.id
+              AND sc.name = ANY($5)
+            ) = array_length($5, 1))  -- Must match ALL selected categories
           ),
           randomized_recipes AS (
             SELECT id
             FROM available_recipes
-            ORDER BY random() * (SELECT count(*) FROM available_recipes)  -- More random distribution
+            ORDER BY random() * (SELECT count(*) FROM available_recipes)
             LIMIT $6
             OFFSET $7
           )
@@ -744,7 +745,7 @@ class RecipeRepository {
           LEFT JOIN secondary_categories sc ON rsc.category_id = sc.id
           WHERE r.id IN (SELECT id FROM randomized_recipes)
           GROUP BY r.id, u.nickname
-          ORDER BY random();  -- Additional randomization
+          ORDER BY random();
         `,
         values: [
           userId,
