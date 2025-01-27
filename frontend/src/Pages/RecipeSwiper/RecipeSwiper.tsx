@@ -1,19 +1,16 @@
 import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../../Redux/store";
 import { fetchMoreRecipes } from "../../Redux/Actions/recipeSwiperActions";
 import {
   nextRecipe,
   clearRecipes,
-  setNoMoreRecipes,
   addSeenRecipe,
   setFilters,
 } from "../../Redux/Reducers/recipeSwiperSlice";
 import RecipeSwiperFilters from "../../Components/RecipeSwiperFilters/RecipeSwiperFilters";
 
 const RecipeSwiper = () => {
-  const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const {
     recipes,

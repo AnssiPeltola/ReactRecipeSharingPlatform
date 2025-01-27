@@ -37,9 +37,6 @@ const secondaryCategories = [
   "Vähähiilihydraattinen",
 ];
 
-// Flatten main ingredients for dropdown
-const allMainIngredients = Object.values(mainIngredients).flat();
-
 const RecipeSwiperFilters: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const filters = useSelector((state: RootState) => state.recipeSwiper.filters);
@@ -67,8 +64,7 @@ const RecipeSwiperFilters: React.FC = () => {
   ) => {
     const value = e.target.value as keyof typeof mainIngredients | "";
     setMainCategory(value);
-    setSpecificIngredient(""); // Reset specific when changing main
-    // Don't trigger filter change here
+    setSpecificIngredient("");
   };
 
   const handleSpecificIngredientChange = (
@@ -114,7 +110,6 @@ const RecipeSwiperFilters: React.FC = () => {
         </button>
       </div>
 
-      {/* Dropdowns in a grid */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
         {/* Category filter */}
         <div className="relative">
