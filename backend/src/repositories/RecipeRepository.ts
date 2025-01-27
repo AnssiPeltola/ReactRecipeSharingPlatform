@@ -688,6 +688,90 @@ class RecipeRepository {
     const result = await pool.query(query);
     return result.rows.map((row) => row.name);
   }
+
+  async fetchUnlikedRecipes({
+    userId,
+    excludeIds,
+    category,
+    mainIngredient,
+    secondaryCategories,
+    limit,
+    offset,
+  }: {
+    userId: number;
+    excludeIds: number[];
+    category?: string;
+    mainIngredient?: string;
+    secondaryCategories?: string[];
+    limit: number;
+    offset: number;
+  }): Promise<Recipe[]> {
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+
+      const query: QueryConfig = {
+        text: `
+          WITH available_recipes AS (
+            SELECT r.id
+            FROM recipes r
+            LEFT JOIN recipe_likes rl ON r.id = rl.recipe_id AND rl.user_id = $1
+            WHERE rl.id IS NULL
+            AND NOT r.id = ANY($2::int[])
+            AND ($3::VARCHAR IS NULL OR r.category = $3)
+            AND ($4::VARCHAR IS NULL OR r.main_ingredient = $4)
+            AND ($5::VARCHAR[] IS NULL OR (
+              SELECT COUNT(DISTINCT sc.name)
+              FROM recipe_secondary_categories rsc
+              JOIN secondary_categories sc ON rsc.category_id = sc.id
+              WHERE rsc.recipe_id = r.id
+              AND sc.name = ANY($5)
+            ) = array_length($5, 1))  -- Must match ALL selected categories
+          ),
+          randomized_recipes AS (
+            SELECT id
+            FROM available_recipes
+            ORDER BY random() * (SELECT count(*) FROM available_recipes)
+            LIMIT $6
+            OFFSET $7
+          )
+          SELECT 
+            r.*,
+            u.nickname,
+            STRING_AGG(DISTINCT sc.name, ', ') as secondary_categories
+          FROM recipes r
+          INNER JOIN users u ON r.user_id = u.id
+          LEFT JOIN recipe_secondary_categories rsc ON r.id = rsc.recipe_id
+          LEFT JOIN secondary_categories sc ON rsc.category_id = sc.id
+          WHERE r.id IN (SELECT id FROM randomized_recipes)
+          GROUP BY r.id, u.nickname
+          ORDER BY random();
+        `,
+        values: [
+          userId,
+          excludeIds.length > 0 ? excludeIds : [0],
+          category || null,
+          mainIngredient || null,
+          secondaryCategories || null,
+          limit,
+          offset,
+        ],
+      };
+      const { rows } = await client.query(query);
+      await client.query("COMMIT");
+      return rows.map((row) => ({
+        ...row,
+        secondary_categories: row.secondary_categories
+          ? row.secondary_categories.split(", ")
+          : [],
+      }));
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
 }
 
 export default RecipeRepository;

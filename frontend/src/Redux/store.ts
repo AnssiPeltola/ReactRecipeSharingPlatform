@@ -3,6 +3,7 @@ import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import recipeReducer from "./recipeSlice";
 import authReducer from "./authSlice";
+import recipeSwiperReducer from "./Reducers/recipeSwiperSlice";
 
 const persistConfig = {
   key: "root",
@@ -15,6 +16,7 @@ export const store = configureStore({
   reducer: {
     recipe: recipeReducer,
     auth: persistedAuthReducer,
+    recipeSwiper: recipeSwiperReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

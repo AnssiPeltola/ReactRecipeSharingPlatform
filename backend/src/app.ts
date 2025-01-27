@@ -313,4 +313,11 @@ app.get("/unique-recipe-names-and-ingredients", (req, res) =>
   recipeController.getUniqueRecipeNamesAndIngredients(req, res)
 );
 
+// Get unliked recipes with filters
+app.get(
+  "/recipes/unliked",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => recipeController.getUnlikedRecipes(req, res)
+);
+
 export default app;

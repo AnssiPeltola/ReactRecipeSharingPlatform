@@ -334,6 +334,48 @@ class RecipeController {
       });
     }
   }
+
+  async getUnlikedRecipes(req: Request, res: Response): Promise<void> {
+    try {
+      const user = req.user as AuthenticatedUser;
+      if (!user || !user.id) {
+        res.status(401).json({ message: "Unauthorized" });
+        return;
+      }
+
+      const {
+        category,
+        mainIngredient,
+        secondaryCategories,
+        excludeIds,
+        page = "1",
+        pageSize = "20",
+      } = req.query;
+
+      const parsedExcludeIds = excludeIds
+        ? (JSON.parse(excludeIds as string) as number[])
+        : [];
+
+      const recipes = await this.recipeService.getUnlikedRecipes(
+        user.id,
+        parsedExcludeIds,
+        {
+          category: category as string,
+          mainIngredient: mainIngredient as string,
+          secondaryCategories: secondaryCategories
+            ? (secondaryCategories as string).split(",")
+            : undefined,
+        },
+        parseInt(page as string),
+        parseInt(pageSize as string)
+      );
+
+      res.json(recipes);
+    } catch (error) {
+      console.error("Error getting unliked recipes:", error);
+      res.status(500).json({ message: "Error fetching recipes" });
+    }
+  }
 }
 
 export default RecipeController;
