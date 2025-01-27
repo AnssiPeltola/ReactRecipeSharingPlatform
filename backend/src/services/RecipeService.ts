@@ -159,6 +159,27 @@ class RecipeService {
   ): Promise<string[]> {
     return this.recipeRepository.getUniqueRecipeNamesAndIngredients(searchTerm);
   }
+
+  async getUnlikedRecipes(
+    userId: number,
+    excludeIds: number[],
+    filters: {
+      category?: string;
+      mainIngredient?: string;
+      secondaryCategories?: string[];
+    },
+    page: number = 1,
+    pageSize: number = 20
+  ): Promise<Recipe[]> {
+    const offset = (page - 1) * pageSize;
+    return this.recipeRepository.fetchUnlikedRecipes({
+      userId,
+      excludeIds,
+      ...filters,
+      limit: pageSize,
+      offset,
+    });
+  }
 }
 
 export default RecipeService;
