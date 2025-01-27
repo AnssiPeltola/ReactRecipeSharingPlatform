@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import LoginModal from "../Modal/LoginModal/LoginModal";
-import { LANDING } from "../../Constants/routes";
+import { LANDING, RECIPE_SWIPER } from "../../Constants/routes";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../Redux/authSlice";
 import { RootState } from "../../Redux/store";
@@ -112,6 +112,12 @@ const Navbar = () => {
           className="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-700"
         >
           Lisää resepti
+        </button>
+        <button
+          onClick={() => navigate(RECIPE_SWIPER)}
+          className="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-700"
+        >
+          Resepti Swiper
         </button>
         <button
           onClick={() => navigate("/profile")}

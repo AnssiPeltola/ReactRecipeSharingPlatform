@@ -14,6 +14,7 @@ import SearchResultsPage from "./Pages/RecipeSearchResults/RecipeSearchResults";
 import RecipeDetails from "./Pages/RecipeDetails/RecipeDetails";
 import ProfilePage from "./Pages/ProfilePage/ProfilePage";
 import RegisterRoute from "./Pages/Register/RegisterRoute/RegisterRoute";
+import RecipeSwiper from "./Pages/RecipeSwiper/RecipeSwiper";
 
 function App() {
   return (
@@ -47,6 +48,7 @@ function App() {
             />
             <Route path={ROUTES.RECIPE_DETAILS} element={<RecipeDetails />} />
             <Route path={ROUTES.PROFILE + "/*"} element={<ProfilePage />} />
+            <Route path={ROUTES.RECIPE_SWIPER} element={<RecipeSwiper />} />
             <Route path="*" element={<ErrorPage />} />
           </Routes>
         </main>

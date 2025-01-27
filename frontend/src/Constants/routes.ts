@@ -10,3 +10,4 @@ export const SEARCH_RESULTS = "/search-results";
 export const RECIPE_DETAILS = "/recipe/:recipeId";
 export const PROFILE = "/profile";
 export const MODIFY_USER_INFO = "/profile/modify";
+export const RECIPE_SWIPER = "/recipe-swiper";
