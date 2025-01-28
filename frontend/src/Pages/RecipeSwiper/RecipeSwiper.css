@@ -1,0 +1,75 @@
+.recipe-card {
+  transition: transform 0.3s ease-out;
+  touch-action: none;
+  user-select: none;
+  position: relative;
+}
+
+.dragging {
+  transition: none;
+  cursor: grabbing;
+}
+
+/* Desktop indicators */
+@media (min-width: 768px) {
+  .swipe-indicator {
+    position: absolute;
+    top: 10px;
+    padding: 8px 16px;
+    border-radius: 9999px;
+    font-weight: bold;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 10;
+  }
+
+  .like-indicator {
+    right: 10px;
+    background-color: rgba(34, 197, 94, 0.9);
+    color: white;
+  }
+
+  .dislike-indicator {
+    left: 10px;
+    background-color: rgba(239, 68, 68, 0.9);
+    color: white;
+  }
+
+  .show-like .like-indicator,
+  .show-dislike .dislike-indicator {
+    opacity: 1;
+  }
+}
+
+/* Mobile overlay effects */
+@media (max-width: 767px) {
+  .show-like .bg-white {
+    background-color: rgba(34, 197, 94, 0.1);
+  }
+
+  .show-dislike .bg-white {
+    background-color: rgba(239, 68, 68, 0.1);
+  }
+}
+
+.swipe-left {
+  animation: swipeLeft 0.5s ease-out forwards;
+}
+
+.swipe-right {
+  animation: swipeRight 0.5s ease-out forwards;
+}
+
+@keyframes swipeLeft {
+  to {
+    transform: translateX(-150%) rotate(-30deg);
+    opacity: 0;
+  }
+}
+
+@keyframes swipeRight {
+  to {
+    transform: translateX(150%) rotate(30deg);
+    opacity: 0;
+  }
+}
