@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSwipeable } from "react-swipeable";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../../Redux/store";
+import axios from "axios";
 import { fetchMoreRecipes } from "../../Redux/Actions/recipeSwiperActions";
 import {
   nextRecipe,
@@ -37,6 +38,7 @@ const RecipeSwiper = () => {
   const [isAnimating, setIsAnimating] = useState(false);
 
   // Different thresholds for mobile and desktop
+  const isDesktop = window.innerWidth > 768;
   const SWIPE_THRESHOLD = window.innerWidth > 768 ? 150 : 80;
   const MAX_SWIPE = SWIPE_THRESHOLD * 2; // Maximum swipe distance for full opacity
 
@@ -92,6 +94,71 @@ const RecipeSwiper = () => {
       seenRecipeIds,
     });
   }, [recipes.length, currentIndex, seenRecipeIds]);
+
+  const handleSwipe = (liked: boolean) => {
+    if (currentRecipe) {
+      console.log("Adding recipe to seen:", currentRecipe.id);
+      dispatch(addSeenRecipe(currentRecipe.id));
+
+      if (liked) {
+        likeRecipe(currentRecipe.id);
+      }
+
+      if (currentIndex >= recipes.length - 1 && !noMoreRecipes) {
+        console.log("Last recipe in batch, checking for more");
+        dispatch(fetchMoreRecipes());
+      } else {
+        dispatch(nextRecipe());
+      }
+    }
+  };
+
+  const getSwipeOpacity = (deltaX: number) => {
+    const absoluteDelta = Math.abs(deltaX);
+    return Math.min(absoluteDelta / MAX_SWIPE, 0.3); // Max opacity of 0.3
+  };
+
+  const getSwipeState = (deltaX: number) => {
+    if (deltaX > SWIPE_THRESHOLD) return "show-like";
+    if (deltaX < -SWIPE_THRESHOLD) return "show-dislike";
+    return "";
+  };
+
+  const handleButtonSwipe = (isLike: boolean) => {
+    setIsAnimating(true);
+    setDragDelta({
+      x: isLike ? SWIPE_THRESHOLD * 1.5 : -SWIPE_THRESHOLD * 1.5,
+      y: 0,
+    });
+    setSwipeDirection(isLike ? "right" : "left");
+
+    setTimeout(() => {
+      if (isLike && currentRecipe) {
+        likeRecipe(currentRecipe.id);
+      }
+      handleSwipe(isLike);
+      // Reset states after the swipe
+      setDragDelta({ x: 0, y: 0 });
+    }, 500);
+  };
+
+  const likeRecipe = async (recipeId: number) => {
+    try {
+      const token = localStorage.getItem("sessionToken");
+      await axios.post(
+        `${process.env.REACT_APP_API_BASE_URL}/likeRecipe/${recipeId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log("Recipe liked:", recipeId);
+    } catch (error) {
+      console.error("Error liking the recipe:", error);
+    }
+  };
 
   if (loading) {
     return (
@@ -159,49 +226,6 @@ const RecipeSwiper = () => {
   if (!currentRecipe) {
     return null;
   }
-
-  const handleSwipe = (liked: boolean) => {
-    if (currentRecipe) {
-      console.log("Adding recipe to seen:", currentRecipe.id);
-      // console.log("Current recipe:", currentRecipe);
-      dispatch(addSeenRecipe(currentRecipe.id));
-
-      if (currentIndex >= recipes.length - 1 && !noMoreRecipes) {
-        console.log("Last recipe in batch, checking for more");
-        dispatch(fetchMoreRecipes());
-      } else {
-        dispatch(nextRecipe());
-      }
-    }
-  };
-
-  const getSwipeOpacity = (deltaX: number) => {
-    const absoluteDelta = Math.abs(deltaX);
-    return Math.min(absoluteDelta / MAX_SWIPE, 0.3); // Max opacity of 0.3
-  };
-
-  const getSwipeState = (deltaX: number) => {
-    if (deltaX > SWIPE_THRESHOLD) return "show-like";
-    if (deltaX < -SWIPE_THRESHOLD) return "show-dislike";
-    return "";
-  };
-
-  const handleButtonSwipe = (isLike: boolean) => {
-    setIsAnimating(true);
-    setDragDelta({
-      x: isLike ? SWIPE_THRESHOLD * 1.5 : -SWIPE_THRESHOLD * 1.5,
-      y: 0,
-    });
-    setSwipeDirection(isLike ? "right" : "left");
-
-    setTimeout(() => {
-      handleSwipe(isLike);
-      // Reset states after the swipe
-      setDragDelta({ x: 0, y: 0 });
-    }, 500);
-  };
-
-  const isDesktop = window.innerWidth > 768;
 
   return (
     <div className="flex flex-col items-center min-h-screen p-4">
