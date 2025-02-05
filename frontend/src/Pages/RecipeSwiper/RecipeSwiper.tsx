@@ -11,6 +11,8 @@ import {
   setFilters,
 } from "../../Redux/Reducers/recipeSwiperSlice";
 import RecipeSwiperFilters from "../../Components/RecipeSwiperFilters/RecipeSwiperFilters";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import "./RecipeSwiper.css";
 
 const RecipeSwiper = () => {
@@ -160,6 +162,11 @@ const RecipeSwiper = () => {
     }
   };
 
+  const openRecipeInNewTab = (recipeId: number) => {
+    const url = `/recipe/${recipeId}`;
+    window.open(url, "_blank");
+  };
+
   if (loading) {
     return (
       <div className="flex flex-col items-center min-h-screen p-4">
@@ -265,6 +272,15 @@ const RecipeSwiper = () => {
                   : `rgba(239, 68, 68, ${getSwipeOpacity(dragDelta.x)})`,
             }}
           >
+            <div className="flex justify-center mb-4">
+              <button
+                onClick={() => openRecipeInNewTab(currentRecipe.id)}
+                className="bg-blue-500 text-white px-4 py-2 rounded-full"
+              >
+                <FontAwesomeIcon icon={faExternalLinkAlt} className="mr-2" />
+                Avaa
+              </button>
+            </div>
             <img
               src={
                 currentRecipe.picture_url
