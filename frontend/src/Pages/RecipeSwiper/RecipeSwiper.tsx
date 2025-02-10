@@ -9,6 +9,9 @@ import {
   clearRecipes,
   addSeenRecipe,
   setFilters,
+  addAction,
+  undoLastAction,
+  resetState,
 } from "../../Redux/Reducers/recipeSwiperSlice";
 import RecipeSwiperFilters from "../../Components/RecipeSwiperFilters/RecipeSwiperFilters";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -26,6 +29,7 @@ const RecipeSwiper = () => {
     noMoreRecipes,
     seenRecipeIds,
     filters,
+    actionHistory,
   } = useSelector((state: RootState) => state.recipeSwiper);
 
   const currentRecipe = recipes[currentIndex];
@@ -78,16 +82,33 @@ const RecipeSwiper = () => {
   });
 
   useEffect(() => {
-    console.log("Component mounted - clearing and refetching recipes");
-    dispatch(clearRecipes());
-    dispatch(fetchMoreRecipes());
-  }, []);
+    let mounted = true;
+
+    const initializeRecipes = async () => {
+      if (mounted) {
+        dispatch(clearRecipes());
+        await dispatch(fetchMoreRecipes());
+      }
+    };
+
+    initializeRecipes();
+
+    return () => {
+      mounted = false;
+    };
+  }, [dispatch]);
 
   useEffect(() => {
-    if (recipes.length === 0 && !noMoreRecipes) {
-      dispatch(fetchMoreRecipes());
-    }
-  }, [dispatch, recipes.length, noMoreRecipes]);
+    return () => {
+      dispatch(resetState());
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
+    console.log("Component mounted - clearing and fetching initial recipes");
+    dispatch(clearRecipes());
+    dispatch(fetchMoreRecipes());
+  }, [dispatch]); // Only run once when component mounts
 
   useEffect(() => {
     console.log("Current state:", {
@@ -102,17 +123,62 @@ const RecipeSwiper = () => {
       console.log("Adding recipe to seen:", currentRecipe.id);
       dispatch(addSeenRecipe(currentRecipe.id));
 
+      dispatch(
+        addAction({
+          type: liked ? "like" : "dislike",
+          recipeId: currentRecipe.id,
+          recipeIndex: currentIndex,
+        })
+      );
+
       if (liked) {
         likeRecipe(currentRecipe.id);
       }
 
-      if (currentIndex >= recipes.length - 1 && !noMoreRecipes) {
-        console.log("Last recipe in batch, checking for more");
+      // Fetch more recipes when we're closer to the end (e.g., 3 recipes left)
+      if (currentIndex >= recipes.length - 3 && !noMoreRecipes) {
+        console.log("Getting close to the end, fetching more recipes");
         dispatch(fetchMoreRecipes());
-      } else {
-        dispatch(nextRecipe());
       }
+
+      dispatch(nextRecipe());
     }
+  };
+
+  const unlikeRecipe = async (recipeId: number) => {
+    try {
+      const token = localStorage.getItem("sessionToken");
+      await axios.delete(
+        `${process.env.REACT_APP_API_BASE_URL}/unlikeRecipe/${recipeId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log("Recipe unliked:", recipeId);
+    } catch (error) {
+      console.error("Error unliking the recipe:", error);
+    }
+  };
+
+  const handleClearFilters = () => {
+    dispatch(resetState());
+    dispatch(setFilters({}));
+    dispatch(fetchMoreRecipes());
+  };
+
+  const handleUndo = async () => {
+    if (actionHistory.length === 0) return;
+
+    const lastAction = actionHistory[actionHistory.length - 1];
+
+    // If the last action was a like, unlike the recipe
+    if (lastAction.type === "like") {
+      await unlikeRecipe(lastAction.recipeId);
+    }
+
+    dispatch(undoLastAction());
   };
 
   const getSwipeOpacity = (deltaX: number) => {
@@ -186,7 +252,10 @@ const RecipeSwiper = () => {
     );
   }
 
-  if (noMoreRecipes || (!currentRecipe && !loading)) {
+  if (
+    (noMoreRecipes && currentIndex >= recipes.length) ||
+    (!currentRecipe && !loading)
+  ) {
     return (
       <div className="flex flex-col items-center min-h-screen p-4">
         <RecipeSwiperFilters />
@@ -199,11 +268,7 @@ const RecipeSwiper = () => {
               Kokeile muuttaa suodattimia tai tyhjennä ne kokonaan.
             </p>
             <button
-              onClick={() => {
-                dispatch(setFilters({}));
-                dispatch(clearRecipes());
-                dispatch(fetchMoreRecipes());
-              }}
+              onClick={handleClearFilters}
               className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-700"
             >
               Tyhjennä suodattimet
@@ -215,11 +280,7 @@ const RecipeSwiper = () => {
               Ei enempää reseptejä saatavilla.
             </p>
             <button
-              onClick={() => {
-                dispatch(setFilters({}));
-                dispatch(clearRecipes());
-                dispatch(fetchMoreRecipes());
-              }}
+              onClick={handleClearFilters}
               className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-700"
             >
               Kokeile uudelleen
@@ -319,6 +380,17 @@ const RecipeSwiper = () => {
                 className="bg-red-500 text-white px-6 py-2 rounded-full"
               >
                 Ohita
+              </button>
+              <button
+                onClick={handleUndo}
+                disabled={actionHistory.length === 0}
+                className={`px-4 py-2 rounded-full ${
+                  actionHistory.length === 0
+                    ? "bg-gray-300 cursor-not-allowed"
+                    : "bg-yellow-500 hover:bg-yellow-600"
+                } text-white`}
+              >
+                Kumoa edellinen
               </button>
               <button
                 onClick={() => handleButtonSwipe(true)}
