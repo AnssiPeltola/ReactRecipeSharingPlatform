@@ -12,6 +12,7 @@ A full-stack web application for food lovers to create, share, and discover reci
 - 📜 **Efficient Pagination** – Recipes and comments are loaded with pagination, ensuring optimal performance even with a large dataset.
 - 🎭 **RecipeSwiper** – A Tinder-like swipe page where users see unliked recipes and can swipe left to skip or right to like.
   - 🏷️ **Filter options**: - Main ingredient, category, and diet.
+  - ↩️ **Undo feature**: Ability to undo the last swipe action (like/dislike)
 - 📈 **Top Recipes of the Week** – The front page highlights the top 6 liked recipes of the week.
 - 🌍 **Ingredient Search** – Uses the [OpenFoodFacts API](https://world.openfoodfacts.org/data/taxonomies/ingredients.json) to fetch ingredient names in Finnish when typing three or more letters in the **IngredientSearch** component.
   - For example, typing "per" would suggest "peruna" (potato) and other related ingredients.
