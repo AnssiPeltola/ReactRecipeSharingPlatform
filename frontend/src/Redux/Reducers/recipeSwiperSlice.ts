@@ -11,6 +11,12 @@ interface Recipe {
   nickname: string;
 }
 
+interface Action {
+  type: "like" | "dislike";
+  recipeId: number;
+  recipeIndex: number;
+}
+
 interface RecipeSwiperState {
   recipes: Recipe[];
   currentIndex: number;
@@ -23,6 +29,7 @@ interface RecipeSwiperState {
   };
   noMoreRecipes: boolean;
   seenRecipeIds: number[];
+  actionHistory: Action[];
 }
 
 const initialState: RecipeSwiperState = {
@@ -33,6 +40,7 @@ const initialState: RecipeSwiperState = {
   filters: {},
   noMoreRecipes: false,
   seenRecipeIds: [],
+  actionHistory: [],
 };
 
 const recipeSwiperSlice = createSlice({
@@ -42,11 +50,15 @@ const recipeSwiperSlice = createSlice({
     setRecipes: (state, action: PayloadAction<Recipe[]>) => {
       if (action.payload.length === 0) {
         state.noMoreRecipes = true;
-        state.recipes = [];
-        state.currentIndex = 0;
       } else {
-        state.recipes = action.payload;
-        state.currentIndex = 0;
+        // Filter out any duplicates based on recipe ID
+        const newRecipes = action.payload.filter(
+          (newRecipe) =>
+            !state.recipes.some(
+              (existingRecipe) => existingRecipe.id === newRecipe.id
+            ) && !state.seenRecipeIds.includes(newRecipe.id)
+        );
+        state.recipes = [...state.recipes, ...newRecipes];
       }
     },
     clearRecipes: (state) => {
@@ -69,6 +81,12 @@ const recipeSwiperSlice = createSlice({
       action: PayloadAction<RecipeSwiperState["filters"]>
     ) => {
       state.filters = action.payload;
+      // Reset other state when filters change
+      state.recipes = [];
+      state.currentIndex = 0;
+      state.noMoreRecipes = false;
+      state.seenRecipeIds = [];
+      state.actionHistory = [];
     },
     setNoMoreRecipes: (state, action: PayloadAction<boolean>) => {
       state.noMoreRecipes = action.payload;
@@ -77,6 +95,29 @@ const recipeSwiperSlice = createSlice({
       if (!state.seenRecipeIds.includes(action.payload)) {
         state.seenRecipeIds.push(action.payload);
       }
+    },
+    addAction: (state, action: PayloadAction<Action>) => {
+      state.actionHistory.push(action.payload);
+    },
+
+    undoLastAction: (state) => {
+      if (state.actionHistory.length === 0) return;
+
+      const lastAction = state.actionHistory[state.actionHistory.length - 1];
+
+      // Remove the recipe ID from seen recipes
+      state.seenRecipeIds = state.seenRecipeIds.filter(
+        (id) => id !== lastAction.recipeId
+      );
+
+      // Adjust current index
+      state.currentIndex = lastAction.recipeIndex;
+
+      // Remove the action from history
+      state.actionHistory.pop();
+    },
+    resetState: (state) => {
+      return initialState;
     },
   },
 });
@@ -90,6 +131,9 @@ export const {
   setFilters,
   setNoMoreRecipes,
   addSeenRecipe,
+  addAction,
+  undoLastAction,
+  resetState,
 } = recipeSwiperSlice.actions;
 
 export default recipeSwiperSlice.reducer;

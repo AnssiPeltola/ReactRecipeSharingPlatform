@@ -12,14 +12,21 @@ export const fetchMoreRecipes = createAsyncThunk(
   "recipeSwiper/fetchMore",
   async (_, { getState, dispatch }) => {
     const state = getState() as RootState;
-    const { filters, seenRecipeIds } = state.recipeSwiper;
-    console.log("Fetching more recipes with seenRecipeIds:", seenRecipeIds);
-    const token = state.auth?.sessionToken || "";
+    const { filters, seenRecipeIds, recipes, loading, noMoreRecipes } =
+      state.recipeSwiper;
+
+    // Don't fetch if we're already loading or have no more recipes
+    if (loading || noMoreRecipes) return;
 
     try {
       dispatch(setLoading(true));
 
-      // Build query parameters
+      // Get all IDs we want to exclude (both seen and currently in recipes)
+      const currentRecipeIds = recipes.map((recipe) => recipe.id);
+      const allExcludedIds = [
+        ...new Set([...seenRecipeIds, ...currentRecipeIds]),
+      ];
+
       const params = new URLSearchParams();
       if (filters.category) params.append("category", filters.category);
       if (filters.mainIngredient)
@@ -30,9 +37,10 @@ export const fetchMoreRecipes = createAsyncThunk(
           filters.secondaryCategories.join(",")
         );
       }
-      params.append("excludeIds", JSON.stringify(seenRecipeIds));
+      params.append("excludeIds", JSON.stringify(allExcludedIds));
+      params.append("pageSize", "20");
 
-      console.log("Request URL params:", params.toString());
+      console.log("Fetching recipes with excludeIds:", allExcludedIds);
 
       const response = await axios.get(
         `${
@@ -40,24 +48,20 @@ export const fetchMoreRecipes = createAsyncThunk(
         }/recipes/unliked?${params.toString()}`,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${state.auth?.sessionToken || ""}`,
           },
         }
       );
 
-      console.log("Received recipes:", response.data);
-      console.log("Number of recipes received:", response.data.length);
+      console.log("Received recipes:", response.data.length);
 
-      // If no recipes returned, set noMoreRecipes flag
       if (response.data.length === 0) {
-        console.log("No more recipes available");
         dispatch(setNoMoreRecipes(true));
       } else {
         dispatch(setRecipes(response.data));
       }
-      dispatch(setError(null));
     } catch (error) {
-      console.error("Error details:", error);
+      console.error("Error fetching recipes:", error);
       dispatch(setError("Failed to fetch recipes"));
     } finally {
       dispatch(setLoading(false));
