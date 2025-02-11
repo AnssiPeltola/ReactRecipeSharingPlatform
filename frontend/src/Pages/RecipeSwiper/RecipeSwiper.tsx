@@ -42,39 +42,39 @@ const RecipeSwiper = () => {
   const [dragDelta, setDragDelta] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
 
   // Different thresholds for mobile and desktop
   const isDesktop = window.innerWidth > 768;
   const SWIPE_THRESHOLD = window.innerWidth > 768 ? 150 : 80;
-  const MAX_SWIPE = SWIPE_THRESHOLD * 2; // Maximum swipe distance for full opacity
+  const MAX_SWIPE = SWIPE_THRESHOLD * 2;
 
   const handlers = useSwipeable({
     onSwiping: (event) => {
-      setIsDragging(true);
-      setDragDelta({ x: event.deltaX, y: event.deltaY });
+      if (!isAnimating && !isFetchingMore) {
+        setIsDragging(true);
+        // Only update x movement, keep y at 0
+        setDragDelta({ x: event.deltaX, y: 0 });
+      }
     },
     onSwipedLeft: () => {
-      if (Math.abs(dragDelta.x) > SWIPE_THRESHOLD) {
-        setIsAnimating(true);
+      if (Math.abs(dragDelta.x) > SWIPE_THRESHOLD && !isFetchingMore) {
         setSwipeDirection("left");
-        setTimeout(() => {
-          handleSwipe(false);
-        }, 500);
+        handleSwipe(false, dragDelta.x);
       }
     },
     onSwipedRight: () => {
-      if (Math.abs(dragDelta.x) > SWIPE_THRESHOLD) {
-        setIsAnimating(true);
+      if (Math.abs(dragDelta.x) > SWIPE_THRESHOLD && !isFetchingMore) {
         setSwipeDirection("right");
-        setTimeout(() => {
-          handleSwipe(true);
-        }, 500);
+        handleSwipe(true, dragDelta.x);
       }
     },
     onTouchEndOrOnMouseUp: () => {
       if (!isAnimating) {
-        setIsDragging(false);
-        setDragDelta({ x: 0, y: 0 });
+        if (Math.abs(dragDelta.x) <= SWIPE_THRESHOLD) {
+          setIsDragging(false);
+          setDragDelta({ x: 0, y: 0 });
+        }
       }
     },
     trackMouse: true,
@@ -105,24 +105,31 @@ const RecipeSwiper = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    console.log("Component mounted - clearing and fetching initial recipes");
-    dispatch(clearRecipes());
-    dispatch(fetchMoreRecipes());
-  }, [dispatch]); // Only run once when component mounts
-
-  useEffect(() => {
-    console.log("Current state:", {
+    const stateChange = {
       recipesLength: recipes.length,
       currentIndex,
       seenRecipeIds,
-    });
-  }, [recipes.length, currentIndex, seenRecipeIds]);
+      cause:
+        seenRecipeIds.length > 0
+          ? `Recipe ${seenRecipeIds[seenRecipeIds.length - 1]} added to seen`
+          : "Initial state",
+    };
 
-  const handleSwipe = (liked: boolean) => {
+    console.log("State update:", stateChange);
+  }, [currentIndex, seenRecipeIds.length]);
+
+  const handleSwipe = async (liked: boolean, currentX?: number) => {
     if (currentRecipe) {
-      console.log("Adding recipe to seen:", currentRecipe.id);
-      dispatch(addSeenRecipe(currentRecipe.id));
+      setIsAnimating(true);
 
+      const finalX =
+        currentX || (liked ? SWIPE_THRESHOLD * 1.5 : -SWIPE_THRESHOLD * 1.5);
+      setDragDelta({
+        x: finalX,
+        y: 0,
+      });
+
+      dispatch(addSeenRecipe(currentRecipe.id));
       dispatch(
         addAction({
           type: liked ? "like" : "dislike",
@@ -132,16 +139,25 @@ const RecipeSwiper = () => {
       );
 
       if (liked) {
-        likeRecipe(currentRecipe.id);
+        await likeRecipe(currentRecipe.id);
       }
 
-      // Fetch more recipes when we're closer to the end (e.g., 3 recipes left)
-      if (currentIndex >= recipes.length - 3 && !noMoreRecipes) {
-        console.log("Getting close to the end, fetching more recipes");
-        dispatch(fetchMoreRecipes());
+      const needMoreRecipes =
+        currentIndex >= recipes.length - 3 && !noMoreRecipes;
+      if (needMoreRecipes) {
+        setIsFetchingMore(true);
+        await dispatch(fetchMoreRecipes());
+        setIsFetchingMore(false);
       }
 
-      dispatch(nextRecipe());
+      // Reset states after animation
+      setTimeout(() => {
+        dispatch(nextRecipe());
+        setIsAnimating(false);
+        setSwipeDirection(null);
+        setDragDelta({ x: 0, y: 0 });
+        setIsDragging(false);
+      }, 500);
     }
   };
 
@@ -183,7 +199,7 @@ const RecipeSwiper = () => {
 
   const getSwipeOpacity = (deltaX: number) => {
     const absoluteDelta = Math.abs(deltaX);
-    return Math.min(absoluteDelta / MAX_SWIPE, 0.3); // Max opacity of 0.3
+    return Math.min(absoluteDelta / MAX_SWIPE, 0.3);
   };
 
   const getSwipeState = (deltaX: number) => {
@@ -193,23 +209,11 @@ const RecipeSwiper = () => {
   };
 
   const handleButtonSwipe = (isLike: boolean) => {
-    setIsAnimating(true);
-    setDragDelta({
-      x: isLike ? SWIPE_THRESHOLD * 1.5 : -SWIPE_THRESHOLD * 1.5,
-      y: 0,
-    });
-    setSwipeDirection(isLike ? "right" : "left");
-
-    setTimeout(() => {
-      if (isLike && currentRecipe) {
-        likeRecipe(currentRecipe.id);
-      }
+    if (!isFetchingMore) {
+      setSwipeDirection(isLike ? "right" : "left");
       handleSwipe(isLike);
-      // Reset states after the swipe
-      setDragDelta({ x: 0, y: 0 });
-    }, 500);
+    }
   };
-
   const likeRecipe = async (recipeId: number) => {
     try {
       const token = localStorage.getItem("sessionToken");
@@ -306,7 +310,7 @@ const RecipeSwiper = () => {
           } ${isDragging ? "dragging" : ""} ${getSwipeState(dragDelta.x)}`}
           style={{
             transform: isDragging
-              ? `translate(${dragDelta.x}px, ${dragDelta.y}px) rotate(${
+              ? `translate(${dragDelta.x}px, 0px) rotate(${
                   dragDelta.x * 0.1
                 }deg)`
               : undefined,
