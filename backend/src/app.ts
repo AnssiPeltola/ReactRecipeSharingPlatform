@@ -215,32 +215,26 @@ app.get("/random-recipe", (req, res) =>
 );
 
 // Get user recipes by user ID
-app.get(
-  "/getUserRecipes",
-  passport.authenticate("jwt", { session: false }),
-  async (req, res) => {
-    if (req.user) {
-      const user: User = req.user as User;
-      try {
-        const recipes = await recipeController.getUserRecipes(user.id);
-        res.json(recipes);
-      } catch (error) {
-        res.status(500).json({ message: "Error fetching user recipes" });
-      }
-    } else {
-      res.status(401).json({ message: "User not authenticated" });
-    }
-  }
-);
+// app.get(
+//   "/getUserRecipes",
+//   passport.authenticate("jwt", { session: false }),
+//   async (req, res) => {
+//     if (req.user) {
+//       const user: User = req.user as User;
+//       try {
+//         const recipes = await recipeController.getUserRecipes(user.id);
+//         res.json(recipes);
+//       } catch (error) {
+//         res.status(500).json({ message: "Error fetching user recipes" });
+//       }
+//     } else {
+//       res.status(401).json({ message: "User not authenticated" });
+//     }
+//   }
+// );
 
 app.get("/user/:userId/recipes", async (req, res) => {
-  const { userId } = req.params;
-  try {
-    const recipes = await recipeController.getUserRecipes(Number(userId));
-    res.json(recipes);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching user recipes" });
-  }
+  await recipeController.getUserRecipes(req, res);
 });
 
 app.post(
