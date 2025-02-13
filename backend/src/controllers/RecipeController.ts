@@ -139,8 +139,24 @@ class RecipeController {
     }
   }
 
-  async getUserRecipes(user_id: number): Promise<Recipe[]> {
-    return this.recipeService.getUserRecipes(user_id);
+  async getUserRecipes(req: Request, res: Response) {
+    const userId = Number(req.params.userId);
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 9;
+    const sortBy = String(req.query.sortBy || "created_at");
+
+    try {
+      const result = await this.recipeService.getUserRecipes(
+        userId,
+        page,
+        limit,
+        sortBy
+      );
+      res.json(result);
+    } catch (error) {
+      console.error("Error fetching user recipes:", error);
+      res.status(500).json({ message: "Error fetching user recipes" });
+    }
   }
 
   async likeRecipe(req: Request, res: Response) {
