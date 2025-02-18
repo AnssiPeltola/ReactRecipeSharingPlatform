@@ -203,11 +203,20 @@ class RecipeController {
     if (!user || !user.id) {
       return res.status(401).send("Unauthorized");
     }
+
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 9;
+    const sortBy = String(req.query.sortBy || "created_at");
     const userId = user.id;
 
     try {
-      const likedRecipes = await this.recipeService.getLikedRecipes(userId);
-      res.status(200).json(likedRecipes);
+      const result = await this.recipeService.getLikedRecipes(
+        userId,
+        page,
+        limit,
+        sortBy
+      );
+      res.status(200).json(result);
     } catch (error) {
       console.error("Error fetching liked recipes:", error);
       res.status(500).send("Error fetching liked recipes");

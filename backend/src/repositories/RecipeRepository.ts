@@ -595,15 +595,86 @@ class RecipeRepository {
     await pool.query(query, [userId, recipeId]);
   }
 
-  async getLikedRecipes(userId: number) {
-    const query = `
-      SELECT r.*
-      FROM recipes r
-      JOIN recipe_likes rl ON r.id = rl.recipe_id
-      WHERE rl.user_id = $1
-    `;
-    const result = await pool.query(query, [userId]);
-    return result.rows;
+  async getLikedRecipes(
+    userId: number,
+    page: number,
+    limit: number,
+    sortBy: string
+  ): Promise<{ recipes: Recipe[]; totalRecipes: number }> {
+    let orderByClause = "";
+    let additionalSelectClause = "";
+
+    switch (sortBy) {
+      case "title":
+        orderByClause = "ORDER BY r.title";
+        break;
+      case "category":
+        orderByClause = "ORDER BY r.category";
+        break;
+      case "created_at":
+        orderByClause = "ORDER BY rl.created_at DESC";
+        break;
+      case "oldest":
+        orderByClause = "ORDER BY rl.created_at ASC";
+        break;
+      case "most_liked":
+        additionalSelectClause =
+          ", (SELECT COUNT(*) FROM recipe_likes rl2 WHERE rl2.recipe_id = r.id) AS like_count";
+        orderByClause = "ORDER BY like_count DESC";
+        break;
+      case "most_commented":
+        additionalSelectClause =
+          ", (SELECT COUNT(*) FROM recipe_comments rc WHERE rc.recipe_id = r.id) AS comment_count";
+        orderByClause = "ORDER BY comment_count DESC";
+        break;
+      default:
+        orderByClause = "ORDER BY rl.created_at DESC";
+    }
+
+    const offset = (page - 1) * limit;
+
+    const query = {
+      text: `
+        SELECT 
+          r.*,
+          STRING_AGG(DISTINCT sc.name, ', ') as secondary_categories
+          ${additionalSelectClause}
+        FROM recipes r
+        JOIN recipe_likes rl ON r.id = rl.recipe_id
+        LEFT JOIN recipe_secondary_categories rsc ON r.id = rsc.recipe_id
+        LEFT JOIN secondary_categories sc ON rsc.category_id = sc.id
+        WHERE rl.user_id = $1
+        GROUP BY r.id, rl.created_at
+        ${orderByClause}
+        LIMIT $2 OFFSET $3
+      `,
+      values: [userId, limit, offset],
+    };
+
+    const countQuery = {
+      text: "SELECT COUNT(*) FROM recipe_likes WHERE user_id = $1",
+      values: [userId],
+    };
+
+    try {
+      const [recipesResult, countResult] = await Promise.all([
+        pool.query(query),
+        pool.query(countQuery),
+      ]);
+
+      return {
+        recipes: recipesResult.rows.map((row) => ({
+          ...row,
+          secondary_categories: row.secondary_categories
+            ? row.secondary_categories.split(", ")
+            : [],
+        })),
+        totalRecipes: parseInt(countResult.rows[0].count, 10),
+      };
+    } catch (error) {
+      console.error("Error querying the database", error);
+      throw error;
+    }
   }
 
   async isRecipeLiked(userId: number, recipeId: number): Promise<boolean> {

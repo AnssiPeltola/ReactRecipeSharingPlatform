@@ -113,8 +113,13 @@ class RecipeService {
     await this.recipeRepository.unlikeRecipe(userId, recipeId);
   }
 
-  async getLikedRecipes(userId: number) {
-    return this.recipeRepository.getLikedRecipes(userId);
+  async getLikedRecipes(
+    userId: number,
+    page: number,
+    limit: number,
+    sortBy: string
+  ) {
+    return this.recipeRepository.getLikedRecipes(userId, page, limit, sortBy);
   }
 
   async isRecipeLiked(userId: number, recipeId: number): Promise<boolean> {
