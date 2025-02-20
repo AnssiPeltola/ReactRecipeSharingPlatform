@@ -7,7 +7,11 @@ import { setIngredients, setInstructions } from "../../../Redux/recipeSlice";
 import { Ingredient } from "../../../Types/types";
 import { v4 as uuidv4 } from "uuid";
 import ProgressBar from "../../../Components/ProgressBar/ProgressBar";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faTrash,
+  faCaretUp,
+  faCaretDown,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   validateQuantity,
@@ -210,6 +214,22 @@ const RecipeIngredients = () => {
     });
   };
 
+  const moveIngredient = (index: number, direction: "up" | "down") => {
+    const newIngredients = [...ingredients];
+    if (direction === "up" && index > 0) {
+      [newIngredients[index], newIngredients[index - 1]] = [
+        newIngredients[index - 1],
+        newIngredients[index],
+      ];
+    } else if (direction === "down" && index < ingredients.length - 1) {
+      [newIngredients[index], newIngredients[index + 1]] = [
+        newIngredients[index + 1],
+        newIngredients[index],
+      ];
+    }
+    setLocalIngredients(newIngredients);
+  };
+
   console.log("Recipe State in RecipeIngredients:", recipeState);
 
   return (
@@ -225,6 +245,30 @@ const RecipeIngredients = () => {
             className="mb-4 p-4 border rounded-lg bg-white shadow"
           >
             <div className="flex flex-wrap gap-4 items-center">
+              <div className="flex flex-col justify-center">
+                <button
+                  onClick={() => moveIngredient(index, "up")}
+                  disabled={index === 0}
+                  className={`text-blue-500 hover:text-blue-600 transition-colors duration-200 ${
+                    index === 0 ? "opacity-30 cursor-not-allowed" : ""
+                  }`}
+                  type="button"
+                >
+                  <FontAwesomeIcon icon={faCaretUp} />
+                </button>
+                <button
+                  onClick={() => moveIngredient(index, "down")}
+                  disabled={index === ingredients.length - 1}
+                  className={`text-blue-500 hover:text-blue-600 transition-colors duration-200 ${
+                    index === ingredients.length - 1
+                      ? "opacity-30 cursor-not-allowed"
+                      : ""
+                  }`}
+                  type="button"
+                >
+                  <FontAwesomeIcon icon={faCaretDown} />
+                </button>
+              </div>
               <input
                 type="text"
                 placeholder="Paljon?"
