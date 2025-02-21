@@ -1,0 +1,64 @@
+.ingredient-item {
+  position: relative;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.moving-up {
+  animation: moveUp 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.moving-down {
+  animation: moveDown 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.swap-up {
+  animation: swapUp 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.swap-down {
+  animation: swapDown 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes moveUp {
+  0% {
+    transform: translateY(0);
+    z-index: 10;
+  }
+  100% {
+    transform: translateY(-100%);
+    z-index: 10;
+  }
+}
+
+@keyframes moveDown {
+  0% {
+    transform: translateY(0);
+    z-index: 10;
+  }
+  100% {
+    transform: translateY(100%);
+    z-index: 10;
+  }
+}
+
+@keyframes swapUp {
+  0% {
+    transform: translateY(0);
+    z-index: 5;
+  }
+  100% {
+    transform: translateY(-100%);
+    z-index: 5;
+  }
+}
+
+@keyframes swapDown {
+  0% {
+    transform: translateY(0);
+    z-index: 5;
+  }
+  100% {
+    transform: translateY(100%);
+    z-index: 5;
+  }
+}

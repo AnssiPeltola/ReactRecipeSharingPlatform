@@ -7,6 +7,7 @@ import { setIngredients, setInstructions } from "../../../Redux/recipeSlice";
 import { Ingredient } from "../../../Types/types";
 import { v4 as uuidv4 } from "uuid";
 import ProgressBar from "../../../Components/ProgressBar/ProgressBar";
+import "../../../Styles/ingredientAnimation.css";
 import {
   faTrash,
   faCaretUp,
@@ -35,6 +36,14 @@ const RecipeIngredients = () => {
     instructions: "",
     steps: [] as string[],
   });
+  const [isMoving, setIsMoving] = useState(false);
+  const [movingIngredient, setMovingIngredient] = useState<string | null>(null);
+  const [moveDirection, setMoveDirection] = useState<"up" | "down" | null>(
+    null
+  );
+  const [swappingIngredient, setSwappingIngredient] = useState<string | null>(
+    null
+  );
   const charLimit = 1000;
 
   useEffect(() => {
@@ -215,6 +224,17 @@ const RecipeIngredients = () => {
   };
 
   const moveIngredient = (index: number, direction: "up" | "down") => {
+    if (isMoving) return;
+
+    const currentId = ingredients[index].id;
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    const targetId = ingredients[targetIndex].id;
+
+    setIsMoving(true);
+    setMovingIngredient(currentId);
+    setSwappingIngredient(targetId);
+    setMoveDirection(direction);
+
     const newIngredients = [...ingredients];
     if (direction === "up" && index > 0) {
       [newIngredients[index], newIngredients[index - 1]] = [
@@ -227,7 +247,18 @@ const RecipeIngredients = () => {
         newIngredients[index],
       ];
     }
-    setLocalIngredients(newIngredients);
+
+    // Let the animation complete before updating the state
+    setTimeout(() => {
+      setLocalIngredients(newIngredients);
+      // Small delay to prevent visual glitch
+      requestAnimationFrame(() => {
+        setIsMoving(false);
+        setMovingIngredient(null);
+        setSwappingIngredient(null);
+        setMoveDirection(null);
+      });
+    }, 200);
   };
 
   console.log("Recipe State in RecipeIngredients:", recipeState);
@@ -242,7 +273,30 @@ const RecipeIngredients = () => {
         {ingredients.map((ingredient, index) => (
           <div
             key={ingredient.id}
-            className="mb-4 p-4 border rounded-lg bg-white shadow"
+            className={`
+              ingredient-item
+              mb-4 p-4 border rounded-lg bg-white shadow
+              ${
+                movingIngredient === ingredient.id && moveDirection === "up"
+                  ? "moving-up"
+                  : ""
+              }
+              ${
+                movingIngredient === ingredient.id && moveDirection === "down"
+                  ? "moving-down"
+                  : ""
+              }
+              ${
+                swappingIngredient === ingredient.id && moveDirection === "down"
+                  ? "swap-up"
+                  : ""
+              }
+              ${
+                swappingIngredient === ingredient.id && moveDirection === "up"
+                  ? "swap-down"
+                  : ""
+              }
+            `}
           >
             <div className="flex flex-wrap gap-4 items-center">
               <div className="flex flex-col justify-center">
